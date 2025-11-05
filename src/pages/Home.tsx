@@ -1,14 +1,17 @@
+import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, Heart, Shield, TrendingUp, MessageCircle, Star } from "lucide-react";
+import { Check, Heart, Shield, TrendingUp, MessageCircle, Star, ClipboardCheck } from "lucide-react";
 import { getFeaturedProducts, getWhatsAppLink } from "@/data/products";
 import heroBanner from "@/assets/hero-banner.png";
 
 const Home = () => {
+  const [testOpen, setTestOpen] = useState(false);
   const featuredProducts = getFeaturedProducts();
 
   return (
@@ -31,18 +34,12 @@ const Home = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button
-                asChild
                 size="lg"
+                onClick={() => setTestOpen(true)}
                 className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-8"
               >
-                <a
-                  href={getWhatsAppLink("", "Hola, quiero asesoría personalizada sobre medias de compresión")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  Asesoría por WhatsApp
-                </a>
+                <ClipboardCheck className="w-5 h-5 mr-2" />
+                Hacer Test Gratis
               </Button>
               <Button
                 asChild
@@ -53,6 +50,35 @@ const Home = () => {
                 <a href="#productos">Ver Catálogo</a>
               </Button>
             </div>
+            <p className="text-sm text-primary-foreground/80 mt-4">
+              Test creado con apoyo de especialistas • No reemplaza consulta médica
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <TestDialog open={testOpen} onOpenChange={setTestOpen} />
+
+      {/* Banner Test */}
+      <section className="bg-accent py-6">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-center md:text-left">
+              <h3 className="text-xl font-bold text-accent-foreground mb-1">
+                ¿No sabes qué media necesitas?
+              </h3>
+              <p className="text-accent-foreground/80">
+                Haz el test en 2 minutos y recibe una recomendación personalizada
+              </p>
+            </div>
+            <Button
+              size="lg"
+              onClick={() => setTestOpen(true)}
+              className="bg-background text-foreground hover:bg-background/90 flex-shrink-0"
+            >
+              <ClipboardCheck className="w-5 h-5 mr-2" />
+              Hacer Test Gratis
+            </Button>
           </div>
         </div>
       </section>

@@ -3,12 +3,14 @@ import Navigation from "@/components/Navigation";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { products, getWhatsAppLink } from "@/data/products";
-import { Filter } from "lucide-react";
+import { Filter, ClipboardCheck, MessageCircle } from "lucide-react";
 
 const Catalog = () => {
+  const [testOpen, setTestOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
 
@@ -23,6 +25,7 @@ const Catalog = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <WhatsAppFloat />
+      <TestDialog open={testOpen} onOpenChange={setTestOpen} />
 
       {/* Header */}
       <section className="bg-gradient-hero text-primary-foreground py-12 md:py-16">
@@ -41,23 +44,22 @@ const Catalog = () => {
       {/* Info Bar */}
       <section className="bg-accent/10 border-y border-border">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-center">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">¿No sabes qué modelo elegir?</span> Escríbenos por WhatsApp y te guiamos en 3 minutos
+              <span className="font-semibold text-foreground">¿No sabes qué modelo elegir?</span> Haz el test o escríbenos
             </p>
-            <Button
-              asChild
-              size="sm"
-              className="bg-[#25D366] hover:bg-[#20BA5A] text-white"
-            >
-              <a
-                href={getWhatsAppLink("", "Hola, necesito ayuda para elegir mis medias de compresión")}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Ayúdame a elegir
-              </a>
-            </Button>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={() => setTestOpen(true)}>
+                <ClipboardCheck className="w-4 h-4 mr-2" />
+                Hacer Test
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <a href={getWhatsAppLink("", "Hola, necesito ayuda")} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  WhatsApp
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

@@ -1,18 +1,23 @@
+import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import { TestDialog } from "@/components/TestDialog";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check } from "lucide-react";
+import { Check, ClipboardCheck } from "lucide-react";
 import { getProductsByCategory } from "@/data/products";
+import { Button } from "@/components/ui/button";
 
 const Varices = () => {
+  const [testOpen, setTestOpen] = useState(false);
   const varicesProducts = getProductsByCategory("varices");
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       <WhatsAppFloat />
+      <TestDialog open={testOpen} onOpenChange={setTestOpen} />
 
       {/* Header */}
       <section className="bg-gradient-hero text-primary-foreground py-12 md:py-16">
@@ -24,6 +29,15 @@ const Varices = () => {
             <p className="text-lg text-primary-foreground/90">
               Compresión médica 20-30 mmHg que alivia el dolor, reduce la hinchazón y mejora la apariencia de las várices
             </p>
+            <div className="flex gap-4 justify-center pt-4">
+              <Button size="lg" onClick={() => setTestOpen(true)} className="bg-accent hover:bg-accent/90">
+                <ClipboardCheck className="w-5 h-5 mr-2" />
+                Hacer Test Gratis
+              </Button>
+              <Button asChild size="lg" variant="outline" className="bg-primary-foreground/10 border-primary-foreground/20">
+                <a href="/catalogo">Ver catálogo</a>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
