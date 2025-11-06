@@ -144,6 +144,6 @@ export const getFeaturedProducts = (): Product[] => {
 
 export const getWhatsAppLink = (productName: string, message?: string): string => {
   const phone = "51904541341"; // Replace with actual WhatsApp number
-  const text = message || `Hola, vengo de ${originUrl} y quiero información del producto: ${productName}`;
+  const text = message || `Hola, quiero información del producto: ${productName} y vengo de ${originUrl}`;
   return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 };
