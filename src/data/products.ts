@@ -28,7 +28,7 @@ export const products: Product[] = [
     compression: "12-17 mmHg",
     name: "Media Compresiva Hasta Rodilla 12-17 mmHg - Piel",
     subtitle: "Compresión ligera ideal para prevención",
-    image: "/src/assets/product-750-1.jpg",
+    image: "/images/product-750-1.jpg",
     benefits: [
       "Previene várices por estar muchas horas de pie",
       "Elimina la hinchazón al final del día",
@@ -59,7 +59,7 @@ export const products: Product[] = [
     compression: "12-17 mmHg",
     name: "Panty Compresivo 12-17 mmHg - Piel",
     subtitle: "Cobertura total para prevención diaria",
-    image: "/src/assets/product-880.jpg",
+    image: "/images/product-880.jpg",
     benefits: [
       "Compresión uniforme en ambas piernas",
       "Previene várices y mejora circulación",
@@ -92,7 +92,7 @@ export const products: Product[] = [
     compression: "18-22 mmHg",
     name: "Media Compresiva Hasta Rodilla 18-22 mmHg - Piel",
     subtitle: "Compresión media para alivio efectivo",
-    image: "/src/assets/product-750-1.jpg",
+    image: "/images/product-750-1.jpg",
     benefits: [
       "Alivia el dolor y la hinchazón de várices visibles",
       "Reduce la fatiga incluso después de largas jornadas",
@@ -123,7 +123,7 @@ export const products: Product[] = [
     compression: "18-22 mmHg",
     name: "Media Compresiva Hasta Rodilla 18-22 mmHg - Negro",
     subtitle: "Compresión media elegante y discreta",
-    image: "/src/assets/product-750-2.jpg",
+    image: "/images/product-750-2.jpg",
     benefits: [
       "Alivia el dolor y la hinchazón de várices visibles",
       "Color negro elegante para cualquier ocasión",
@@ -154,7 +154,7 @@ export const products: Product[] = [
     compression: "18-22 mmHg",
     name: "Media Compresiva Punta Abierta 18-22 mmHg - Piel",
     subtitle: "Máxima transpirabilidad para clima cálido",
-    image: "/src/assets/product-950a.jpg",
+    image: "/images/product-950a.jpg",
     benefits: [
       "Punta abierta ideal para pies sensibles o con calor",
       "No irrita la piel, hipoalergénica",
@@ -185,7 +185,7 @@ export const products: Product[] = [
     compression: "18-22 mmHg",
     name: "Media Compresiva Autoreggente Hasta Muslo 18-22 mmHg - Piel",
     subtitle: "Banda de silicona elegante con soporte médico",
-    image: "/src/assets/product-870a-1.jpg",
+    image: "/images/product-870a-1.jpg",
     benefits: [
       "Banda de silicona antideslizante que se mantiene en su lugar",
       "Alivia várices sin sacrificar la estética",
@@ -216,7 +216,7 @@ export const products: Product[] = [
     compression: "18-22 mmHg",
     name: "Media Compresiva Autoreggente Hasta Muslo 18-22 mmHg - Negro",
     subtitle: "Elegancia y soporte terapéutico",
-    image: "/src/assets/product-870a-2.jpg",
+    image: "/images/product-870a-2.jpg",
     benefits: [
       "Banda de silicona antideslizante elegante",
       "Color negro sofisticado para cualquier ocasión",
@@ -247,7 +247,7 @@ export const products: Product[] = [
     compression: "18-22 mmHg",
     name: "Panty Compresivo Várices 18-22 mmHg - Piel",
     subtitle: "Cobertura total para várices en ambas piernas",
-    image: "/src/assets/product-880.jpg",
+    image: "/images/product-880.jpg",
     benefits: [
       "Compresión uniforme en ambas piernas y glúteos",
       "Alivia várices y previene nuevas apariciones",
@@ -280,7 +280,7 @@ export const products: Product[] = [
     compression: "22-27 mmHg",
     name: "Media Compresiva Hasta Rodilla 22-27 mmHg - Piel",
     subtitle: "Compresión fuerte para várices avanzadas",
-    image: "/src/assets/product-750-1.jpg",
+    image: "/images/product-750-1.jpg",
     benefits: [
       "Compresión fuerte para várices severas",
       "Mejora significativamente la circulación",
@@ -311,7 +311,7 @@ export const products: Product[] = [
     compression: "22-27 mmHg",
     name: "Media Compresiva Hasta Rodilla 22-27 mmHg - Negro",
     subtitle: "Compresión fuerte elegante",
-    image: "/src/assets/product-750-2.jpg",
+    image: "/images/product-750-2.jpg",
     benefits: [
       "Compresión fuerte para várices severas",
       "Color negro elegante y discreto",
@@ -342,7 +342,7 @@ export const products: Product[] = [
     compression: "22-27 mmHg",
     name: "Media Compresiva Punta Abierta 22-27 mmHg - Piel",
     subtitle: "Compresión fuerte con máxima transpirabilidad",
-    image: "/src/assets/product-950a.jpg",
+    image: "/images/product-950a.jpg",
     benefits: [
       "Punta abierta para pies sensibles",
       "Compresión fuerte terapéutica",
@@ -373,7 +373,7 @@ export const products: Product[] = [
     compression: "22-27 mmHg",
     name: "Media Compresiva Hasta Muslo 22-27 mmHg - Piel",
     subtitle: "Compresión fuerte hasta muslo",
-    image: "/src/assets/product-870a-1.jpg",
+    image: "/images/product-870a-1.jpg",
     benefits: [
       "Compresión fuerte hasta el muslo",
       "Banda de silicona antideslizante",
@@ -404,7 +404,7 @@ export const products: Product[] = [
     compression: "22-27 mmHg",
     name: "Media Compresiva Hasta Muslo 22-27 mmHg - Negro",
     subtitle: "Compresión fuerte elegante hasta muslo",
-    image: "/src/assets/product-870a-2.jpg",
+    image: "/images/product-870a-2.jpg",
     benefits: [
       "Compresión fuerte hasta el muslo",
       "Color negro elegante",
@@ -435,7 +435,7 @@ export const products: Product[] = [
     compression: "22-27 mmHg",
     name: "Panty Compresivo 22-27 mmHg - Piel",
     subtitle: "Máxima compresión en panty completo",
-    image: "/src/assets/product-880.jpg",
+    image: "/images/product-880.jpg",
     benefits: [
       "Compresión fuerte en ambas piernas",
       "Cobertura completa hasta cintura",
@@ -455,7 +455,7 @@ export const products: Product[] = [
     type: "panty",
     sizes: ["S", "M", "L", "XL", "2XL"],
     colors: ["Piel"],
-    priceOriginal: 157.80,
+    priceOriginal: 157.8,
     priceSale: 126.24,
   },
 
@@ -468,7 +468,7 @@ export const products: Product[] = [
     compression: "22-27 mmHg",
     name: "Panty Compresivo Maternidad 22-27 mmHg - Piel",
     subtitle: "Diseño especial para el embarazo",
-    image: "/src/assets/product-880.jpg",
+    image: "/images/product-880.jpg",
     benefits: [
       "Diseño especial con panel expandible para embarazo",
       "Alivia várices durante y después del embarazo",
@@ -501,7 +501,7 @@ export const products: Product[] = [
     compression: "12-17 mmHg",
     name: "Media Microfibra Hasta Rodilla 12-17 mmHg - Piel",
     subtitle: "Suavidad de microfibra con compresión",
-    image: "/src/assets/product-750-1.jpg",
+    image: "/images/product-750-1.jpg",
     benefits: [
       "Efecto opaco y cubriente gracias a la microfibra",
       "Previene várices con estilo elegante",
@@ -534,7 +534,7 @@ export const products: Product[] = [
     compression: "18-22 mmHg",
     name: "Media Microfibra Hasta Rodilla 18-22 mmHg - Soleil",
     subtitle: "Elegancia en microfibra con soporte médico",
-    image: "/src/assets/product-750-1.jpg",
+    image: "/images/product-750-1.jpg",
     benefits: [
       "Microfibra suave y elegante",
       "Compresión media efectiva",
@@ -555,7 +555,7 @@ export const products: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     colors: ["Soleil"],
     priceOriginal: 76.88,
-    priceSale: 61.50,
+    priceSale: 61.5,
   },
   {
     id: "880m-soleil",
@@ -565,7 +565,7 @@ export const products: Product[] = [
     compression: "18-22 mmHg",
     name: "Panty Microfibra 18-22 mmHg - Soleil",
     subtitle: "Panty elegante en microfibra suave",
-    image: "/src/assets/product-880.jpg",
+    image: "/images/product-880.jpg",
     benefits: [
       "Microfibra ultra suave",
       "Compresión uniforme en ambas piernas",
@@ -600,9 +600,7 @@ export const getProductsByCompression = (compression: string): Product[] => {
 
 export const getFeaturedProducts = (): Product[] => {
   // Destacar productos de diferentes categorías
-  return products.filter((p) => 
-    ["850-piel", "870-piel", "880-piel", "950a-piel"].includes(p.id)
-  );
+  return products.filter((p) => ["850-piel", "870-piel", "880-piel", "950a-piel"].includes(p.id));
 };
 
 export const getWhatsAppLink = (productName: string, message?: string): string => {
