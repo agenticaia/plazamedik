@@ -106,14 +106,14 @@ export const TestDialog = ({ open, onOpenChange }: TestDialogProps) => {
     if (step > 1) setStep(step - 1);
   };
 
-  const getWhatsAppMessage = (productName: string) => {
+  const getWhatsAppMessage = (productCode: string, result: RiskLevel) => {
     const name = testData.name || "Cliente";
-    return `Hola, acabo de hacer el Test Online de Várices y Trabajo de Pie en piernasligeras.com. Mi resultado ha sido: ${result}. Me interesa el producto: ${productName}. ¿Me pueden ayudar a elegir talla y completar la compra?`;
+    return `Hola, soy ${name}. Acabo de hacer el Test Online en PlazaMedik.net.pe. Mi resultado: ${result}. Me interesa el producto código ${productCode}. ¿Me pueden ayudar con talla y precio?`;
   };
 
-  const getWhatsAppLink = (productName: string) => {
+  const getWhatsAppLink = (productCode: string, result: RiskLevel) => {
     const phone = "51904541341";
-    const message = getWhatsAppMessage(productName);
+    const message = getWhatsAppMessage(productCode, result);
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   };
 
@@ -761,8 +761,11 @@ export const TestDialog = ({ open, onOpenChange }: TestDialogProps) => {
           { icon: <Sunrise className="w-6 h-6" />, text: "Eleva las piernas" },
           { icon: <Footprints className="w-6 h-6" />, text: "Camina regularmente" },
         ],
-        compression: "12–17 mmHg hasta la rodilla",
-        products: ["Calcetines hasta rodilla 12–17 mmHg – Talón, puntera y plantilla reforzados"],
+        compression: "12-17 mmHg hasta la rodilla",
+        products: [
+          { code: "750", name: "Media Básica Hasta Rodilla 12-17 mmHg - Piel", price: "S/ 55.74" },
+          { code: "750M", name: "Media Microfibra Hasta Rodilla 12-17 mmHg - Piel", price: "S/ 59.34" },
+        ],
       },
       MODERADO: {
         title: "RIESGO MODERADO",
@@ -774,10 +777,11 @@ export const TestDialog = ({ open, onOpenChange }: TestDialogProps) => {
           { icon: <Flame className="w-6 h-6" />, text: "Evita el calor intenso directo" },
           { icon: <Sunrise className="w-6 h-6" />, text: "Eleva las piernas regularmente" },
         ],
-        compression: "18–22 mmHg hasta la rodilla",
+        compression: "18-22 mmHg",
         products: [
-          "Calcetines hasta rodilla 18–22 mmHg – Puntera abierta, talón reforzado",
-          "Calcetines hasta muslo 18–22 mmHg – Volante elástico con silicona hipoalergénica",
+          { code: "850A", name: "Media Punta Abierta Hasta Rodilla 18-22 mmHg - Piel", price: "S/ 61.23" },
+          { code: "870", name: "Media Autoreggente Hasta Muslo 18-22 mmHg - Piel", price: "S/ 93.15" },
+          { code: "880", name: "Panty Compresivo 18-22 mmHg - Piel", price: "S/ 102.51" },
         ],
       },
       AVANZADO: {
@@ -790,10 +794,11 @@ export const TestDialog = ({ open, onOpenChange }: TestDialogProps) => {
           { icon: <Sunrise className="w-6 h-6" />, text: "Eleva piernas varias veces al día" },
           { icon: <Clock className="w-6 h-6" />, text: "Descansa todo lo posible" },
         ],
-        compression: "22–27 mmHg",
+        compression: "22-27 mmHg",
         products: [
-          "Calcetines hasta muslo 22–27 mmHg – Volante elástico con silicona hipoalergénica",
-          "Calcetines hasta rodilla 22–27 mmHg – Talón, puntera y plantilla reforzados",
+          { code: "960", name: "Media Hasta Muslo 22-27 mmHg - Piel", price: "S/ 81.64" },
+          { code: "950", name: "Media Hasta Rodilla 22-27 mmHg - Piel", price: "S/ 65.82" },
+          { code: "950A", name: "Media Punta Abierta 22-27 mmHg - Piel", price: "S/ 71.58" },
         ],
       },
     };
@@ -821,14 +826,24 @@ export const TestDialog = ({ open, onOpenChange }: TestDialogProps) => {
 
         <div className="bg-primary/10 rounded-lg p-4">
           <h4 className="font-semibold mb-2">Recomendación de medias de compresión:</h4>
-          <p className="text-sm font-medium text-primary mb-3">{data.compression}</p>
-          <div className="space-y-2">
+          <p className="text-sm font-medium text-primary mb-3">Compresión recomendada: {data.compression}</p>
+          <div className="space-y-3">
             {data.products.map((product, idx) => (
-              <div key={idx} className="bg-background rounded p-3">
-                <p className="text-sm mb-2">{product}</p>
-                <Button size="sm" className="w-full" onClick={() => window.open(getWhatsAppLink(product), "_blank")}>
+              <div key={idx} className="bg-background rounded p-4 space-y-2">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium mb-1">{product.name}</p>
+                    <p className="text-xs text-muted-foreground">Código: {product.code}</p>
+                  </div>
+                  <p className="text-lg font-bold text-primary ml-2">{product.price}</p>
+                </div>
+                <Button 
+                  size="sm" 
+                  className="w-full" 
+                  onClick={() => window.open(getWhatsAppLink(product.code, result!), "_blank")}
+                >
                   <Phone className="w-4 h-4 mr-2" />
-                  Quiero este producto por WhatsApp
+                  Pedir por WhatsApp
                 </Button>
               </div>
             ))}
@@ -839,7 +854,7 @@ export const TestDialog = ({ open, onOpenChange }: TestDialogProps) => {
           <Button
             size="lg"
             className="w-full bg-accent hover:bg-accent/90"
-            onClick={() => window.open(getWhatsAppLink("Asesoría general"), "_blank")}
+            onClick={() => window.open(getWhatsAppLink("ASESORIA", result!), "_blank")}
           >
             <Phone className="w-5 h-5 mr-2" />
             Quiero hablar con un asesor por WhatsApp

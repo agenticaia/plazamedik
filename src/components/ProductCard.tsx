@@ -35,6 +35,12 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
           <p className="text-sm text-primary font-medium">{product.subtitle}</p>
         </div>
 
+        {/* Precio con descuento */}
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-bold text-primary">S/ {product.priceSale.toFixed(2)}</span>
+          <span className="text-sm text-muted-foreground line-through">S/ {product.priceOriginal.toFixed(2)}</span>
+        </div>
+
         <div className="space-y-2">
           {product.benefits.slice(0, 3).map((benefit, index) => (
             <div key={index} className="flex items-start gap-2">
@@ -55,11 +61,16 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
             {product.type}
           </Badge>
           <Badge variant="outline" className="text-xs">
-            20-30 mmHg
+            {product.compression}
           </Badge>
           <Badge variant="outline" className="text-xs">
             Tallas {product.sizes[0]}-{product.sizes[product.sizes.length - 1]}
           </Badge>
+          {product.colors.length > 0 && (
+            <Badge variant="outline" className="text-xs">
+              {product.colors.join(", ")}
+            </Badge>
+          )}
         </div>
       </CardContent>
 
