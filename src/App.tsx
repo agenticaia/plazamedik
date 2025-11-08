@@ -15,6 +15,7 @@ import MediasElasticasParaVarices from "@/pages/blog/MediasElasticasParaVarices"
 import TiposMediasCompresion from "@/pages/blog/TiposMediasCompresion";
 import MediasAntiembolicas from "@/pages/blog/MediasAntiembolicas";
 import ComoElegirTallaCorrecta from "@/pages/blog/ComoElegirTallaCorrecta";
+import Seguimiento from "@/pages/Seguimiento";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/blog/medias-antiembolicas" element={<MediasAntiembolicas />} />
           <Route path="/blog/como-elegir-talla-correcta" element={<ComoElegirTallaCorrecta />} />
           <Route path="/preguntas-frecuentes" element={<FAQ />} />
+          <Route path="/seguimiento" element={<Seguimiento />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

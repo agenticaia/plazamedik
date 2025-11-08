@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, MessageCircle } from "lucide-react";
-import { Product, getWhatsAppLink } from "@/data/products";
+import { Product } from "@/data/products";
+import OrderModal from "@/components/OrderModal";
 
 interface ProductCardProps {
   product: Product;
@@ -10,7 +12,15 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, featured = false }: ProductCardProps) => {
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
+
   return (
+    <>
+      <OrderModal 
+        open={orderModalOpen}
+        onOpenChange={setOrderModalOpen}
+        product={product}
+      />
     <Card className="group overflow-hidden bg-gradient-card border-border hover:shadow-hover transition-all duration-300 hover:scale-[1.02]">
       <CardHeader className="p-0">
         <div className="relative aspect-[3/4] overflow-hidden bg-muted">
@@ -76,20 +86,15 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
 
       <CardFooter className="p-6 pt-0">
         <Button
-          asChild
+          onClick={() => setOrderModalOpen(true)}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground group-hover:scale-105 transition-transform"
         >
-          <a
-            href={getWhatsAppLink(product.name)}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <MessageCircle className="w-4 h-4 mr-2" />
-            Pedir por WhatsApp
-          </a>
+          <MessageCircle className="w-4 h-4 mr-2" />
+          Pedir por WhatsApp
         </Button>
       </CardFooter>
     </Card>
+    </>
   );
 };
 
