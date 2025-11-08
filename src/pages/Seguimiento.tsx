@@ -33,13 +33,13 @@ const Seguimiento = () => {
 
     try {
       const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('order_code', orderCode.trim().toUpperCase())
-        .single();
+        .from("orders")
+        .select("*")
+        .eq("order_code", orderCode.trim().toUpperCase())
+        .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116') {
+        if (error.code === "PGRST116") {
           toast({
             title: "Pedido no encontrado",
             description: "No encontramos un pedido con ese código. Verifica e intenta nuevamente.",
@@ -52,7 +52,7 @@ const Seguimiento = () => {
         setOrder(data);
       }
     } catch (error) {
-      console.error('Error al buscar pedido:', error);
+      console.error("Error al buscar pedido:", error);
       toast({
         title: "Error",
         description: "No pudimos buscar tu pedido. Intenta nuevamente.",
@@ -65,47 +65,47 @@ const Seguimiento = () => {
 
   const getStatusInfo = (status: string) => {
     switch (status) {
-      case 'recibido':
+      case "recibido":
         return {
-          label: 'Recibido',
+          label: "Recibido",
           icon: Clock,
-          color: 'bg-blue-500',
-          description: 'Tu pedido ha sido recibido y está siendo procesado',
+          color: "bg-blue-500",
+          description: "Tu pedido ha sido recibido y está siendo procesado",
         };
-      case 'preparacion':
+      case "preparacion":
         return {
-          label: 'En Preparación',
+          label: "En Preparación",
           icon: Package,
-          color: 'bg-yellow-500',
-          description: 'Estamos preparando tu pedido para el envío',
+          color: "bg-yellow-500",
+          description: "Estamos preparando tu pedido para el envío",
         };
-      case 'enviado':
+      case "enviado":
         return {
-          label: 'Enviado',
+          label: "Enviado",
           icon: Truck,
-          color: 'bg-purple-500',
-          description: 'Tu pedido está en camino',
+          color: "bg-purple-500",
+          description: "Tu pedido está en camino",
         };
-      case 'entregado':
+      case "entregado":
         return {
-          label: 'Entregado',
+          label: "Entregado",
           icon: CheckCircle2,
-          color: 'bg-green-500',
-          description: '¡Tu pedido ha sido entregado con éxito!',
+          color: "bg-green-500",
+          description: "¡Tu pedido ha sido entregado con éxito!",
         };
-      case 'cancelado':
+      case "cancelado":
         return {
-          label: 'Cancelado',
+          label: "Cancelado",
           icon: Clock,
-          color: 'bg-red-500',
-          description: 'Este pedido ha sido cancelado',
+          color: "bg-red-500",
+          description: "Este pedido ha sido cancelado",
         };
       default:
         return {
           label: status,
           icon: Clock,
-          color: 'bg-gray-500',
-          description: 'Estado desconocido',
+          color: "bg-gray-500",
+          description: "Estado desconocido",
         };
     }
   };
@@ -114,9 +114,9 @@ const Seguimiento = () => {
     <>
       <Helmet>
         <title>Seguimiento de Pedido | Plaza Medik - Medias de Compresión</title>
-        <meta 
-          name="description" 
-          content="Rastrea tu pedido de medias de compresión RelaxSan en tiempo real. Ingresa tu código de seguimiento y conoce el estado actual de tu compra." 
+        <meta
+          name="description"
+          content="Rastrea tu pedido de medias de compresión RelaxSan en tiempo real. Ingresa tu código de seguimiento y conoce el estado actual de tu compra."
         />
       </Helmet>
 
@@ -129,9 +129,7 @@ const Seguimiento = () => {
           <section className="py-16 bg-gradient-to-b from-primary/5 to-background">
             <div className="container mx-auto px-4">
               <div className="max-w-2xl mx-auto text-center">
-                <h1 className="text-4xl font-bold text-foreground mb-4">
-                  Seguimiento de Pedido
-                </h1>
+                <h1 className="text-4xl font-bold text-foreground mb-4">Seguimiento de Pedido</h1>
                 <p className="text-lg text-muted-foreground">
                   Ingresa tu código de seguimiento para ver el estado de tu pedido
                 </p>
@@ -146,9 +144,7 @@ const Seguimiento = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle>Buscar Pedido</CardTitle>
-                    <CardDescription>
-                      Ingresa el código que recibiste al confirmar tu pedido
-                    </CardDescription>
+                    <CardDescription>Ingresa el código que recibiste al confirmar tu pedido</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
@@ -158,14 +154,10 @@ const Seguimiento = () => {
                         placeholder="Ej: PLAZA-1234"
                         value={orderCode}
                         onChange={(e) => setOrderCode(e.target.value.toUpperCase())}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                        onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                       />
                     </div>
-                    <Button 
-                      onClick={handleSearch} 
-                      className="w-full"
-                      disabled={isLoading}
-                    >
+                    <Button onClick={handleSearch} className="w-full" disabled={isLoading}>
                       <Search className="w-4 h-4 mr-2" />
                       {isLoading ? "Buscando..." : "Buscar Pedido"}
                     </Button>
@@ -178,9 +170,7 @@ const Seguimiento = () => {
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <CardTitle>Pedido {order.order_code}</CardTitle>
-                        <Badge variant="outline">
-                          {new Date(order.created_at).toLocaleDateString('es-PE')}
-                        </Badge>
+                        <Badge variant="outline">{new Date(order.created_at).toLocaleDateString("es-PE")}</Badge>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
@@ -191,15 +181,13 @@ const Seguimiento = () => {
                           const StatusIcon = statusInfo.icon;
                           return (
                             <>
-                              <div className={`w-16 h-16 ${statusInfo.color} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                              <div
+                                className={`w-16 h-16 ${statusInfo.color} rounded-full flex items-center justify-center mx-auto mb-4`}
+                              >
                                 <StatusIcon className="w-8 h-8 text-white" />
                               </div>
-                              <h3 className="text-xl font-bold text-foreground mb-2">
-                                {statusInfo.label}
-                              </h3>
-                              <p className="text-sm text-muted-foreground">
-                                {statusInfo.description}
-                              </p>
+                              <h3 className="text-xl font-bold text-foreground mb-2">{statusInfo.label}</h3>
+                              <p className="text-sm text-muted-foreground">{statusInfo.description}</p>
                             </>
                           );
                         })()}
