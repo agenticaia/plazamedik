@@ -134,7 +134,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
          status: 'recibido',
        }])
        .select()
-       .single();
+       .maybeSingle();
  
      if (orderError) throw orderError;
  
