@@ -6,6 +6,9 @@ import { AdminLayout } from '@/components/admin/AdminLayout';
 import { DollarSign, ShoppingBag, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import InventoryForecast from '@/components/admin/InventoryForecast';
+import AIConsumptionDashboard from '@/components/admin/AIConsumptionDashboard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -87,74 +90,92 @@ export default function Dashboard() {
           <p className="text-muted-foreground">Resumen de operaciones</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Ventas Hoy</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">S/ {stats.todaySales.toFixed(2)}</div>
-            </CardContent>
-          </Card>
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList>
+            <TabsTrigger value="overview">Resumen</TabsTrigger>
+            <TabsTrigger value="inventory">Inventario IA</TabsTrigger>
+            <TabsTrigger value="ai-consumption">Consumo IA</TabsTrigger>
+          </TabsList>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pedidos Hoy</CardTitle>
-              <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.todayOrders}</div>
-            </CardContent>
-          </Card>
+          <TabsContent value="overview" className="space-y-8 mt-6">
+            {/* Stats Cards */}
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Ventas Hoy</CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">S/ {stats.todaySales.toFixed(2)}</div>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Producto Top</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.topProduct || 'N/A'}</div>
-            </CardContent>
-          </Card>
-        </div>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Pedidos Hoy</CardTitle>
+                  <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.todayOrders}</div>
+                </CardContent>
+              </Card>
 
-        {/* Recent Orders */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Pedidos Recientes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentOrders.map((order) => (
-                <div
-                  key={order.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="space-y-1">
-                    <p className="font-medium">{order.order_code}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {order.customer_name} {order.customer_lastname}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(new Date(order.created_at), 'dd MMM yyyy, HH:mm', { locale: es })}
-                    </p>
-                  </div>
-                  <div className="text-right space-y-2">
-                    <Badge className={getStatusColor(order.status)}>
-                      {getStatusLabel(order.status)}
-                    </Badge>
-                    <p className="text-sm font-medium">S/ {Number(order.product_price).toFixed(2)}</p>
-                  </div>
-                </div>
-              ))}
-              {recentOrders.length === 0 && (
-                <p className="text-center text-muted-foreground py-8">No hay pedidos recientes</p>
-              )}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Producto Top</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.topProduct || 'N/A'}</div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Recent Orders */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Pedidos Recientes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {recentOrders.map((order) => (
+                    <div
+                      key={order.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
+                      <div className="space-y-1">
+                        <p className="font-medium">{order.order_code}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {order.customer_name} {order.customer_lastname}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(order.created_at), 'dd MMM yyyy, HH:mm', { locale: es })}
+                        </p>
+                      </div>
+                      <div className="text-right space-y-2">
+                        <Badge className={getStatusColor(order.status)}>
+                          {getStatusLabel(order.status)}
+                        </Badge>
+                        <p className="text-sm font-medium">S/ {Number(order.product_price).toFixed(2)}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {recentOrders.length === 0 && (
+                    <p className="text-center text-muted-foreground py-8">No hay pedidos recientes</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="inventory" className="mt-6">
+            <InventoryForecast />
+          </TabsContent>
+
+          <TabsContent value="ai-consumption" className="mt-6">
+            <AIConsumptionDashboard />
+          </TabsContent>
+        </Tabs>
       </div>
     </AdminLayout>
   );

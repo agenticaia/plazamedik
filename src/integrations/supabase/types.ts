@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_consumption_logs: {
+        Row: {
+          api_calls: number | null
+          cost_usd: number | null
+          created_at: string | null
+          feature: string
+          id: string
+          metadata: Json | null
+          operation_type: string
+          tokens_used: number | null
+        }
+        Insert: {
+          api_calls?: number | null
+          cost_usd?: number | null
+          created_at?: string | null
+          feature: string
+          id?: string
+          metadata?: Json | null
+          operation_type: string
+          tokens_used?: number | null
+        }
+        Update: {
+          api_calls?: number | null
+          cost_usd?: number | null
+          created_at?: string | null
+          feature?: string
+          id?: string
+          metadata?: Json | null
+          operation_type?: string
+          tokens_used?: number | null
+        }
+        Relationships: []
+      }
+      inventory_forecast: {
+        Row: {
+          calculated_at: string | null
+          confidence_level: string
+          current_stock: number
+          days_until_stockout: number | null
+          forecast_date: string
+          id: string
+          predicted_demand: number
+          product_code: string
+          reorder_alert: boolean | null
+          suggested_reorder_qty: number | null
+        }
+        Insert: {
+          calculated_at?: string | null
+          confidence_level: string
+          current_stock: number
+          days_until_stockout?: number | null
+          forecast_date: string
+          id?: string
+          predicted_demand: number
+          product_code: string
+          reorder_alert?: boolean | null
+          suggested_reorder_qty?: number | null
+        }
+        Update: {
+          calculated_at?: string | null
+          confidence_level?: string
+          current_stock?: number
+          days_until_stockout?: number | null
+          forecast_date?: string
+          id?: string
+          predicted_demand?: number
+          product_code?: string
+          reorder_alert?: boolean | null
+          suggested_reorder_qty?: number | null
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string
@@ -27,6 +99,8 @@ export type Database = {
           product_color: string
           product_name: string
           product_price: number
+          recommended_by: string | null
+          source: string | null
           status: string
           updated_at: string
         }
@@ -42,6 +116,8 @@ export type Database = {
           product_color: string
           product_name: string
           product_price: number
+          recommended_by?: string | null
+          source?: string | null
           status?: string
           updated_at?: string
         }
@@ -57,8 +133,109 @@ export type Database = {
           product_color?: string
           product_name?: string
           product_price?: number
+          recommended_by?: string | null
+          source?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      product_similarity: {
+        Row: {
+          calculated_at: string | null
+          id: string
+          product_id_1: string
+          product_id_2: string
+          similarity_score: number
+        }
+        Insert: {
+          calculated_at?: string | null
+          id?: string
+          product_id_1: string
+          product_id_2: string
+          similarity_score: number
+        }
+        Update: {
+          calculated_at?: string | null
+          id?: string
+          product_id_1?: string
+          product_id_2?: string
+          similarity_score?: number
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          avg_days_to_restock: number | null
+          cantidad_stock: number | null
+          categoria: string
+          created_at: string | null
+          id: string
+          imagen_url: string | null
+          nombre_producto: string
+          precio: number
+          product_code: string
+          total_recommendations: number | null
+          total_vendido: number | null
+          total_views: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_days_to_restock?: number | null
+          cantidad_stock?: number | null
+          categoria: string
+          created_at?: string | null
+          id?: string
+          imagen_url?: string | null
+          nombre_producto: string
+          precio: number
+          product_code: string
+          total_recommendations?: number | null
+          total_vendido?: number | null
+          total_views?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_days_to_restock?: number | null
+          cantidad_stock?: number | null
+          categoria?: string
+          created_at?: string | null
+          id?: string
+          imagen_url?: string | null
+          nombre_producto?: string
+          precio?: number
+          product_code?: string
+          total_recommendations?: number | null
+          total_vendido?: number | null
+          total_views?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_interactions: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          product_code: string
+          session_id: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          product_code: string
+          session_id: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          product_code?: string
+          session_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
