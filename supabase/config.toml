@@ -1,1 +1,10 @@
 project_id = "pvgcrywkxzbgeywwhyqm"
+
+[functions.calculate-similarity]
+verify_jwt = false
+
+[functions.predict-inventory]
+verify_jwt = false
+
+[functions.create-order]
+verify_jwt = false
