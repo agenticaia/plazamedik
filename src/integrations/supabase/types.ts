@@ -298,6 +298,26 @@ export type Database = {
         Returns: boolean
       }
       generate_order_code: { Args: never; Returns: string }
+      get_order_by_code: {
+        Args: { lookup_code: string }
+        Returns: {
+          created_at: string
+          customer_district: string
+          customer_lastname: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          order_code: string
+          product_code: string
+          product_color: string
+          product_name: string
+          product_price: number
+          recommended_by: string
+          source: string
+          status: string
+          updated_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
