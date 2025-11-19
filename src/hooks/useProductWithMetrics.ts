@@ -187,9 +187,18 @@ export function useProductWithMetrics(options: UseProductMetricsOptions = {}) {
 
   const trackProductView = async (productCode: string) => {
     try {
-      await supabase.rpc('increment_product_views', {
-        p_product_code: productCode
-      });
+      // Track view via user_interactions table
+      const { data: currentProduct } = await supabase
+        .from('products')
+        .select('total_views')
+        .eq('product_code', productCode)
+        .single();
+      
+      if (currentProduct) {
+        await supabase.from('products').update({
+          total_views: (currentProduct.total_views || 0) + 1
+        }).eq('product_code', productCode);
+      }
     } catch (err) {
       console.error('Error tracking product view:', err);
     }
