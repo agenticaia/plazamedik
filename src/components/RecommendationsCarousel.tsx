@@ -70,9 +70,12 @@ export default function RecommendationsCarousel() {
                 >
                   <div className="relative aspect-square overflow-hidden bg-muted">
                     <img
-                      src={product.imagen_url || '/placeholder.svg'}
+                      src={product.imagen_url || '/images/product-750-1.jpg'}
                       alt={product.nombre_producto}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/product-750-1.jpg';
+                      }}
                     />
                     <div className="absolute top-2 right-2">
                       <span className="bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded-full">

@@ -71,6 +71,9 @@ const ProductDetail = () => {
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = '/images/product-750-1.jpg';
+                  }}
                 />
               </div>
 

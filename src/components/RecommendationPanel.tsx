@@ -51,9 +51,12 @@ export default function RecommendationPanel({ currentProductCode }: Recommendati
               <div className="flex gap-3">
                 <div className="w-20 h-20 flex-shrink-0 bg-muted rounded overflow-hidden">
                   <img
-                    src={rec.imagen_url || '/placeholder.svg'}
+                    src={rec.imagen_url || '/images/product-750-1.jpg'}
                     alt={rec.nombre_producto}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = '/images/product-750-1.jpg';
+                    }}
                   />
                 </div>
 
