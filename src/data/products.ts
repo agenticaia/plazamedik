@@ -604,7 +604,7 @@ export const getFeaturedProducts = (): Product[] => {
 };
 
 export const getWhatsAppLink = (productName: string, message?: string): string => {
-  const phone = "51904541341";
+  const phone = "51941941083";
   const text = message || `Hola, quiero información del producto: ${productName} - vengo de PlazaMedik.net.pe`;
   return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 };

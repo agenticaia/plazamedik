@@ -112,7 +112,7 @@ export const TestDialog = ({ open, onOpenChange }: TestDialogProps) => {
   };
 
   const getWhatsAppLink = (productCode: string, result: RiskLevel) => {
-    const phone = "51904541341";
+    const phone = "51941941083";
     const message = getWhatsAppMessage(productCode, result);
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   };
@@ -837,9 +837,9 @@ export const TestDialog = ({ open, onOpenChange }: TestDialogProps) => {
                   </div>
                   <p className="text-lg font-bold text-primary ml-2">{product.price}</p>
                 </div>
-                <Button 
-                  size="sm" 
-                  className="w-full" 
+                <Button
+                  size="sm"
+                  className="w-full"
                   onClick={() => window.open(getWhatsAppLink(product.code, result!), "_blank")}
                 >
                   <Phone className="w-4 h-4 mr-2" />
