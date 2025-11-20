@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Plus } from 'lucide-react';
 import { z } from 'zod';
+import { ImageUpload } from './ImageUpload';
 
 const CATEGORIAS = [
   { value: 'dolor-pies', label: '🦶 Dolor de Pies' },
@@ -23,7 +24,7 @@ const productSchema = z.object({
   categoria: z.string().min(1, 'Categoría requerida'),
   precio: z.number().min(0, 'Precio debe ser positivo').max(9999, 'Precio demasiado alto'),
   cantidad_stock: z.number().int().min(0, 'Stock debe ser 0 o mayor'),
-  imagen_url: z.string().url('URL inválida').optional().or(z.literal('')),
+  imagen_url: z.string().optional(),
 });
 
 interface CreateProductDialogProps {
@@ -219,19 +220,11 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="imagen_url">URL de Imagen (Opcional)</Label>
-            <Input
-              id="imagen_url"
-              type="url"
-              value={formData.imagen_url}
-              onChange={(e) => setFormData({ ...formData, imagen_url: e.target.value })}
-              placeholder="https://ejemplo.com/imagen.jpg"
-            />
-            {errors.imagen_url && (
-              <p className="text-sm text-destructive">{errors.imagen_url}</p>
-            )}
-          </div>
+          <ImageUpload
+            currentImageUrl={formData.imagen_url}
+            onImageUrlChange={(url) => setFormData({ ...formData, imagen_url: url })}
+            productCode={formData.product_code}
+          />
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
