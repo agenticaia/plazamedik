@@ -1,13 +1,32 @@
 // Archivo: src/pages/admin/InventoryIA.tsx
 // Componente del Dashboard de Predicción de Inventario con IA
 
+import { useState, useEffect } from 'react';
 import { useInventoryPrediction, useProductWithMetrics } from '@/hooks/useProductWithMetrics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, TrendingUp, AlertTriangle, CheckCircle, Package } from 'lucide-react';
+import { RefreshCw, TrendingUp, AlertTriangle, CheckCircle, Package, History, XCircle, ShoppingCart } from 'lucide-react';
+import { ProductHistoryPanel } from '@/components/admin/ProductHistoryPanel';
+import { DiscontinueProductDialog } from '@/components/admin/DiscontinueProductDialog';
+import { QuickPurchaseOrderDialog } from '@/components/admin/QuickPurchaseOrderDialog';
+import { supabase } from '@/integrations/supabase/client';
+import type { ProductWithMetrics } from '@/hooks/useProductWithMetrics';
+
+interface ProductPerformanceData {
+  sales_7d: number;
+  sales_30d: number;
+  conversion_rate_7d: number;
+  avg_daily_demand_7d: number;
+}
 
 export default function InventoryIA() {
+  const [selectedProduct, setSelectedProduct] = useState<ProductWithMetrics | null>(null);
+  const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
+  const [discontinueDialogOpen, setDiscontinueDialogOpen] = useState(false);
+  const [purchaseOrderDialogOpen, setPurchaseOrderDialogOpen] = useState(false);
+  const [performanceData, setPerformanceData] = useState<ProductPerformanceData | null>(null);
+  const [predictionData, setPredictionData] = useState<any>(null);
   const { 
     products, 
     loading, 
@@ -27,6 +46,80 @@ export default function InventoryIA() {
       </div>
     );
   }
+
+  useEffect(() => {
+    if (selectedProduct) {
+      fetchProductPerformance(selectedProduct);
+    }
+  }, [selectedProduct]);
+
+  const fetchProductPerformance = async (product: ProductWithMetrics) => {
+    try {
+      const now = new Date();
+      const date7DaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const date30DaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+      const { data: sales7d } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('product_code', product.code)
+        .gte('created_at', date7DaysAgo.toISOString())
+        .in('status', ['entregado', 'enviado']);
+
+      const { data: sales30d } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('product_code', product.code)
+        .gte('created_at', date30DaysAgo.toISOString())
+        .in('status', ['entregado', 'enviado']);
+
+      const { data: interactions7d } = await supabase
+        .from('user_interactions')
+        .select('*')
+        .eq('product_code', product.code)
+        .eq('action', 'view')
+        .gte('created_at', date7DaysAgo.toISOString());
+
+      const sales7dCount = sales7d?.length || 0;
+      const sales30dCount = sales30d?.length || 0;
+      const views7d = interactions7d?.length || 0;
+      const conversionRate7d = views7d > 0 ? (sales7dCount / views7d) * 100 : 0;
+      const avgDemand7d = sales7dCount / 7;
+
+      setPerformanceData({
+        sales_7d: sales7dCount,
+        sales_30d: sales30dCount,
+        conversion_rate_7d: conversionRate7d,
+        avg_daily_demand_7d: avgDemand7d,
+      });
+    } catch (error) {
+      console.error('Error fetching performance data:', error);
+    }
+  };
+
+  const handleViewHistory = (product: ProductWithMetrics) => {
+    setSelectedProduct(product);
+    setHistoryPanelOpen(true);
+  };
+
+  const handleDiscontinue = (product: ProductWithMetrics) => {
+    setSelectedProduct(product);
+    fetchProductPerformance(product);
+    setDiscontinueDialogOpen(true);
+  };
+
+  const handleCreatePurchaseOrder = (product: ProductWithMetrics, prediction: any) => {
+    setSelectedProduct(product);
+    setPredictionData(prediction);
+    setPurchaseOrderDialogOpen(true);
+  };
+
+  const handleSuccess = () => {
+    refresh();
+    setSelectedProduct(null);
+    setPerformanceData(null);
+    setPredictionData(null);
+  };
 
   const metrics = getTotalMetrics();
   const topSellers = getTopSellers(5);
@@ -131,6 +224,7 @@ export default function InventoryIA() {
                   <th className="text-center p-3 font-semibold">DÍAS RESTANTES</th>
                   <th className="text-center p-3 font-semibold">CONFIANZA</th>
                   <th className="text-center p-3 font-semibold">ACCIÓN</th>
+                  <th className="text-center p-3 font-semibold">ACCIONES</th>
                 </tr>
               </thead>
               <tbody>
@@ -159,6 +253,44 @@ export default function InventoryIA() {
                       </td>
                       <td className="text-center p-3">
                         <ActionBadge action={pred.accion} />
+                      </td>
+                      <td className="text-center p-3">
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleViewHistory(pred as any)}
+                            title="Ver historial completo"
+                          >
+                            <History className="w-4 h-4" />
+                          </Button>
+                          
+                          {pred.dias_restantes <= 14 && (
+                            <Button
+                              size="sm"
+                              variant="default"
+                              onClick={() => handleCreatePurchaseOrder(pred as any, {
+                                dias_restantes: pred.dias_restantes,
+                                demanda_7d: pred.demanda_7d,
+                                accion: pred.accion,
+                              })}
+                              title="Crear orden de compra"
+                            >
+                              <ShoppingCart className="w-4 h-4" />
+                            </Button>
+                          )}
+                          
+                          {pred.demanda_7d === 0 && (
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleDiscontinue(pred as any)}
+                              title="Descontinuar producto"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -208,6 +340,34 @@ export default function InventoryIA() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Paneles y Modales */}
+      <ProductHistoryPanel
+        open={historyPanelOpen}
+        onOpenChange={setHistoryPanelOpen}
+        product={selectedProduct}
+      />
+
+      <DiscontinueProductDialog
+        open={discontinueDialogOpen}
+        onOpenChange={setDiscontinueDialogOpen}
+        product={selectedProduct}
+        performanceData={performanceData || undefined}
+        onSuccess={handleSuccess}
+      />
+
+      <QuickPurchaseOrderDialog
+        open={purchaseOrderDialogOpen}
+        onOpenChange={setPurchaseOrderDialogOpen}
+        product={selectedProduct}
+        predictionData={predictionData}
+        suggestedQuantity={
+          predictionData?.demanda_7d 
+            ? Math.ceil(predictionData.demanda_7d * 4) 
+            : 50
+        }
+        onSuccess={handleSuccess}
+      />
     </div>
   );
 }
