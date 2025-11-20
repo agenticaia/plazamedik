@@ -21,7 +21,7 @@ export default function RecommendationPanel({ currentProductCode }: Recommendati
   }
 
   return (
-    <div className="border-l border-border pl-6 mt-8 lg:mt-0">
+    <div className="space-y-4">
       <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
         <Sparkles className="w-5 h-5 mr-2 text-primary" />
         Te puede interesar

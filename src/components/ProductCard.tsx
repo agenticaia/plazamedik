@@ -3,9 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, MessageCircle } from "lucide-react";
+import { Check, MessageCircle, Sparkles } from "lucide-react";
 import { Product } from "@/data/products";
 import OrderModal from "@/components/OrderModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import RecommendationPanel from "@/components/RecommendationPanel";
 
 interface ProductCardProps {
   product: Product;
@@ -14,6 +21,7 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, featured = false }: ProductCardProps) => {
   const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [recommendationsOpen, setRecommendationsOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleCardClick = () => {
@@ -23,6 +31,11 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
   const handleOrderClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setOrderModalOpen(true);
+  };
+
+  const handleRecommendationsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRecommendationsOpen(true);
   };
 
   return (
@@ -98,7 +111,7 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
         </div>
       </CardContent>
 
-      <CardFooter className="p-6 pt-0">
+      <CardFooter className="p-6 pt-0 flex flex-col gap-2">
         <Button
           onClick={handleOrderClick}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground group-hover:scale-105 transition-transform"
@@ -106,8 +119,28 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
           <MessageCircle className="w-4 h-4 mr-2" />
           Pedir por WhatsApp
         </Button>
+        <Button
+          onClick={handleRecommendationsClick}
+          variant="outline"
+          className="w-full"
+        >
+          <Sparkles className="w-4 h-4 mr-2" />
+          Te puede interesar
+        </Button>
       </CardFooter>
     </Card>
+
+    <Dialog open={recommendationsOpen} onOpenChange={setRecommendationsOpen}>
+      <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-primary" />
+            Recomendaciones para ti
+          </DialogTitle>
+        </DialogHeader>
+        <RecommendationPanel currentProductCode={product.code} />
+      </DialogContent>
+    </Dialog>
     </>
   );
 };
