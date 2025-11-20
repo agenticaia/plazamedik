@@ -20,9 +20,10 @@ import { cn } from "@/lib/utils";
 interface ProductCardProps {
   product: Product;
   featured?: boolean;
+  showTreatmentButton?: boolean;
 }
 
-const ProductCard = ({ product, featured = false }: ProductCardProps) => {
+const ProductCard = ({ product, featured = false, showTreatmentButton = false }: ProductCardProps) => {
   const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [recommendationsOpen, setRecommendationsOpen] = useState(false);
   const navigate = useNavigate();
@@ -142,13 +143,22 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
       </CardContent>
 
       <CardFooter className="p-6 pt-0 flex flex-col gap-2">
-        <Button
-          onClick={handleOrderClick}
-          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground group-hover:scale-105 transition-transform"
-        >
-          <MessageCircle className="w-4 h-4 mr-2" />
-          Pedir por WhatsApp
-        </Button>
+        {showTreatmentButton ? (
+          <Button
+            onClick={handleCardClick}
+            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground group-hover:scale-105 transition-transform"
+          >
+            Ver Tratamiento
+          </Button>
+        ) : (
+          <Button
+            onClick={handleOrderClick}
+            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground group-hover:scale-105 transition-transform"
+          >
+            <MessageCircle className="w-4 h-4 mr-2" />
+            Pedir por WhatsApp
+          </Button>
+        )}
         <Button
           onClick={handleRecommendationsClick}
           variant="outline"
