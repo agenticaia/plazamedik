@@ -4,11 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Plus } from 'lucide-react';
 import { z } from 'zod';
 import { ImageUpload } from './ImageUpload';
+import { DynamicListInput } from './DynamicListInput';
+import { MultiSelectChips } from './MultiSelectChips';
 
 const CATEGORIAS = [
   { value: 'dolor-pies', label: '🦶 Dolor de Pies' },
@@ -18,6 +21,9 @@ const CATEGORIAS = [
   { value: 'accesorios', label: '✨ Accesorios' },
 ];
 
+const TALLAS_SUGERENCIAS = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+const COLORES_SUGERENCIAS = ['Piel', 'Negro', 'Blanco', 'Beige'];
+
 const productSchema = z.object({
   product_code: z.string().trim().min(1, 'Código requerido').max(20, 'Máximo 20 caracteres'),
   nombre_producto: z.string().trim().min(1, 'Nombre requerido').max(200, 'Máximo 200 caracteres'),
@@ -25,6 +31,9 @@ const productSchema = z.object({
   precio: z.number().min(0, 'Precio debe ser positivo').max(9999, 'Precio demasiado alto'),
   cantidad_stock: z.number().int().min(0, 'Stock debe ser 0 o mayor'),
   imagen_url: z.string().optional(),
+  descripcion_corta: z.string().optional(),
+  precio_anterior: z.number().optional(),
+  ideal_para: z.string().optional(),
 });
 
 interface CreateProductDialogProps {
@@ -43,6 +52,13 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
     precio: 0,
     cantidad_stock: 0,
     imagen_url: '',
+    descripcion_corta: '',
+    precio_anterior: 0,
+    tallas_disponibles: [] as string[],
+    colores_disponibles: [] as string[],
+    ideal_para: '',
+    beneficios: [] as string[],
+    especificaciones: [] as string[],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -83,6 +99,13 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
           precio: validatedData.precio,
           cantidad_stock: validatedData.cantidad_stock,
           imagen_url: validatedData.imagen_url || null,
+          descripcion_corta: formData.descripcion_corta || null,
+          precio_anterior: formData.precio_anterior || null,
+          tallas_disponibles: formData.tallas_disponibles,
+          colores_disponibles: formData.colores_disponibles,
+          ideal_para: formData.ideal_para || null,
+          beneficios: formData.beneficios,
+          especificaciones: formData.especificaciones,
           total_vendido: 0,
           total_views: 0,
           total_recommendations: 0,
@@ -103,6 +126,13 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
         precio: 0,
         cantidad_stock: 0,
         imagen_url: '',
+        descripcion_corta: '',
+        precio_anterior: 0,
+        tallas_disponibles: [],
+        colores_disponibles: [],
+        ideal_para: '',
+        beneficios: [],
+        especificaciones: [],
       });
 
       onSuccess();
@@ -188,9 +218,21 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
             )}
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="descripcion_corta">Descripción Corta</Label>
+            <Textarea
+              id="descripcion_corta"
+              value={formData.descripcion_corta}
+              onChange={(e) => setFormData({ ...formData, descripcion_corta: e.target.value })}
+              placeholder="Ej: Compresión ligera ideal para prevención"
+              rows={2}
+              maxLength={200}
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="precio">Precio (S/) *</Label>
+              <Label htmlFor="precio">Precio Actual (S/) *</Label>
               <Input
                 id="precio"
                 type="number"
@@ -206,6 +248,23 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="precio_anterior">Precio Anterior (S/)</Label>
+              <Input
+                id="precio_anterior"
+                type="number"
+                step="0.01"
+                min="0"
+                max="9999"
+                value={formData.precio_anterior}
+                onChange={(e) => setFormData({ ...formData, precio_anterior: parseFloat(e.target.value) || 0 })}
+                placeholder="Ej: 69.68"
+              />
+              <p className="text-xs text-muted-foreground">Para mostrar descuento</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="cantidad_stock">Stock Inicial *</Label>
               <Input
                 id="cantidad_stock"
@@ -219,6 +278,48 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
               )}
             </div>
           </div>
+
+          <MultiSelectChips
+            label="Tallas Disponibles"
+            items={formData.tallas_disponibles}
+            onChange={(items) => setFormData({ ...formData, tallas_disponibles: items })}
+            placeholder="Ej: S, M, L, XL"
+            suggestions={TALLAS_SUGERENCIAS}
+          />
+
+          <MultiSelectChips
+            label="Colores Disponibles"
+            items={formData.colores_disponibles}
+            onChange={(items) => setFormData({ ...formData, colores_disponibles: items })}
+            placeholder="Ej: Piel, Negro"
+            suggestions={COLORES_SUGERENCIAS}
+          />
+
+          <div className="space-y-2">
+            <Label htmlFor="ideal_para">Ideal Para</Label>
+            <Textarea
+              id="ideal_para"
+              value={formData.ideal_para}
+              onChange={(e) => setFormData({ ...formData, ideal_para: e.target.value })}
+              placeholder="Ej: Personas que trabajan de pie y buscan prevenir problemas circulatorios"
+              rows={2}
+              maxLength={300}
+            />
+          </div>
+
+          <DynamicListInput
+            label="Beneficios"
+            items={formData.beneficios}
+            onChange={(items) => setFormData({ ...formData, beneficios: items })}
+            placeholder="Ej: Previene várices por estar muchas horas de pie"
+          />
+
+          <DynamicListInput
+            label="Especificaciones"
+            items={formData.especificaciones}
+            onChange={(items) => setFormData({ ...formData, especificaciones: items })}
+            placeholder="Ej: Compresión: 12-17 mmHg (Ligera)"
+          />
 
           <ImageUpload
             currentImageUrl={formData.imagen_url}

@@ -191,14 +191,21 @@ export type Database = {
       products: {
         Row: {
           avg_days_to_restock: number | null
+          beneficios: string[] | null
           cantidad_stock: number | null
           categoria: string
+          colores_disponibles: string[] | null
           created_at: string | null
+          descripcion_corta: string | null
+          especificaciones: string[] | null
           id: string
+          ideal_para: string | null
           imagen_url: string | null
           nombre_producto: string
           precio: number
+          precio_anterior: number | null
           product_code: string
+          tallas_disponibles: string[] | null
           total_recommendations: number | null
           total_vendido: number | null
           total_views: number | null
@@ -206,14 +213,21 @@ export type Database = {
         }
         Insert: {
           avg_days_to_restock?: number | null
+          beneficios?: string[] | null
           cantidad_stock?: number | null
           categoria: string
+          colores_disponibles?: string[] | null
           created_at?: string | null
+          descripcion_corta?: string | null
+          especificaciones?: string[] | null
           id?: string
+          ideal_para?: string | null
           imagen_url?: string | null
           nombre_producto: string
           precio: number
+          precio_anterior?: number | null
           product_code: string
+          tallas_disponibles?: string[] | null
           total_recommendations?: number | null
           total_vendido?: number | null
           total_views?: number | null
@@ -221,14 +235,21 @@ export type Database = {
         }
         Update: {
           avg_days_to_restock?: number | null
+          beneficios?: string[] | null
           cantidad_stock?: number | null
           categoria?: string
+          colores_disponibles?: string[] | null
           created_at?: string | null
+          descripcion_corta?: string | null
+          especificaciones?: string[] | null
           id?: string
+          ideal_para?: string | null
           imagen_url?: string | null
           nombre_producto?: string
           precio?: number
+          precio_anterior?: number | null
           product_code?: string
+          tallas_disponibles?: string[] | null
           total_recommendations?: number | null
           total_vendido?: number | null
           total_views?: number | null
