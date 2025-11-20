@@ -155,7 +155,7 @@ const Catalog = () => {
         {filteredProducts.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} showTreatmentButton />
             ))}
           </div>
         ) : (
