@@ -236,6 +236,54 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          product_code: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_code: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_code?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_interactions: {
         Row: {
           action: string

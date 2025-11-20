@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, MessageCircle, Sparkles } from "lucide-react";
+import { Check, MessageCircle, Sparkles, Heart } from "lucide-react";
 import { Product } from "@/data/products";
 import OrderModal from "@/components/OrderModal";
 import {
@@ -13,6 +13,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import RecommendationPanel from "@/components/RecommendationPanel";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
@@ -23,6 +26,8 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
   const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [recommendationsOpen, setRecommendationsOpen] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const handleCardClick = () => {
     navigate(`/producto?codigo=${product.code}`);
@@ -36,6 +41,15 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
   const handleRecommendationsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setRecommendationsOpen(true);
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    toggleFavorite(product.code);
   };
 
   return (
@@ -61,6 +75,22 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
               Destacado
             </Badge>
           )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "absolute top-3 left-3 bg-background/80 hover:bg-background",
+              isFavorite(product.code) && "text-red-500"
+            )}
+            onClick={handleFavoriteClick}
+          >
+            <Heart 
+              className={cn(
+                "w-5 h-5",
+                isFavorite(product.code) && "fill-current"
+              )} 
+            />
+          </Button>
         </div>
       </CardHeader>
       

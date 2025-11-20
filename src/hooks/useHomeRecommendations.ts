@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from '@/lib/sessionId';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Recommendation {
   product_code: string;
@@ -14,17 +15,30 @@ interface Recommendation {
 export function useHomeRecommendations(limit: number = 8) {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchRecommendations();
-  }, []);
+  }, [user]);
 
   const fetchRecommendations = async () => {
     try {
       setLoading(true);
       const sessionId = getSessionId();
 
-      // 1. Obtener historial reciente del usuario (últimos 5 productos vistos)
+      // 1. Si el usuario está autenticado, priorizar favoritos
+      let favoriteProducts: string[] = [];
+      if (user) {
+        const { data: favorites } = await supabase
+          .from('user_favorites')
+          .select('product_code')
+          .eq('user_id', user.id)
+          .limit(3);
+        
+        favoriteProducts = favorites?.map(f => f.product_code) || [];
+      }
+
+      // 2. Obtener historial reciente del usuario (últimos 5 productos vistos)
       const { data: userHistory } = await supabase
         .from('user_interactions')
         .select('product_code')
@@ -33,8 +47,12 @@ export function useHomeRecommendations(limit: number = 8) {
         .order('created_at', { ascending: false })
         .limit(5);
 
-      if (!userHistory || userHistory.length === 0) {
-        // Si no hay historial, mostrar productos más vendidos
+      // Combinar favoritos con historial, priorizando favoritos
+      const sourceProducts = [...favoriteProducts, ...(userHistory?.map(h => h.product_code) || [])];
+      const uniqueSourceProducts = [...new Set(sourceProducts)];
+
+      if (uniqueSourceProducts.length === 0) {
+        // Si no hay historial ni favoritos, mostrar productos más vendidos
         const { data: popularProducts } = await supabase
           .from('products')
           .select('product_code, nombre_producto, precio, imagen_url, categoria')
@@ -49,11 +67,10 @@ export function useHomeRecommendations(limit: number = 8) {
         return;
       }
 
-      // 2. Obtener productos similares para cada producto del historial
-      const viewedProductCodes = [...new Set(userHistory.map(h => h.product_code))];
+      // 3. Obtener productos similares para cada producto
       const allSimilarProducts = [];
 
-      for (const productCode of viewedProductCodes) {
+      for (const productCode of uniqueSourceProducts) {
         const { data: similar } = await supabase
           .from('product_similarity')
           .select('product_id_2, similarity_score')
@@ -62,16 +79,22 @@ export function useHomeRecommendations(limit: number = 8) {
           .limit(3);
 
         if (similar) {
-          allSimilarProducts.push(...similar);
+          // Dar peso extra a recomendaciones basadas en favoritos
+          const isFavorite = favoriteProducts.includes(productCode);
+          const weightedSimilar = similar.map(s => ({
+            ...s,
+            similarity_score: isFavorite ? s.similarity_score * 1.2 : s.similarity_score
+          }));
+          allSimilarProducts.push(...weightedSimilar);
         }
       }
 
-      // 3. Filtrar duplicados y productos ya vistos
+      // 4. Filtrar duplicados y productos ya vistos/favoritos
       const uniqueSimilar = allSimilarProducts
         .filter((item, index, self) => 
           index === self.findIndex(t => t.product_id_2 === item.product_id_2)
         )
-        .filter(s => !viewedProductCodes.includes(s.product_id_2))
+        .filter(s => !uniqueSourceProducts.includes(s.product_id_2))
         .sort((a, b) => b.similarity_score - a.similarity_score)
         .slice(0, limit);
 
@@ -91,19 +114,19 @@ export function useHomeRecommendations(limit: number = 8) {
         return;
       }
 
-      // 4. Obtener detalles de productos
+      // 5. Obtener detalles de productos
       const productCodes = uniqueSimilar.map(s => s.product_id_2);
       const { data: productDetails } = await supabase
         .from('products')
         .select('product_code, nombre_producto, precio, imagen_url, categoria')
         .in('product_code', productCodes);
 
-      // 5. Combinar con scores de similitud
+      // 6. Combinar con scores de similitud
       const finalRecommendations = uniqueSimilar.map(similar => {
         const product = productDetails?.find(p => p.product_code === similar.product_id_2);
         return product ? {
           ...product,
-          similarity_score: similar.similarity_score
+          similarity_score: Math.min(similar.similarity_score, 1) // Cap at 1.0
         } : null;
       }).filter(Boolean) as Recommendation[];
 
