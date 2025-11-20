@@ -6,13 +6,16 @@ import ProductCard from "@/components/ProductCard";
 import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { products, getWhatsAppLink } from "@/data/products";
-import { Filter, ClipboardCheck, MessageCircle } from "lucide-react";
+import { getWhatsAppLink } from "@/data/products";
+import { useProducts } from "@/hooks/useProducts";
+import { Filter, ClipboardCheck, MessageCircle, Loader2 } from "lucide-react";
 
 const Catalog = () => {
   const [testOpen, setTestOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
+  
+  const { products, loading, error } = useProducts();
 
   const filteredProducts = products.filter((product) => {
     const categoryMatch =
@@ -146,27 +149,41 @@ const Catalog = () => {
 
       {/* Products Grid */}
       <section className="container mx-auto px-4 pb-16">
-        <div className="mb-6">
-          <p className="text-muted-foreground">
-            Mostrando {filteredProducts.length} producto{filteredProducts.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-
-        {filteredProducts.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} showTreatmentButton />
-            ))}
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">Cargando productos...</span>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-destructive mb-4">Error al cargar productos: {error}</p>
+            <Button onClick={() => window.location.reload()}>Reintentar</Button>
           </div>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">
-              No se encontraron productos con estos filtros
-            </p>
-            <Button onClick={() => { setSelectedCategory("all"); setSelectedType("all"); }}>
-              Limpiar filtros
-            </Button>
-          </div>
+          <>
+            <div className="mb-6">
+              <p className="text-muted-foreground">
+                Mostrando {filteredProducts.length} producto{filteredProducts.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+
+            {filteredProducts.length > 0 ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} showTreatmentButton />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground mb-4">
+                  No se encontraron productos con estos filtros
+                </p>
+                <Button onClick={() => { setSelectedCategory("all"); setSelectedType("all"); }}>
+                  Limpiar filtros
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </section>
 
