@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRecommendations } from '@/hooks/useRecommendations';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, TrendingUp } from 'lucide-react';
+import { Sparkles, TrendingUp, Eye } from 'lucide-react';
 
 interface RecommendationPanelProps {
   currentProductCode: string;
@@ -41,8 +41,13 @@ export default function RecommendationPanel({ currentProductCode }: Recommendati
             <div
               key={rec.product_code}
               onClick={() => handleRecommendationClick(rec.product_code)}
-              className="border border-border rounded-lg p-3 cursor-pointer hover:shadow-lg transition-all duration-200 hover:border-primary"
+              className="border border-border rounded-lg p-3 cursor-pointer hover:shadow-lg transition-all duration-200 hover:border-primary relative group"
             >
+              {/* Eye Icon */}
+              <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <Eye className="w-4 h-4" />
+              </div>
+
               <div className="flex gap-3">
                 <div className="w-20 h-20 flex-shrink-0 bg-muted rounded overflow-hidden">
                   <img
