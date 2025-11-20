@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, MessageCircle } from "lucide-react";
+import { Menu, X, MessageCircle, LogIn, LogOut, User } from "lucide-react";
 import { getWhatsAppLink } from "@/data/products";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   const menuItems = [
     { label: "Inicio", path: "/" },
@@ -49,6 +51,23 @@ const Navigation = () => {
                 WhatsApp
               </a>
             </Button>
+            {user ? (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => signOut()}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Salir
+              </Button>
+            ) : (
+              <Button asChild variant="outline" size="sm">
+                <Link to="/auth">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Entrar
+                </Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -84,6 +103,26 @@ const Navigation = () => {
                   WhatsApp
                 </a>
               </Button>
+              {user ? (
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => {
+                    signOut();
+                    setIsOpen(false);
+                  }}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Salir
+                </Button>
+              ) : (
+                <Button asChild variant="outline" className="w-full">
+                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Entrar
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         )}
