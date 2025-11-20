@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { MessageCircle, Mail, MapPin } from "lucide-react";
-import { getWhatsAppLink } from "@/data/products";
+import { getWhatsAppLink } from "@/lib/productUtils";
 
 const Footer = () => {
   return (

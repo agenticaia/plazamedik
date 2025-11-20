@@ -13,7 +13,7 @@ import {
   Loader2, DollarSign, Activity
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { products } from '@/data/products';
+
 
 export default function InventoryDashboard() {
   const { toast } = useToast();
@@ -112,30 +112,16 @@ export default function InventoryDashboard() {
   const handleSyncProducts = async () => {
     try {
       setSyncing(true);
-      const { data, error } = await supabase.functions.invoke('sync-products-to-db', {
-        body: { products },
-      });
-
-      if (error) throw error;
-
-      setLastSync(new Date());
-      await refresh();
-      
       toast({
-        title: '✅ Sincronización exitosa',
-        description: `${data.results.created} creados, ${data.results.updated} actualizados`,
-      });
-    } catch (error) {
-      console.error('Error syncing:', error);
-      toast({
-        title: '❌ Error',
-        description: 'No se pudo sincronizar',
-        variant: 'destructive',
+        title: '⚠️ Función no disponible',
+        description: 'La sincronización de productos estáticos ya no es necesaria. Todos los productos ahora se gestionan directamente desde la base de datos.',
+        variant: 'default',
       });
     } finally {
       setSyncing(false);
     }
   };
+
 
   const handleRunAIPrediction = async () => {
     try {
