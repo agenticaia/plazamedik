@@ -70,6 +70,9 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
             src={product.image}
             alt={product.name}
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              e.currentTarget.src = '/images/product-750-1.jpg';
+            }}
           />
           {featured && (
             <Badge className="absolute top-3 right-3 bg-accent text-accent-foreground">
