@@ -6,13 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, MessageCircle, Sparkles } from "lucide-react";
 import { Product } from "@/data/products";
 import OrderModal from "@/components/OrderModal";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import RecommendationPanel from "@/components/RecommendationPanel";
+import RecommendationModal from "@/components/RecommendationModal";
 
 interface ProductCardProps {
   product: Product;
@@ -130,17 +124,12 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
       </CardFooter>
     </Card>
 
-    <Dialog open={recommendationsOpen} onOpenChange={setRecommendationsOpen}>
-      <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            Recomendaciones para ti
-          </DialogTitle>
-        </DialogHeader>
-        <RecommendationPanel currentProductCode={product.code} />
-      </DialogContent>
-    </Dialog>
+    <RecommendationModal
+      open={recommendationsOpen}
+      onOpenChange={setRecommendationsOpen}
+      currentProductCode={product.code}
+      currentProductName={product.name}
+    />
     </>
   );
 };
