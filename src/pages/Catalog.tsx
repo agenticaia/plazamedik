@@ -4,18 +4,12 @@ import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { TestDialog } from "@/components/TestDialog";
-import RecommendationPanel from "@/components/RecommendationPanel";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+import { Check, Filter, ClipboardCheck, MessageCircle, X } from "lucide-react";
+import RecommendationPanel from "@/components/RecommendationPanel";
 import { products, getWhatsAppLink, Product } from "@/data/products";
-import { Filter, ClipboardCheck, MessageCircle, X } from "lucide-react";
 
 const Catalog = () => {
   const [testOpen, setTestOpen] = useState(false);
@@ -38,21 +32,70 @@ const Catalog = () => {
       
       {/* Panel lateral de recomendaciones */}
       <Sheet open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <SheetContent side="right" className="w-full sm:w-[400px] sm:max-w-[400px] p-0">
-          <div className="h-full flex flex-col">
-            <SheetHeader className="p-6 pb-4 border-b border-border">
-              <SheetTitle className="text-left">Producto Seleccionado</SheetTitle>
-              <SheetDescription className="text-left">
-                {selectedProduct?.name}
-              </SheetDescription>
-            </SheetHeader>
-            
-            <div className="flex-1 overflow-hidden p-6">
-              {selectedProduct && (
+        <SheetContent side="right" className="w-full sm:w-[540px] sm:max-w-[540px] p-0">
+          {selectedProduct && (
+            <div className="h-full flex flex-col">
+              {/* Detalle del producto seleccionado */}
+              <div className="border-b border-border p-6 space-y-4">
+                <div className="flex gap-4">
+                  <div className="w-32 h-32 flex-shrink-0 bg-muted rounded-lg overflow-hidden">
+                    <img
+                      src={selectedProduct.image}
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="font-bold text-xl text-foreground mb-1">
+                      {selectedProduct.name}
+                    </h2>
+                    <p className="text-sm text-primary font-medium mb-2">{selectedProduct.subtitle}</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-primary">S/ {selectedProduct.priceSale.toFixed(2)}</span>
+                      <span className="text-sm text-muted-foreground line-through">S/ {selectedProduct.priceOriginal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {selectedProduct.benefits.map((benefit, index) => (
+                    <div key={index} className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-muted-foreground">{benefit}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-semibold text-foreground">Ideal para:</span> {selectedProduct.idealFor}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {selectedProduct.type}
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    {selectedProduct.compression}
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Tallas {selectedProduct.sizes[0]}-{selectedProduct.sizes[selectedProduct.sizes.length - 1]}
+                  </Badge>
+                  {selectedProduct.colors.length > 0 && (
+                    <Badge variant="outline" className="text-xs">
+                      {selectedProduct.colors.join(", ")}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* Panel de recomendaciones */}
+              <div className="flex-1 overflow-hidden p-6">
                 <RecommendationPanel currentProductCode={selectedProduct.code} />
-              )}
+              </div>
             </div>
-          </div>
+          )}
         </SheetContent>
       </Sheet>
 
