@@ -129,8 +129,9 @@ export function useProductWithMetrics(options: UseProductMetricsOptions = {}) {
           especificaciones: metrics?.especificaciones,
           imagen_url: metrics?.imagen_url,
           categoria: metrics?.categoria,
-          product_code: metrics?.product_code,
-          nombre_producto: metrics?.nombre_producto,
+          // CRÍTICO: siempre mapear code a product_code para consistencia con BD
+          product_code: product.code,
+          nombre_producto: metrics?.nombre_producto || product.name,
         };
       });
 
