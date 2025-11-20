@@ -1,9 +1,7 @@
 import React from 'react';
 import { useRecommendations } from '@/hooks/useRecommendations';
-import { Stethoscope, Sparkles } from 'lucide-react';
-import TreatmentRecommendationCard from '@/components/TreatmentRecommendationCard';
-
-const WHATSAPP_NUMBER = '51978978706';
+import { useNavigate } from 'react-router-dom';
+import { Sparkles, TrendingUp } from 'lucide-react';
 
 interface RecommendationPanelProps {
   currentProductCode: string;
@@ -11,13 +9,11 @@ interface RecommendationPanelProps {
 
 export default function RecommendationPanel({ currentProductCode }: RecommendationPanelProps) {
   const { recommendations, loading, error, trackRecommendationClick } = useRecommendations(currentProductCode);
+  const navigate = useNavigate();
 
-  const handleWhatsAppClick = async (productCode: string, productName: string, price: number) => {
+  const handleRecommendationClick = async (productCode: string) => {
     await trackRecommendationClick(productCode);
-    
-    const message = `Hola! Me interesa este producto de mi tratamiento recomendado:\n\n📦 *${productName}*\n💰 Precio: S/ ${price.toFixed(2)}\n🆔 Código: ${productCode}\n\n¿Está disponible?`;
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    navigate(`/catalogo?codigo=${productCode}`);
   };
 
   if (error) {
@@ -25,61 +21,68 @@ export default function RecommendationPanel({ currentProductCode }: Recommendati
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Header con diseño de receta médica */}
-      <div className="border-b border-border pb-4 mb-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Stethoscope className="w-6 h-6 text-primary" />
-          <h3 className="text-xl font-bold text-foreground">Tu Tratamiento</h3>
+    <div className="border-l border-border pl-6 mt-8 lg:mt-0">
+      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+        <Sparkles className="w-5 h-5 mr-2 text-primary" />
+        Te puede interesar
+      </h3>
+
+      {loading ? (
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="h-24 bg-muted rounded animate-pulse" />
+          ))}
         </div>
-        <p className="text-sm text-muted-foreground">
-          Prescripción personalizada basada en tu necesidad
+      ) : recommendations.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No hay recomendaciones disponibles</p>
+      ) : (
+        <div className="space-y-3">
+          {recommendations.map((rec) => (
+            <div
+              key={rec.product_code}
+              onClick={() => handleRecommendationClick(rec.product_code)}
+              className="border border-border rounded-lg p-3 cursor-pointer hover:shadow-lg transition-all duration-200 hover:border-primary"
+            >
+              <div className="flex gap-3">
+                <div className="w-20 h-20 flex-shrink-0 bg-muted rounded overflow-hidden">
+                  <img
+                    src={rec.imagen_url || '/placeholder.svg'}
+                    alt={rec.nombre_producto}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm line-clamp-2 text-foreground mb-1">
+                    {rec.nombre_producto}
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-2">{rec.categoria}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-primary font-bold text-lg">
+                      S/ {rec.precio.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-2 flex items-center gap-2">
+                <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full flex items-center">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  {Math.round(rec.similarity_score * 100)}% Compatible
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg text-xs">
+        <p className="font-semibold text-primary mb-1 flex items-center">
+          🤖 Recomendado por IA
         </p>
-      </div>
-
-      {/* Contenido con scroll */}
-      <div className="flex-1 overflow-y-auto space-y-4">
-        {loading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-40 bg-muted rounded-lg animate-pulse" />
-            ))}
-          </div>
-        ) : recommendations.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">
-              No hay productos disponibles para tu tratamiento en este momento
-            </p>
-          </div>
-        ) : (
-          <>
-            {recommendations.map((rec) => (
-              <TreatmentRecommendationCard
-                key={rec.product_code}
-                product_code={rec.product_code}
-                nombre_producto={rec.nombre_producto}
-                precio={rec.precio}
-                imagen_url={rec.imagen_url}
-                similarity_score={rec.similarity_score}
-                categoria={rec.categoria}
-                onWhatsAppClick={handleWhatsAppClick}
-              />
-            ))}
-          </>
-        )}
-      </div>
-
-      {/* Footer con info de IA */}
-      <div className="mt-4 pt-4 border-t border-border">
-        <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
-          <p className="font-semibold text-primary text-xs mb-1 flex items-center">
-            <Sparkles className="w-3 h-3 mr-1" />
-            Prescripción Inteligente
-          </p>
-          <p className="text-primary/80 text-xs">
-            Análisis basado en IA y preferencias de clientes con necesidades similares
-          </p>
-        </div>
+        <p className="text-primary/80">
+          Basado en preferencias de clientes similares y tu historial de navegación
+        </p>
       </div>
     </div>
   );
