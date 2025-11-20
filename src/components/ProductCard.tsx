@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +14,16 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, featured = false }: ProductCardProps) => {
   const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/producto?codigo=${product.code}`);
+  };
+
+  const handleOrderClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setOrderModalOpen(true);
+  };
 
   return (
     <>
@@ -21,7 +32,10 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
         onOpenChange={setOrderModalOpen}
         product={product}
       />
-    <Card className="group overflow-hidden bg-gradient-card border-border hover:shadow-hover transition-all duration-300 hover:scale-[1.02]">
+    <Card 
+      onClick={handleCardClick}
+      className="group overflow-hidden bg-gradient-card border-border hover:shadow-hover transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+    >
       <CardHeader className="p-0">
         <div className="relative aspect-[3/4] overflow-hidden bg-muted">
           <img
@@ -86,7 +100,7 @@ const ProductCard = ({ product, featured = false }: ProductCardProps) => {
 
       <CardFooter className="p-6 pt-0">
         <Button
-          onClick={() => setOrderModalOpen(true)}
+          onClick={handleOrderClick}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground group-hover:scale-105 transition-transform"
         >
           <MessageCircle className="w-4 h-4 mr-2" />
