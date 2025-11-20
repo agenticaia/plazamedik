@@ -3,11 +3,11 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
-import RecommendationModal from "@/components/RecommendationModal";
+import RecommendationPanel from "@/components/RecommendationPanel";
 import OrderModal from "@/components/OrderModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, MessageCircle, ArrowLeft, Sparkles } from "lucide-react";
+import { Check, MessageCircle, ArrowLeft } from "lucide-react";
 import { products } from "@/data/products";
 
 const ProductDetail = () => {
@@ -15,7 +15,6 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const codigo = searchParams.get("codigo");
   const [orderModalOpen, setOrderModalOpen] = useState(false);
-  const [recommendationsOpen, setRecommendationsOpen] = useState(false);
 
   const product = products.find((p) => p.code === codigo);
 
@@ -43,12 +42,6 @@ const ProductDetail = () => {
         open={orderModalOpen}
         onOpenChange={setOrderModalOpen}
         product={product}
-      />
-      <RecommendationModal
-        open={recommendationsOpen}
-        onOpenChange={setRecommendationsOpen}
-        currentProductCode={product.code}
-        currentProductName={product.name}
       />
 
       {/* Breadcrumb */}
@@ -178,23 +171,7 @@ const ProductDetail = () => {
 
           {/* Recommendations Sidebar */}
           <div className="lg:sticky lg:top-24 self-start">
-            <div className="border border-border rounded-lg p-6 bg-card">
-              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
-                <Sparkles className="w-5 h-5 mr-2 text-primary" />
-                Te puede interesar
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Descubre productos similares recomendados por IA basados en las preferencias de otros clientes
-              </p>
-              <Button 
-                onClick={() => setRecommendationsOpen(true)}
-                className="w-full"
-                variant="default"
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
-                Ver Recomendaciones
-              </Button>
-            </div>
+            <RecommendationPanel currentProductCode={product.code} />
           </div>
         </div>
       </section>
