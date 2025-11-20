@@ -197,14 +197,21 @@ export type Database = {
           colores_disponibles: string[] | null
           created_at: string | null
           descripcion_corta: string | null
+          discontinue_reason: string | null
+          discontinued_at: string | null
           especificaciones: string[] | null
           id: string
           ideal_para: string | null
           imagen_url: string | null
+          is_discontinued: boolean | null
+          max_stock_level: number | null
+          min_stock_level: number | null
           nombre_producto: string
           precio: number
           precio_anterior: number | null
+          preferred_supplier_id: string | null
           product_code: string
+          reorder_point: number | null
           tallas_disponibles: string[] | null
           total_recommendations: number | null
           total_vendido: number | null
@@ -219,14 +226,21 @@ export type Database = {
           colores_disponibles?: string[] | null
           created_at?: string | null
           descripcion_corta?: string | null
+          discontinue_reason?: string | null
+          discontinued_at?: string | null
           especificaciones?: string[] | null
           id?: string
           ideal_para?: string | null
           imagen_url?: string | null
+          is_discontinued?: boolean | null
+          max_stock_level?: number | null
+          min_stock_level?: number | null
           nombre_producto: string
           precio: number
           precio_anterior?: number | null
+          preferred_supplier_id?: string | null
           product_code: string
+          reorder_point?: number | null
           tallas_disponibles?: string[] | null
           total_recommendations?: number | null
           total_vendido?: number | null
@@ -241,21 +255,36 @@ export type Database = {
           colores_disponibles?: string[] | null
           created_at?: string | null
           descripcion_corta?: string | null
+          discontinue_reason?: string | null
+          discontinued_at?: string | null
           especificaciones?: string[] | null
           id?: string
           ideal_para?: string | null
           imagen_url?: string | null
+          is_discontinued?: boolean | null
+          max_stock_level?: number | null
+          min_stock_level?: number | null
           nombre_producto?: string
           precio?: number
           precio_anterior?: number | null
+          preferred_supplier_id?: string | null
           product_code?: string
+          reorder_point?: number | null
           tallas_disponibles?: string[] | null
           total_recommendations?: number | null
           total_vendido?: number | null
           total_views?: number | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_preferred_supplier_id_fkey"
+            columns: ["preferred_supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -281,6 +310,125 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      purchase_orders: {
+        Row: {
+          actual_delivery_date: string | null
+          ai_recommendation: Json | null
+          approved_by: string | null
+          created_at: string | null
+          created_by: string | null
+          expected_delivery_date: string | null
+          id: string
+          notes: string | null
+          order_number: string
+          order_type: string | null
+          product_code: string
+          product_name: string
+          quantity: number
+          status: string | null
+          supplier_id: string
+          total_amount: number
+          unit_price: number
+          updated_at: string | null
+        }
+        Insert: {
+          actual_delivery_date?: string | null
+          ai_recommendation?: Json | null
+          approved_by?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          expected_delivery_date?: string | null
+          id?: string
+          notes?: string | null
+          order_number: string
+          order_type?: string | null
+          product_code: string
+          product_name: string
+          quantity: number
+          status?: string | null
+          supplier_id: string
+          total_amount: number
+          unit_price: number
+          updated_at?: string | null
+        }
+        Update: {
+          actual_delivery_date?: string | null
+          ai_recommendation?: Json | null
+          approved_by?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          expected_delivery_date?: string | null
+          id?: string
+          notes?: string | null
+          order_number?: string
+          order_type?: string | null
+          product_code?: string
+          product_name?: string
+          quantity?: number
+          status?: string | null
+          supplier_id?: string
+          total_amount?: number
+          unit_price?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppliers: {
+        Row: {
+          address: string | null
+          contact_person: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          lead_time_days: number | null
+          name: string
+          notes: string | null
+          payment_terms: string | null
+          phone: string | null
+          rating: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          contact_person?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          lead_time_days?: number | null
+          name: string
+          notes?: string | null
+          payment_terms?: string | null
+          phone?: string | null
+          rating?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          contact_person?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          lead_time_days?: number | null
+          name?: string
+          notes?: string | null
+          payment_terms?: string | null
+          phone?: string | null
+          rating?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -367,6 +515,7 @@ export type Database = {
         Returns: boolean
       }
       generate_order_code: { Args: never; Returns: string }
+      generate_purchase_order_number: { Args: never; Returns: string }
       get_dashboard_metrics: { Args: never; Returns: Json }
       get_low_stock_products: {
         Args: { p_threshold?: number }
@@ -419,6 +568,10 @@ export type Database = {
         Returns: undefined
       }
       predict_restock_date: { Args: { p_product_code: string }; Returns: Json }
+      process_purchase_order_received: {
+        Args: { p_order_id: string }
+        Returns: Json
+      }
       register_product_sale: {
         Args: { p_product_code: string; p_quantity?: number }
         Returns: Json
