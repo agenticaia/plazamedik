@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import { z } from 'zod';
 import { ImageUpload } from './ImageUpload';
 import { DynamicListInput } from './DynamicListInput';
@@ -46,6 +46,7 @@ interface EditProductDialogProps {
 export function EditProductDialog({ open, onOpenChange, product, onSuccess }: EditProductDialogProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [generatingAI, setGeneratingAI] = useState(false);
   const [formData, setFormData] = useState({
     product_code: product?.code || product?.product_code || '',
     nombre_producto: product?.name || product?.nombre_producto || '',
@@ -63,6 +64,73 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Sincronizar formData cuando product cambie
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        product_code: product?.code || product?.product_code || '',
+        nombre_producto: product?.name || product?.nombre_producto || '',
+        categoria: product?.categoria || 'medias-compresion',
+        precio: product?.priceSale || product?.precio || 0,
+        cantidad_stock: product?.cantidad_stock || 0,
+        imagen_url: product?.imagen_url || '',
+        descripcion_corta: product?.descripcion_corta || '',
+        precio_anterior: product?.precio_anterior || 0,
+        tallas_disponibles: product?.tallas_disponibles || [],
+        colores_disponibles: product?.colores_disponibles || [],
+        ideal_para: product?.ideal_para || '',
+        beneficios: product?.beneficios || [],
+        especificaciones: product?.especificaciones || [],
+      });
+    }
+  }, [product]);
+
+  const handleGenerateWithAI = async () => {
+    if (!formData.nombre_producto) {
+      toast({
+        title: '❌ Error',
+        description: 'Debes ingresar el nombre del producto primero',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setGeneratingAI(true);
+      const { data, error } = await supabase.functions.invoke('generate-product-content', {
+        body: {
+          productName: formData.nombre_producto,
+          categoria: formData.categoria,
+          currentDescription: formData.descripcion_corta,
+        },
+      });
+
+      if (error) throw error;
+
+      setFormData(prev => ({
+        ...prev,
+        descripcion_corta: data.descripcion_corta,
+        ideal_para: data.ideal_para,
+        beneficios: data.beneficios,
+        especificaciones: data.especificaciones,
+      }));
+
+      toast({
+        title: '✨ Contenido generado',
+        description: 'El contenido ha sido generado exitosamente',
+      });
+    } catch (error) {
+      console.error('Error generating content:', error);
+      toast({
+        title: '❌ Error',
+        description: 'No se pudo generar el contenido con IA',
+        variant: 'destructive',
+      });
+    } finally {
+      setGeneratingAI(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,7 +200,28 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Editar Producto</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle>Editar Producto</DialogTitle>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleGenerateWithAI}
+              disabled={generatingAI || !formData.nombre_producto}
+            >
+              {generatingAI ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generando...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generar con IA
+                </>
+              )}
+            </Button>
+          </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
