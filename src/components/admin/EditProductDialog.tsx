@@ -48,10 +48,10 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
   const [loading, setLoading] = useState(false);
   const [generatingAI, setGeneratingAI] = useState(false);
   const [formData, setFormData] = useState({
-    product_code: product?.code || product?.product_code || '',
-    nombre_producto: product?.name || product?.nombre_producto || '',
+    product_code: product?.product_code || product?.code || '',
+    nombre_producto: product?.nombre_producto || product?.name || '',
     categoria: product?.categoria || 'medias-compresion',
-    precio: product?.priceSale || product?.precio || 0,
+    precio: product?.precio || product?.priceSale || 0,
     cantidad_stock: product?.cantidad_stock || 0,
     imagen_url: product?.imagen_url || '',
     descripcion_corta: product?.descripcion_corta || '',
@@ -68,11 +68,13 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
   // Sincronizar formData cuando product cambie
   useEffect(() => {
     if (product) {
+      console.log('🔍 Producto recibido en EditDialog:', product);
+      
       setFormData({
-        product_code: product?.code || product?.product_code || '',
-        nombre_producto: product?.name || product?.nombre_producto || '',
+        product_code: product?.product_code || product?.code || '',
+        nombre_producto: product?.nombre_producto || product?.name || '',
         categoria: product?.categoria || 'medias-compresion',
-        precio: product?.priceSale || product?.precio || 0,
+        precio: product?.precio || product?.priceSale || 0,
         cantidad_stock: product?.cantidad_stock || 0,
         imagen_url: product?.imagen_url || '',
         descripcion_corta: product?.descripcion_corta || '',
@@ -135,6 +137,8 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('🔄 Iniciando actualización de producto...', formData);
+    
     try {
       setLoading(true);
       setErrors({});
@@ -146,8 +150,10 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
         cantidad_stock: Number(formData.cantidad_stock),
       });
 
+      console.log('✅ Datos validados:', validatedData);
+
       // Actualizar producto en Supabase
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('products')
         .update({
           nombre_producto: validatedData.nombre_producto,
@@ -166,7 +172,14 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
         })
         .eq('product_code', validatedData.product_code);
 
-      if (error) throw error;
+      console.log('📊 Respuesta de Supabase:', { data, error });
+
+      if (error) {
+        console.error('❌ Error de Supabase:', error);
+        throw error;
+      }
+
+      console.log('✅ Producto actualizado exitosamente');
 
       toast({
         title: '✅ Producto actualizado',
@@ -176,6 +189,8 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
       onSuccess();
       onOpenChange(false);
     } catch (err) {
+      console.error('❌ Error en handleSubmit:', err);
+      
       if (err instanceof z.ZodError) {
         const newErrors: Record<string, string> = {};
         err.issues.forEach((issue) => {
@@ -184,10 +199,16 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
           }
         });
         setErrors(newErrors);
-      } else {
         toast({
-          title: '❌ Error',
-          description: 'No se pudo actualizar el producto',
+          title: '❌ Error de validación',
+          description: 'Revisa los campos marcados en rojo',
+          variant: 'destructive',
+        });
+      } else {
+        const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+        toast({
+          title: '❌ Error al actualizar',
+          description: errorMessage,
           variant: 'destructive',
         });
       }
