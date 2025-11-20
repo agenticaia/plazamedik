@@ -9,7 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { MessageCircle } from "lucide-react";
-import { getWhatsAppLink } from "@/data/products";
+import { getWhatsAppLink } from "@/lib/productUtils";
 
 const FAQ = () => {
   const faqs = [

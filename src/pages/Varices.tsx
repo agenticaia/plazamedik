@@ -5,13 +5,17 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { TestDialog } from "@/components/TestDialog";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, ClipboardCheck } from "lucide-react";
-import { getProductsByCategory } from "@/data/products";
+import { Check, ClipboardCheck, Loader2 } from "lucide-react";
+import { useProducts } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 
 const Varices = () => {
   const [testOpen, setTestOpen] = useState(false);
-  const varicesProducts = getProductsByCategory("varices");
+  const { products, loading } = useProducts();
+  
+  const varicesProducts = products.filter(p => 
+    p.category.includes("varices") && p.stock > 0
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -172,11 +176,22 @@ const Varices = () => {
         <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-12">
           Medias recomendadas para várices
         </h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {varicesProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">Cargando productos...</span>
+          </div>
+        ) : varicesProducts.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {varicesProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No hay productos disponibles en esta categoría</p>
+          </div>
+        )}
       </section>
 
       <Footer />

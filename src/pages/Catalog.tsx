@@ -6,7 +6,7 @@ import ProductCard from "@/components/ProductCard";
 import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getWhatsAppLink } from "@/data/products";
+import { getWhatsAppLink } from "@/lib/productUtils";
 import { useProducts } from "@/hooks/useProducts";
 import { Filter, ClipboardCheck, MessageCircle, Loader2 } from "lucide-react";
 

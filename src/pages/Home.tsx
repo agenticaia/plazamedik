@@ -7,13 +7,19 @@ import RecommendationsCarousel from "@/components/RecommendationsCarousel";
 import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, Heart, Shield, TrendingUp, MessageCircle, Star, ClipboardCheck } from "lucide-react";
-import { getFeaturedProducts, getWhatsAppLink } from "@/data/products";
+import { Check, Heart, Shield, TrendingUp, MessageCircle, Star, ClipboardCheck, Loader2 } from "lucide-react";
+import { getWhatsAppLink } from "@/lib/productUtils";
+import { useProducts } from "@/hooks/useProducts";
 import heroBanner from "@/assets/hero-banner.png";
 
 const Home = () => {
   const [testOpen, setTestOpen] = useState(false);
-  const featuredProducts = getFeaturedProducts();
+  const { products, loading } = useProducts();
+  
+  // Obtener productos destacados: los 4 más vendidos o con mejor rendimiento
+  const featuredProducts = products
+    .filter(p => p.stock > 0)
+    .slice(0, 4);
 
   return (
     <div className="min-h-screen bg-background">
@@ -197,17 +203,26 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} featured />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <span className="ml-3 text-muted-foreground">Cargando productos...</span>
+            </div>
+          ) : (
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                {featuredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} featured />
+                ))}
+              </div>
 
-          <div className="text-center mt-12">
-            <Button asChild size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-              <a href="/catalogo">Ver catálogo completo</a>
-            </Button>
-          </div>
+              <div className="text-center mt-12">
+                <Button asChild size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                  <a href="/catalogo">Ver catálogo completo</a>
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </section>
 

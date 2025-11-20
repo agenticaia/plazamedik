@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, MessageCircle, LogIn, LogOut, User } from "lucide-react";
-import { getWhatsAppLink } from "@/data/products";
+import { getWhatsAppLink } from "@/lib/productUtils";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Navigation = () => {
