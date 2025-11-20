@@ -16,7 +16,6 @@ import RecommendationPanel from "@/components/RecommendationPanel";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import { resolveProductImage, fallbackProductImage } from "@/data/productImages";
 
 interface ProductCardProps {
   product: Product;
@@ -68,11 +67,11 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
       <CardHeader className="p-0">
         <div className="relative aspect-[3/4] overflow-hidden bg-muted">
           <img
-            src={resolveProductImage(product.image)}
+            src={product.image}
             alt={product.name}
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
-              e.currentTarget.src = fallbackProductImage;
+              e.currentTarget.src = "/images/product-750-1.jpg";
             }}
           />
           {featured && (
