@@ -5,15 +5,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RefreshCw, TrendingUp, Package, DollarSign, Edit, Plus } from 'lucide-react';
+import { RefreshCw, TrendingUp, Package, DollarSign, Edit, Plus, Upload } from 'lucide-react';
 import { EditProductDialog } from '@/components/admin/EditProductDialog';
 import { CreateProductDialog } from '@/components/admin/CreateProductDialog';
+import { ImportProductsCSV } from '@/components/admin/ImportProductsCSV';
 
 export default function Products() {
   const { products, loading, refresh, getTotalMetrics } = useProductWithMetrics();
   const [searchTerm, setSearchTerm] = useState('');
   const [editProduct, setEditProduct] = useState<any>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   const metrics = getTotalMetrics();
 
@@ -45,6 +47,10 @@ export default function Products() {
             <Button onClick={() => setCreateDialogOpen(true)} size="sm">
               <Plus className="w-4 h-4 mr-2" />
               Crear Producto
+            </Button>
+            <Button onClick={() => setImportDialogOpen(true)} variant="secondary" size="sm">
+              <Upload className="w-4 h-4 mr-2" />
+              Importar CSV
             </Button>
             <Button onClick={refresh} variant="outline" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
@@ -213,6 +219,12 @@ export default function Products() {
         <CreateProductDialog
           open={createDialogOpen}
           onOpenChange={setCreateDialogOpen}
+          onSuccess={refresh}
+        />
+
+        <ImportProductsCSV
+          open={importDialogOpen}
+          onOpenChange={setImportDialogOpen}
           onSuccess={refresh}
         />
       </div>

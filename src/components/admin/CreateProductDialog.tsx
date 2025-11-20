@@ -162,7 +162,28 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Crear Nuevo Producto</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle>Crear Nuevo Producto</DialogTitle>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleGenerateWithAI}
+              disabled={generatingAI || !formData.nombre_producto}
+            >
+              {generatingAI ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generando...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generar con IA
+                </>
+              )}
+            </Button>
+          </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
