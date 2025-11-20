@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus } from 'lucide-react';
+import { Loader2, Sparkles, AlertCircle } from 'lucide-react';
 import { z } from 'zod';
 import { ImageUpload } from './ImageUpload';
 import { DynamicListInput } from './DynamicListInput';
@@ -45,6 +46,8 @@ interface CreateProductDialogProps {
 export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreateProductDialogProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [generatingAI, setGeneratingAI] = useState(false);
+  const [codeExists, setCodeExists] = useState(false);
   const [formData, setFormData] = useState({
     product_code: '',
     nombre_producto: '',
@@ -63,8 +66,84 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Verificar si el código de producto ya existe
+  useEffect(() => {
+    const checkProductCode = async () => {
+      if (!formData.product_code) {
+        setCodeExists(false);
+        return;
+      }
+
+      const { data } = await supabase
+        .from('products')
+        .select('product_code')
+        .eq('product_code', formData.product_code)
+        .maybeSingle();
+
+      setCodeExists(!!data);
+    };
+
+    const debounce = setTimeout(checkProductCode, 500);
+    return () => clearTimeout(debounce);
+  }, [formData.product_code]);
+
+  const handleGenerateWithAI = async () => {
+    if (!formData.nombre_producto) {
+      toast({
+        title: '❌ Error',
+        description: 'Debes ingresar el nombre del producto primero',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setGeneratingAI(true);
+      const { data, error } = await supabase.functions.invoke('generate-product-content', {
+        body: {
+          productName: formData.nombre_producto,
+          categoria: formData.categoria,
+          currentDescription: formData.descripcion_corta,
+        },
+      });
+
+      if (error) throw error;
+
+      setFormData(prev => ({
+        ...prev,
+        descripcion_corta: data.descripcion_corta,
+        ideal_para: data.ideal_para,
+        beneficios: data.beneficios,
+        especificaciones: data.especificaciones,
+      }));
+
+      toast({
+        title: '✨ Contenido generado',
+        description: 'El contenido ha sido generado exitosamente',
+      });
+    } catch (error) {
+      console.error('Error generating content:', error);
+      toast({
+        title: '❌ Error',
+        description: 'No se pudo generar el contenido con IA',
+        variant: 'destructive',
+      });
+    } finally {
+      setGeneratingAI(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (codeExists) {
+      toast({
+        title: '❌ Error',
+        description: 'Este código de producto ya existe',
+        variant: 'destructive',
+      });
+      return;
+    }
     
     try {
       setLoading(true);
@@ -194,9 +273,18 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
                 id="product_code"
                 value={formData.product_code}
                 onChange={(e) => setFormData({ ...formData, product_code: e.target.value })}
-                placeholder="Ej: MC-001"
+                placeholder="Ej: 750, 850, 870a"
                 maxLength={20}
+                className={codeExists ? 'border-destructive' : ''}
               />
+              {codeExists && (
+                <Alert variant="destructive" className="py-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="text-xs">
+                    Este código ya existe en la base de datos
+                  </AlertDescription>
+                </Alert>
+              )}
               {errors.product_code && (
                 <p className="text-sm text-destructive">{errors.product_code}</p>
               )}
@@ -352,17 +440,14 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || codeExists}>
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Creando...
                 </>
               ) : (
-                <>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Crear Producto
-                </>
+                'Crear Producto'
               )}
             </Button>
           </DialogFooter>
