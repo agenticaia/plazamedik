@@ -4,15 +4,24 @@ import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { TestDialog } from "@/components/TestDialog";
+import RecommendationPanel from "@/components/RecommendationPanel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { products, getWhatsAppLink } from "@/data/products";
-import { Filter, ClipboardCheck, MessageCircle } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import { products, getWhatsAppLink, Product } from "@/data/products";
+import { Filter, ClipboardCheck, MessageCircle, X } from "lucide-react";
 
 const Catalog = () => {
   const [testOpen, setTestOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const filteredProducts = products.filter((product) => {
     const categoryMatch =
@@ -26,6 +35,26 @@ const Catalog = () => {
       <Navigation />
       <WhatsAppFloat />
       <TestDialog open={testOpen} onOpenChange={setTestOpen} />
+      
+      {/* Panel lateral de recomendaciones */}
+      <Sheet open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
+        <SheetContent side="right" className="w-full sm:w-[400px] sm:max-w-[400px] p-0">
+          <div className="h-full flex flex-col">
+            <SheetHeader className="p-6 pb-4 border-b border-border">
+              <SheetTitle className="text-left">Producto Seleccionado</SheetTitle>
+              <SheetDescription className="text-left">
+                {selectedProduct?.name}
+              </SheetDescription>
+            </SheetHeader>
+            
+            <div className="flex-1 overflow-hidden p-6">
+              {selectedProduct && (
+                <RecommendationPanel currentProductCode={selectedProduct.code} />
+              )}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Header */}
       <section className="bg-gradient-hero text-primary-foreground py-12 md:py-16">
@@ -155,7 +184,12 @@ const Catalog = () => {
         {filteredProducts.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard 
+                key={product.id} 
+                product={product}
+                onSelect={setSelectedProduct}
+                isSelected={selectedProduct?.id === product.id}
+              />
             ))}
           </div>
         ) : (
