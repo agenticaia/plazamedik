@@ -57,6 +57,14 @@ export function useProductWithMetrics(options: UseProductMetricsOptions = {}) {
 
       if (metricsError) throw metricsError;
 
+      // Obtener métricas del dashboard usando función SQL
+      const { data: dashboardData, error: dashboardError } = await supabase
+        .rpc('get_dashboard_metrics');
+
+      if (dashboardError) {
+        console.warn('Error fetching dashboard metrics:', dashboardError);
+      }
+
       // Combinar productos estáticos con métricas
       const enrichedProducts: ProductWithMetrics[] = products.map(product => {
         const metrics = metricsData?.find(m => m.product_code === product.code);
@@ -150,6 +158,7 @@ export function useProductWithMetrics(options: UseProductMetricsOptions = {}) {
   };
 
   const getTotalMetrics = () => {
+    // Cálculo local sincrónico
     return {
       total_productos: productsWithMetrics.length,
       total_stock: productsWithMetrics.reduce((sum, p) => sum + p.cantidad_stock, 0),
@@ -187,20 +196,87 @@ export function useProductWithMetrics(options: UseProductMetricsOptions = {}) {
 
   const trackProductView = async (productCode: string) => {
     try {
-      // Track view via user_interactions table
-      const { data: currentProduct } = await supabase
-        .from('products')
-        .select('total_views')
-        .eq('product_code', productCode)
-        .single();
-      
-      if (currentProduct) {
-        await supabase.from('products').update({
-          total_views: (currentProduct.total_views || 0) + 1
-        }).eq('product_code', productCode);
-      }
+      // Usar función SQL optimizada
+      const { error } = await supabase.rpc('increment_product_views', {
+        p_product_code: productCode
+      });
+
+      if (error) throw error;
+      await fetchMetrics();
     } catch (err) {
       console.error('Error tracking product view:', err);
+    }
+  };
+
+  const trackProductRecommendation = async (productCode: string) => {
+    try {
+      const { error } = await supabase.rpc('increment_product_recommendations', {
+        p_product_code: productCode
+      });
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error tracking product recommendation:', err);
+    }
+  };
+
+  const registerProductSale = async (productCode: string, quantity: number = 1) => {
+    try {
+      const { data, error } = await supabase.rpc('register_product_sale', {
+        p_product_code: productCode,
+        p_quantity: quantity
+      });
+
+      if (error) throw error;
+      await fetchMetrics();
+      return { success: true, data };
+    } catch (err) {
+      console.error('Error registering product sale:', err);
+      return { success: false, error: err };
+    }
+  };
+
+  const updateProductStock = async (productCode: string, newStock: number) => {
+    try {
+      const { data, error } = await supabase.rpc('update_product_stock', {
+        p_product_code: productCode,
+        p_new_stock: newStock
+      });
+
+      if (error) throw error;
+      await fetchMetrics();
+      return { success: true, data };
+    } catch (err) {
+      console.error('Error updating product stock:', err);
+      return { success: false, error: err };
+    }
+  };
+
+  const getProductConversionMetrics = async (productCode: string) => {
+    try {
+      const { data, error } = await supabase.rpc('get_product_conversion_metrics', {
+        p_product_code: productCode
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (err) {
+      console.error('Error fetching conversion metrics:', err);
+      return null;
+    }
+  };
+
+  const predictRestockDate = async (productCode: string) => {
+    try {
+      const { data, error } = await supabase.rpc('predict_restock_date', {
+        p_product_code: productCode
+      });
+
+      if (error) throw error;
+      return data;
+    } catch (err) {
+      console.error('Error predicting restock date:', err);
+      return null;
     }
   };
 
@@ -215,8 +291,12 @@ export function useProductWithMetrics(options: UseProductMetricsOptions = {}) {
     getCriticalStock,
     getProductByCode,
     getTotalMetrics,
-    updateProductMetrics,
+    updateProductStock,
+    registerProductSale,
     trackProductView,
+    trackProductRecommendation,
+    getProductConversionMetrics,
+    predictRestockDate,
     refresh: fetchMetrics,
   };
 }
@@ -253,12 +333,53 @@ function generateBadges(params: {
 }
 
 // ============================================
-// Hook para predicciones
+// Hook para predicciones de inventario
 // ============================================
 export function useInventoryPrediction() {
   const { products, loading } = useProductWithMetrics();
+  const [forecasts, setForecasts] = useState<any[]>([]);
+  const [forecastsLoading, setForecastsLoading] = useState(true);
 
-  const predictions = products.map(product => {
+  useEffect(() => {
+    const fetchForecasts = async () => {
+      try {
+        setForecastsLoading(true);
+        
+        // Intentar obtener forecasts de la tabla inventory_forecast
+        const { data: forecastData, error } = await supabase
+          .from('inventory_forecast')
+          .select('*')
+          .order('days_until_stockout', { ascending: true });
+
+        if (error) {
+          console.warn('No forecasts available, using client-side calculations');
+        } else if (forecastData && forecastData.length > 0) {
+          // Usar forecasts de la base de datos
+          setForecasts(forecastData);
+          setForecastsLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.error('Error fetching forecasts:', err);
+      }
+      
+      setForecastsLoading(false);
+    };
+
+    fetchForecasts();
+  }, []);
+
+  // Calcular predicciones desde productos si no hay forecasts en BD
+  const predictions = forecasts.length > 0 ? forecasts.map(f => ({
+    product_code: f.product_code,
+    nombre_producto: products.find(p => p.code === f.product_code)?.name || f.product_code,
+    stock_actual: f.current_stock,
+    demanda_7d: f.predicted_demand,
+    dias_restantes: f.days_until_stockout || 999,
+    confianza: parseConfidence(f.confidence_level),
+    accion: f.reorder_alert ? '🚨 Reabastecer urgente' : getRecommendedAction(f.days_until_stockout || 999, f.current_stock),
+    suggested_reorder_qty: f.suggested_reorder_qty || 0,
+  })) : products.map(product => {
     const demanda7d = Math.ceil(product.demanda_diaria * 7);
     const confianza = calculateConfidence(product.total_vendido, product.total_views);
     const accion = getRecommendedAction(product.dias_restantes_stock, product.cantidad_stock);
@@ -277,8 +398,17 @@ export function useInventoryPrediction() {
 
   return {
     predictions: predictions.sort((a, b) => a.dias_restantes - b.dias_restantes),
-    loading,
+    loading: loading || forecastsLoading,
   };
+}
+
+function parseConfidence(level: string): number {
+  switch (level) {
+    case 'high': return 0.90;
+    case 'medium': return 0.75;
+    case 'low': return 0.60;
+    default: return 0.50;
+  }
 }
 
 function calculateConfidence(totalVendido: number, totalViews: number): number {
