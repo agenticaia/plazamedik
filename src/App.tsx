@@ -24,6 +24,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import Orders from "./pages/admin/Orders";
 import Products from "./pages/admin/Products";
 import InventoryIA from "./pages/admin/InventoryIA";
+import InventoryDashboard from "./pages/admin/InventoryDashboard";
 import SyncProducts from "./pages/admin/SyncProducts";
 import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
 
@@ -54,6 +55,14 @@ const App = () => (
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLogin />} />
+            <Route
+              path="/admin/inventario-dashboard"
+              element={
+                <ProtectedAdminRoute>
+                  <InventoryDashboard />
+                </ProtectedAdminRoute>
+              }
+            />
             <Route
               path="/admin/inventario-ia"
               element={
