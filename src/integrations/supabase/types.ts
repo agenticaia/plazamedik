@@ -346,6 +346,18 @@ export type Database = {
         Returns: boolean
       }
       generate_order_code: { Args: never; Returns: string }
+      get_dashboard_metrics: { Args: never; Returns: Json }
+      get_low_stock_products: {
+        Args: { p_threshold?: number }
+        Returns: {
+          cantidad_stock: number
+          demanda_diaria: number
+          dias_restantes: number
+          nombre_producto: string
+          product_code: string
+          total_vendido: number
+        }[]
+      }
       get_order_by_code: {
         Args: { lookup_code: string }
         Returns: {
@@ -366,12 +378,33 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_product_conversion_metrics: {
+        Args: { p_product_code: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_product_recommendations: {
+        Args: { p_product_code: string }
+        Returns: undefined
+      }
+      increment_product_views: {
+        Args: { p_product_code: string }
+        Returns: undefined
+      }
+      predict_restock_date: { Args: { p_product_code: string }; Returns: Json }
+      register_product_sale: {
+        Args: { p_product_code: string; p_quantity?: number }
+        Returns: Json
+      }
+      update_product_stock: {
+        Args: { p_new_stock: number; p_product_code: string }
+        Returns: Json
       }
     }
     Enums: {
