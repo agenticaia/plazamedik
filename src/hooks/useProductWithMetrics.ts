@@ -32,6 +32,19 @@ export interface ProductWithMetrics extends Product {
   // Timestamps
   created_at: string;
   updated_at: string;
+
+  // Campos adicionales de detalle
+  descripcion_corta?: string | null;
+  precio_anterior?: number | null;
+  tallas_disponibles?: string[] | null;
+  colores_disponibles?: string[] | null;
+  ideal_para?: string | null;
+  beneficios?: string[] | null;
+  especificaciones?: string[] | null;
+  imagen_url?: string | null;
+  categoria?: string;
+  product_code?: string;
+  nombre_producto?: string;
 }
 
 interface UseProductMetricsOptions {
@@ -106,6 +119,18 @@ export function useProductWithMetrics(options: UseProductMetricsOptions = {}) {
           badges,
           created_at: metrics?.created_at || new Date().toISOString(),
           updated_at: metrics?.updated_at || new Date().toISOString(),
+          // Campos adicionales de detalle del producto
+          descripcion_corta: metrics?.descripcion_corta,
+          precio_anterior: metrics?.precio_anterior,
+          tallas_disponibles: metrics?.tallas_disponibles,
+          colores_disponibles: metrics?.colores_disponibles,
+          ideal_para: metrics?.ideal_para,
+          beneficios: metrics?.beneficios,
+          especificaciones: metrics?.especificaciones,
+          imagen_url: metrics?.imagen_url,
+          categoria: metrics?.categoria,
+          product_code: metrics?.product_code,
+          nombre_producto: metrics?.nombre_producto,
         };
       });
 
