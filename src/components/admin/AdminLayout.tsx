@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -8,6 +8,7 @@ const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
   { name: 'Productos', href: '/admin/productos', icon: Package },
+  { name: 'Sincronizar DB', href: '/admin/sincronizar-productos', icon: Database },
 ];
 
 export const AdminLayout = ({ children }: { children: React.ReactNode }) => {

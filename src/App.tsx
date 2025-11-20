@@ -24,6 +24,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import Orders from "./pages/admin/Orders";
 import Products from "./pages/admin/Products";
 import InventoryIA from "./pages/admin/InventoryIA";
+import SyncProducts from "./pages/admin/SyncProducts";
 import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
 
 const queryClient = new QueryClient();
@@ -82,6 +83,14 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <Products />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/sincronizar-productos"
+              element={
+                <ProtectedAdminRoute>
+                  <SyncProducts />
                 </ProtectedAdminRoute>
               }
             />

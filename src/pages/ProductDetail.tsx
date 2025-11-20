@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
@@ -7,8 +7,9 @@ import RecommendationPanel from "@/components/RecommendationPanel";
 import OrderModal from "@/components/OrderModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, MessageCircle, ArrowLeft } from "lucide-react";
-import { products } from "@/data/products";
+import { Check, MessageCircle, ArrowLeft, Loader2 } from "lucide-react";
+import { useProduct } from "@/hooks/useProducts";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProductDetail = () => {
   const [searchParams] = useSearchParams();
@@ -16,9 +17,29 @@ const ProductDetail = () => {
   const codigo = searchParams.get("codigo");
   const [orderModalOpen, setOrderModalOpen] = useState(false);
 
-  const product = products.find((p) => p.code === codigo);
+  const { product, loading, error } = useProduct(codigo);
 
-  if (!product) {
+  // Incrementar vistas del producto
+  useEffect(() => {
+    if (product && codigo) {
+      supabase.rpc('increment_product_views', { p_product_code: codigo });
+    }
+  }, [product, codigo]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-4 py-16 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary mr-3" />
+          <span className="text-muted-foreground">Cargando producto...</span>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !product) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
