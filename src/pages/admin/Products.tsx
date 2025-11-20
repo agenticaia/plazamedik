@@ -5,11 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RefreshCw, TrendingUp, Package, DollarSign } from 'lucide-react';
+import { RefreshCw, TrendingUp, Package, DollarSign, Edit, Plus } from 'lucide-react';
+import { EditProductDialog } from '@/components/admin/EditProductDialog';
+import { CreateProductDialog } from '@/components/admin/CreateProductDialog';
 
 export default function Products() {
   const { products, loading, refresh, getTotalMetrics } = useProductWithMetrics();
   const [searchTerm, setSearchTerm] = useState('');
+  const [editProduct, setEditProduct] = useState<any>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const metrics = getTotalMetrics();
 
@@ -37,10 +41,16 @@ export default function Products() {
             <h1 className="text-3xl font-bold">Gestión de Productos</h1>
             <p className="text-muted-foreground">Vista completa de inventario y ventas</p>
           </div>
-          <Button onClick={refresh} variant="outline" size="sm">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Actualizar
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setCreateDialogOpen(true)} size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Crear Producto
+            </Button>
+            <Button onClick={refresh} variant="outline" size="sm">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Actualizar
+            </Button>
+          </div>
         </div>
 
         {/* Métricas generales */}
@@ -130,6 +140,7 @@ export default function Products() {
                     <th className="text-right py-3 px-4">Ingresos</th>
                     <th className="text-center py-3 px-4">Conversión</th>
                     <th className="text-left py-3 px-4">Estado</th>
+                    <th className="text-center py-3 px-4">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -173,6 +184,15 @@ export default function Products() {
                             ))}
                           </div>
                         </td>
+                        <td className="py-3 px-4 text-center">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setEditProduct(product)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        </td>
                       </tr>
                     ))
                   )}
@@ -181,6 +201,20 @@ export default function Products() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Dialogs */}
+        <EditProductDialog
+          open={!!editProduct}
+          onOpenChange={(open) => !open && setEditProduct(null)}
+          product={editProduct}
+          onSuccess={refresh}
+        />
+
+        <CreateProductDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          onSuccess={refresh}
+        />
       </div>
     </AdminLayout>
   );
