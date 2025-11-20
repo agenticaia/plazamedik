@@ -49,13 +49,42 @@ const App = () => (
             <Route path="/blog/como-elegir-talla-correcta" element={<ComoElegirTallaCorrecta />} />
             <Route path="/preguntas-frecuentes" element={<FAQ />} />
             <Route path="/seguimiento" element={<Seguimiento />} />
-            
+
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<ProtectedAdminRoute><Dashboard /></ProtectedAdminRoute>} />
-            <Route path="/admin/pedidos" element={<ProtectedAdminRoute><Orders /></ProtectedAdminRoute>} />
-            <Route path="/admin/productos" element={<ProtectedAdminRoute><Products /></ProtectedAdminRoute>} />
-            
+            <Route
+              path="/admin/inventario-ia"
+              element={
+                <ProtectedAdminRoute>
+                  <InventoryIA />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedAdminRoute>
+                  <Dashboard />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/pedidos"
+              element={
+                <ProtectedAdminRoute>
+                  <Orders />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/productos"
+              element={
+                <ProtectedAdminRoute>
+                  <Products />
+                </ProtectedAdminRoute>
+              }
+            />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
