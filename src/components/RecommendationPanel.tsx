@@ -2,6 +2,7 @@ import React from 'react';
 import { useRecommendations } from '@/hooks/useRecommendations';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, TrendingUp, Eye } from 'lucide-react';
+import { resolveProductImage, fallbackProductImage } from '@/data/productImages';
 
 interface RecommendationPanelProps {
   currentProductCode: string;
@@ -51,11 +52,11 @@ export default function RecommendationPanel({ currentProductCode }: Recommendati
               <div className="flex gap-3">
                 <div className="w-20 h-20 flex-shrink-0 bg-muted rounded overflow-hidden">
                   <img
-                    src={rec.imagen_url || '/images/product-750-1.jpg'}
+                    src={resolveProductImage(rec.imagen_url)}
                     alt={rec.nombre_producto}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.currentTarget.src = '/images/product-750-1.jpg';
+                      e.currentTarget.src = fallbackProductImage;
                     }}
                   />
                 </div>

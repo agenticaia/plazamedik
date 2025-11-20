@@ -4,6 +4,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Card, CardContent } from '@/components/ui/card';
 import { Sparkles } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { resolveProductImage, fallbackProductImage } from '@/data/productImages';
 
 export default function RecommendationsCarousel() {
   const { recommendations, loading } = useHomeRecommendations(8);
@@ -70,11 +71,11 @@ export default function RecommendationsCarousel() {
                 >
                   <div className="relative aspect-square overflow-hidden bg-muted">
                     <img
-                      src={product.imagen_url || '/images/product-750-1.jpg'}
+                      src={resolveProductImage(product.imagen_url)}
                       alt={product.nombre_producto}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
-                        e.currentTarget.src = '/images/product-750-1.jpg';
+                        e.currentTarget.src = fallbackProductImage;
                       }}
                     />
                     <div className="absolute top-2 right-2">
