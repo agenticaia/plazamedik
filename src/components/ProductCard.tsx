@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, MessageCircle, Sparkles, Heart } from "lucide-react";
-import { Product } from "@/data/products";
+import type { Product } from "@/hooks/useProducts";
 import OrderModal from "@/components/OrderModal";
 import {
   Dialog,

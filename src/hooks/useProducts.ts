@@ -1,24 +1,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { mapDbProductToBase, type BaseProduct } from '@/lib/productMapping';
+import type { Tables } from '@/integrations/supabase/types';
 
-export interface Product {
-  id: string;
-  code: string;
-  name: string;
-  subtitle: string;
-  image: string;
-  benefits: string[];
-  specs: string[];
-  idealFor: string;
-  category: string[];
-  type: string;
-  sizes: string[];
-  colors: string[];
-  priceOriginal: number;
-  priceSale: number;
-  compression: string;
-  brand: string;
-  model: string;
+export interface Product extends BaseProduct {
   stock: number;
 }
 
@@ -30,50 +15,23 @@ export function useProducts() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
+
       const { data, error: fetchError } = await supabase
         .from('products')
         .select('*')
         .gt('cantidad_stock', 0) // Solo productos con stock
+        .or('is_discontinued.is.null,is_discontinued.eq.false') // Ocultar descontinuados
         .order('nombre_producto');
 
       if (fetchError) throw fetchError;
 
-      // Transformar datos de Supabase al formato Product
-      const transformedProducts: Product[] = (data || []).map((dbProduct) => {
-        // Extraer marca y modelo del nombre del producto
-        const nameParts = dbProduct.nombre_producto.split(' ');
-        const brand = 'RelaxSan'; // Default brand
-        
-        // Determinar tipo basado en el nombre
-        let type = 'rodilla';
-        if (dbProduct.nombre_producto.toLowerCase().includes('panty')) {
-          type = 'panty';
-        } else if (dbProduct.nombre_producto.toLowerCase().includes('muslo')) {
-          type = 'muslo';
-        }
+      const rows = (data || []) as Tables<'products'>[];
 
-        // Extraer compresión del nombre
-        const compressionMatch = dbProduct.nombre_producto.match(/(\d+-\d+\s*mmHg)/i);
-        const compression = compressionMatch ? compressionMatch[1] : '20-30 mmHg';
+      const transformedProducts: Product[] = rows.map((dbProduct) => {
+        const base = mapDbProductToBase(dbProduct);
 
         return {
-          id: `${dbProduct.product_code}-${(dbProduct.colores_disponibles?.[0] || 'piel').toLowerCase()}`,
-          code: dbProduct.product_code,
-          name: dbProduct.nombre_producto,
-          subtitle: dbProduct.descripcion_corta || 'Compresión médica certificada',
-          image: dbProduct.imagen_url || '/images/product-750-1.jpg',
-          benefits: dbProduct.beneficios || [],
-          specs: dbProduct.especificaciones || [],
-          idealFor: dbProduct.ideal_para || 'Uso terapéutico y preventivo',
-          category: [dbProduct.categoria],
-          type,
-          sizes: dbProduct.tallas_disponibles || [],
-          colors: dbProduct.colores_disponibles || [],
-          priceOriginal: dbProduct.precio_anterior || (dbProduct.precio * 1.25),
-          priceSale: dbProduct.precio,
-          compression,
-          brand,
-          model: type === 'panty' ? 'Panty' : 'Básico',
+          ...base,
           stock: dbProduct.cantidad_stock || 0,
         };
       });
@@ -91,7 +49,6 @@ export function useProducts() {
   useEffect(() => {
     fetchProducts();
 
-    // Suscripción a cambios en tiempo real
     const channel = supabase
       .channel('products-changes')
       .on(
@@ -121,3 +78,5 @@ export function useProduct(code: string | null) {
   
   return { product, loading, error };
 }
+
+export type { Product as CatalogProduct };

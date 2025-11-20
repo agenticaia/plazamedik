@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Product } from "@/data/products";
+import type { Product } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight } from "lucide-react";
