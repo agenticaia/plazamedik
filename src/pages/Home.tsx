@@ -3,6 +3,7 @@ import Navigation from "@/components/Navigation";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import RecommendationsCarousel from "@/components/RecommendationsCarousel";
 import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -82,6 +83,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Carrusel de Recomendaciones IA */}
+      <RecommendationsCarousel />
 
       {/* ¿Es para ti? */}
       <section className="container mx-auto px-4 py-16 md:py-24">
