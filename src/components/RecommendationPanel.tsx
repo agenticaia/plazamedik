@@ -1,8 +1,7 @@
 import React from 'react';
 import { useRecommendations } from '@/hooks/useRecommendations';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, TrendingUp, Eye } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Sparkles, TrendingUp } from 'lucide-react';
 
 interface RecommendationPanelProps {
   currentProductCode: string;
@@ -22,83 +21,69 @@ export default function RecommendationPanel({ currentProductCode }: Recommendati
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+        <Sparkles className="w-5 h-5 mr-2 text-primary" />
+        Te puede interesar
+      </h3>
+
       {loading ? (
-        <div className="grid gap-4">
-          {[1, 2].map(i => (
-            <div key={i} className="h-64 bg-muted rounded-lg animate-pulse" />
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="h-24 bg-muted rounded animate-pulse" />
           ))}
         </div>
       ) : recommendations.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-sm text-muted-foreground">No hay recomendaciones disponibles</p>
-        </div>
+        <p className="text-sm text-muted-foreground">No hay recomendaciones disponibles</p>
       ) : (
-        <div className="grid gap-4">
+        <div className="space-y-3">
           {recommendations.map((rec) => (
             <div
               key={rec.product_code}
-              className="border border-border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 bg-card"
+              onClick={() => handleRecommendationClick(rec.product_code)}
+              className="border border-border rounded-lg p-3 cursor-pointer hover:shadow-lg transition-all duration-200 hover:border-primary"
             >
-              {/* Image */}
-              <div className="aspect-[4/3] bg-muted overflow-hidden">
-                <img
-                  src={rec.imagen_url || '/placeholder.svg'}
-                  alt={rec.nombre_producto}
-                  className="w-full h-full object-cover"
-                />
+              <div className="flex gap-3">
+                <div className="w-20 h-20 flex-shrink-0 bg-muted rounded overflow-hidden">
+                  <img
+                    src={rec.imagen_url || '/placeholder.svg'}
+                    alt={rec.nombre_producto}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm line-clamp-2 text-foreground mb-1">
+                    {rec.nombre_producto}
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-2">{rec.categoria}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-primary font-bold text-lg">
+                      S/ {rec.precio.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              {/* Content */}
-              <div className="p-4 space-y-3">
-                {/* Badge */}
-                <div className="flex items-center gap-2">
-                  <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full flex items-center font-medium">
-                    <TrendingUp className="w-3 h-3 mr-1" />
-                    {Math.round(rec.similarity_score * 100)}% Compatible
-                  </span>
-                </div>
-
-                {/* Title & Category */}
-                <div>
-                  <h4 className="font-semibold text-base text-foreground mb-1 line-clamp-2">
-                    {rec.nombre_producto}
-                  </h4>
-                  <p className="text-xs text-muted-foreground">{rec.categoria}</p>
-                </div>
-
-                {/* Price */}
-                <p className="text-primary font-bold text-2xl">
-                  S/ {rec.precio.toFixed(2)}
-                </p>
-
-                {/* Button */}
-                <Button
-                  onClick={() => handleRecommendationClick(rec.product_code)}
-                  className="w-full"
-                  variant="default"
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  Ver Detalles
-                </Button>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full flex items-center">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  {Math.round(rec.similarity_score * 100)}% Compatible
+                </span>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* AI Badge */}
-      {!loading && recommendations.length > 0 && (
-        <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg text-xs">
-          <p className="font-semibold text-primary mb-1 flex items-center">
-            <Sparkles className="w-4 h-4 mr-1" />
-            Recomendado por IA
-          </p>
-          <p className="text-primary/80">
-            Basado en preferencias de clientes similares y tu historial de navegación
-          </p>
-        </div>
-      )}
+      <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg text-xs">
+        <p className="font-semibold text-primary mb-1 flex items-center">
+          🤖 Recomendado por IA
+        </p>
+        <p className="text-primary/80">
+          Basado en preferencias de clientes similares y tu historial de navegación
+        </p>
+      </div>
     </div>
   );
 }

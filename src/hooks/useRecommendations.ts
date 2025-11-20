@@ -11,7 +11,7 @@ interface Recommendation {
   categoria: string;
 }
 
-export function useRecommendations(currentProductCode: string, limit: number = 2) {
+export function useRecommendations(currentProductCode: string, limit: number = 4) {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
