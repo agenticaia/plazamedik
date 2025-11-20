@@ -13,7 +13,7 @@ export default function RecommendationPanel({ currentProductCode }: Recommendati
 
   const handleRecommendationClick = async (productCode: string) => {
     await trackRecommendationClick(productCode);
-    navigate(`/catalogo?codigo=${productCode}`);
+    navigate(`/producto?codigo=${productCode}`);
   };
 
   if (error) {
