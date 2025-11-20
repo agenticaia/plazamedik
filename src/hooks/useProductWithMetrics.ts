@@ -5,9 +5,10 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { products, type Product } from '@/data/products';
+import { mapDbProductToBase, type BaseProduct } from '@/lib/productMapping';
+import type { Tables } from '@/integrations/supabase/types';
 
-export interface ProductWithMetrics extends Product {
+export interface ProductWithMetrics extends BaseProduct {
   // Métricas de inventario
   cantidad_stock: number;
   stock_status: 'disponible' | 'bajo' | 'agotado';
@@ -47,6 +48,7 @@ export interface ProductWithMetrics extends Product {
   nombre_producto?: string;
 }
 
+
 interface UseProductMetricsOptions {
   autoRefresh?: boolean;
   refreshInterval?: number;
@@ -63,75 +65,75 @@ export function useProductWithMetrics(options: UseProductMetricsOptions = {}) {
     try {
       setLoading(true);
       
-      // Obtener métricas de Supabase
-      const { data: metricsData, error: metricsError } = await supabase
+      // Obtener productos con métricas directamente desde la BD
+      const { data: productsData, error: productsError } = await supabase
         .from('products')
         .select('*');
 
-      if (metricsError) throw metricsError;
+      if (productsError) throw productsError;
 
-      // Obtener métricas del dashboard usando función SQL
+      // Obtener métricas agregadas del dashboard (opcional)
       const { data: dashboardData, error: dashboardError } = await supabase
         .rpc('get_dashboard_metrics');
 
       if (dashboardError) {
         console.warn('Error fetching dashboard metrics:', dashboardError);
+      } else {
+        console.debug('📊 Métricas generales de dashboard:', dashboardData);
       }
 
-      // Combinar productos estáticos con métricas
-      const enrichedProducts: ProductWithMetrics[] = products.map(product => {
-        const metrics = metricsData?.find(m => m.product_code === product.code);
-        
-        const stockActual = metrics?.cantidad_stock || 0;
-        const totalVendido = metrics?.total_vendido || 0;
-        const totalViews = metrics?.total_views || 0;
-        
-        // Cálculos
+      const rows = (productsData || []) as Tables<'products'>[];
+
+      const enrichedProducts: ProductWithMetrics[] = rows.map((dbProduct) => {
+        const base = mapDbProductToBase(dbProduct);
+
+        const stockActual = dbProduct.cantidad_stock || 0;
+        const totalVendido = dbProduct.total_vendido || 0;
+        const totalViews = dbProduct.total_views || 0;
+
         const stockStatus = getStockStatus(stockActual);
         const demandaDiaria = totalVendido > 0 ? totalVendido / 30 : 0.5;
         const diasRestantes = demandaDiaria > 0 ? Math.floor(stockActual / demandaDiaria) : 999;
         const fechaProximoPedido = diasRestantes < 30 && stockActual > 0
           ? new Date(Date.now() + diasRestantes * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
           : null;
-        
+
         const conversionRate = totalViews > 0 ? (totalVendido / totalViews) * 100 : 0;
-        const ingresosGenerados = totalVendido * product.priceSale;
-        
+        const ingresosGenerados = totalVendido * base.priceSale;
+
         const badges = generateBadges({
           totalVendido,
           stockStatus,
           conversionRate,
-          createdAt: metrics?.created_at
+          createdAt: dbProduct.created_at,
         });
 
         return {
-          ...product,
+          ...base,
           cantidad_stock: stockActual,
           stock_status: stockStatus,
           total_vendido: totalVendido,
           ingresos_generados: ingresosGenerados,
           total_views: totalViews,
-          total_recommendations: metrics?.total_recommendations || 0,
+          total_recommendations: dbProduct.total_recommendations || 0,
           conversion_rate: conversionRate,
           demanda_diaria: demandaDiaria,
           dias_restantes_stock: diasRestantes,
           fecha_proximo_pedido: fechaProximoPedido,
           badges,
-          created_at: metrics?.created_at || new Date().toISOString(),
-          updated_at: metrics?.updated_at || new Date().toISOString(),
-          // Campos adicionales de detalle del producto
-          descripcion_corta: metrics?.descripcion_corta,
-          precio_anterior: metrics?.precio_anterior,
-          tallas_disponibles: metrics?.tallas_disponibles,
-          colores_disponibles: metrics?.colores_disponibles,
-          ideal_para: metrics?.ideal_para,
-          beneficios: metrics?.beneficios,
-          especificaciones: metrics?.especificaciones,
-          imagen_url: metrics?.imagen_url,
-          categoria: metrics?.categoria,
-          // CRÍTICO: siempre mapear code a product_code para consistencia con BD
-          product_code: product.code,
-          nombre_producto: metrics?.nombre_producto || product.name,
+          created_at: dbProduct.created_at || new Date().toISOString(),
+          updated_at: dbProduct.updated_at || new Date().toISOString(),
+          descripcion_corta: dbProduct.descripcion_corta,
+          precio_anterior: dbProduct.precio_anterior,
+          tallas_disponibles: dbProduct.tallas_disponibles,
+          colores_disponibles: dbProduct.colores_disponibles,
+          ideal_para: dbProduct.ideal_para,
+          beneficios: dbProduct.beneficios,
+          especificaciones: dbProduct.especificaciones,
+          imagen_url: dbProduct.imagen_url,
+          categoria: dbProduct.categoria,
+          product_code: dbProduct.product_code,
+          nombre_producto: dbProduct.nombre_producto,
         };
       });
 
@@ -144,6 +146,7 @@ export function useProductWithMetrics(options: UseProductMetricsOptions = {}) {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchMetrics();
