@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, MessageCircle, ArrowLeft } from "lucide-react";
 import { products } from "@/data/products";
+import { resolveProductImage, fallbackProductImage } from "@/data/productImages";
 
 const ProductDetail = () => {
   const [searchParams] = useSearchParams();
@@ -68,11 +69,11 @@ const ProductDetail = () => {
               {/* Image */}
               <div className="aspect-[3/4] overflow-hidden rounded-lg bg-muted">
                 <img
-                  src={product.image}
+                  src={resolveProductImage(product.image)}
                   alt={product.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.currentTarget.src = '/images/product-750-1.jpg';
+                    e.currentTarget.src = fallbackProductImage;
                   }}
                 />
               </div>
