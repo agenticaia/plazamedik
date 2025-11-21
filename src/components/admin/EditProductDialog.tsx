@@ -152,6 +152,19 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
 
       console.log('✅ Datos validados:', validatedData);
 
+      // Verificar que el producto existe antes de actualizar
+      const { data: existingProduct, error: checkError } = await supabase
+        .from('products')
+        .select('id, product_code')
+        .eq('product_code', validatedData.product_code)
+        .single();
+
+      if (checkError || !existingProduct) {
+        throw new Error(`Producto con código ${validatedData.product_code} no encontrado en la base de datos`);
+      }
+
+      console.log('✅ Producto encontrado, actualizando...', existingProduct);
+
       // Actualizar producto en Supabase
       const { data, error } = await supabase
         .from('products')
@@ -170,7 +183,8 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
           especificaciones: formData.especificaciones,
           updated_at: new Date().toISOString(),
         })
-        .eq('product_code', validatedData.product_code);
+        .eq('product_code', validatedData.product_code)
+        .select();
 
       console.log('📊 Respuesta de Supabase:', { data, error });
 
