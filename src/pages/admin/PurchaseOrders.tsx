@@ -13,14 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -32,9 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePurchaseOrders, PurchaseOrder } from "@/hooks/usePurchaseOrders";
 import { useSuppliers } from "@/hooks/useSuppliers";
 import { useProducts } from "@/hooks/useProducts";
-import { Plus, Package, CheckCircle, XCircle, Clock, Truck } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { Plus, Search } from "lucide-react";
+import { ProcurementTable } from "@/components/admin/erp/ProcurementTable";
 
 const PurchaseOrders = () => {
   const { purchaseOrders, isLoading, createPurchaseOrder, updateOrderStatus, markAsReceived } =
@@ -43,6 +34,8 @@ const PurchaseOrders = () => {
   const { products } = useProducts();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [orderType, setOrderType] = useState<"manual" | "automatica">("manual");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [formData, setFormData] = useState({
     supplier_id: "",
     product_code: "",
@@ -50,6 +43,17 @@ const PurchaseOrders = () => {
     unit_price: 0,
     expected_delivery_date: "",
     notes: "",
+  });
+
+  const filteredOrders = purchaseOrders.filter((po: any) => {
+    const matchesSearch = 
+      po.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      po.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      po.supplier?.name.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = filterStatus === "ALL" || po.status === filterStatus;
+    
+    return matchesSearch && matchesStatus;
   });
 
   const resetForm = () => {
@@ -83,103 +87,17 @@ const PurchaseOrders = () => {
   };
 
   const getStatusBadge = (status: PurchaseOrder["status"]) => {
-    const variants: Record<string, { variant: any; icon: any; label: string }> = {
-      DRAFT: { variant: "secondary", icon: Clock, label: "Borrador" },
-      SENT: { variant: "default", icon: Truck, label: "Enviada" },
-      PARTIAL_RECEIPT: { variant: "default", icon: Package, label: "Recepción Parcial" },
-      CLOSED: { variant: "default", icon: CheckCircle, label: "Cerrada" },
-      CANCELLED: { variant: "destructive", icon: XCircle, label: "Cancelada" },
+    const variants: Record<string, { label: string }> = {
+      DRAFT: { label: "Borrador" },
+      SENT: { label: "Enviada" },
+      PARTIAL_RECEIPT: { label: "Recepción Parcial" },
+      CLOSED: { label: "Cerrada" },
+      CANCELLED: { label: "Cancelada" },
     };
 
-    const config = variants[status || ""] || { variant: "outline", icon: Clock, label: status };
-    const Icon = config.icon;
-    return (
-      <Badge variant={config.variant} className="gap-1">
-        <Icon className="h-3 w-3" />
-        {config.label}
-      </Badge>
-    );
+    const config = variants[status || ""] || { label: status };
+    return config.label;
   };
-
-  const filterOrders = (status?: PurchaseOrder["status"]) => {
-    if (!status) return purchaseOrders;
-    return purchaseOrders.filter((order: any) => order.status === status);
-  };
-
-  const renderOrdersTable = (orders: any[]) => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Número de Orden</TableHead>
-          <TableHead>Proveedor</TableHead>
-          <TableHead>Producto</TableHead>
-          <TableHead>Cantidad</TableHead>
-          <TableHead>Total</TableHead>
-          <TableHead>Tipo</TableHead>
-          <TableHead>Estado</TableHead>
-          <TableHead>Fecha Esperada</TableHead>
-          <TableHead>Acciones</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {orders.map((order: any) => (
-          <TableRow key={order.id}>
-            <TableCell className="font-mono">{order.order_number}</TableCell>
-            <TableCell>{order.supplier?.name}</TableCell>
-            <TableCell>
-              <div>
-                <div className="font-medium">{order.product_name}</div>
-                <div className="text-sm text-muted-foreground">{order.product_code}</div>
-              </div>
-            </TableCell>
-            <TableCell>{order.quantity} unidades</TableCell>
-            <TableCell>S/ {order.total_amount.toFixed(2)}</TableCell>
-            <TableCell>
-              <Badge variant={order.order_type === "automatica" ? "default" : "outline"}>
-                {order.order_type === "automatica" ? "Auto" : "Manual"}
-              </Badge>
-            </TableCell>
-            <TableCell>{getStatusBadge(order.status)}</TableCell>
-            <TableCell>
-              {order.expected_delivery_date
-                ? format(new Date(order.expected_delivery_date), "dd/MM/yyyy", { locale: es })
-                : "-"}
-            </TableCell>
-            <TableCell>
-              <div className="flex gap-2">
-                {order.status === "DRAFT" && (
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      updateOrderStatus.mutateAsync({ id: order.id, status: "SENT" })
-                    }
-                  >
-                    Enviar
-                  </Button>
-                )}
-                {(order.status === "SENT" || order.status === "PARTIAL_RECEIPT") && (
-                  <Button
-                    size="sm"
-                    variant="default"
-                    onClick={() => markAsReceived.mutateAsync(order.id)}
-                  >
-                    Recibir
-                  </Button>
-                )}
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-        {orders.length === 0 && (
-          <TableRow>
-            <TableCell colSpan={9} className="text-center text-muted-foreground">
-              No hay órdenes de compra en esta categoría
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-  );
 
   if (isLoading) {
     return (
@@ -193,11 +111,14 @@ const PurchaseOrders = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="p-6 space-y-6">
+        {/* Header */}
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Órdenes de Compra</h1>
-            <p className="text-muted-foreground mt-1">Gestiona tus órdenes de compra a proveedores</p>
+            <p className="text-muted-foreground mt-1">
+              Ciclo completo Procure to Pay - Desde la solicitud hasta el pago
+            </p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -344,33 +265,74 @@ const PurchaseOrders = () => {
           </Dialog>
         </div>
 
+        {/* Search & Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="col-span-2 p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por N° OC, proveedor o producto..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </Card>
+          <Card className="p-4">
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger>
+                <SelectValue placeholder="Filtrar por estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Todos los estados</SelectItem>
+                <SelectItem value="DRAFT">Borrador</SelectItem>
+                <SelectItem value="SENT">Enviada</SelectItem>
+                <SelectItem value="PARTIAL_RECEIPT">Recepción Parcial</SelectItem>
+                <SelectItem value="CLOSED">Cerrada</SelectItem>
+                <SelectItem value="CANCELLED">Cancelada</SelectItem>
+              </SelectContent>
+            </Select>
+          </Card>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="p-4">
+            <div className="text-sm text-muted-foreground">Total Órdenes</div>
+            <div className="text-2xl font-bold">{filteredOrders.length}</div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-sm text-muted-foreground">Borradores</div>
+            <div className="text-2xl font-bold">
+              {filteredOrders.filter((o: any) => o.status === "DRAFT").length}
+            </div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-sm text-muted-foreground">En Proceso</div>
+            <div className="text-2xl font-bold">
+              {filteredOrders.filter((o: any) => 
+                o.status === "SENT" || o.status === "PARTIAL_RECEIPT"
+              ).length}
+            </div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-sm text-muted-foreground">Cerradas</div>
+            <div className="text-2xl font-bold">
+              {filteredOrders.filter((o: any) => o.status === "CLOSED").length}
+            </div>
+          </Card>
+        </div>
+
+        {/* Orders Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Órdenes de Compra</CardTitle>
+            <CardTitle>Órdenes de Compra Activas - Procure to Pay</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="all">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="all">Todas</TabsTrigger>
-                <TabsTrigger value="DRAFT">Borrador</TabsTrigger>
-                <TabsTrigger value="SENT">Enviadas</TabsTrigger>
-                <TabsTrigger value="PARTIAL_RECEIPT">Recepción Parcial</TabsTrigger>
-                <TabsTrigger value="CLOSED">Cerradas</TabsTrigger>
-              </TabsList>
-              <TabsContent value="all">{renderOrdersTable(purchaseOrders)}</TabsContent>
-              <TabsContent value="DRAFT">
-                {renderOrdersTable(filterOrders("DRAFT" as any))}
-              </TabsContent>
-              <TabsContent value="SENT">
-                {renderOrdersTable(filterOrders("SENT" as any))}
-              </TabsContent>
-              <TabsContent value="PARTIAL_RECEIPT">
-                {renderOrdersTable(filterOrders("PARTIAL_RECEIPT" as any))}
-              </TabsContent>
-              <TabsContent value="CLOSED">
-                {renderOrdersTable(filterOrders("CLOSED" as any))}
-              </TabsContent>
-            </Tabs>
+            <ProcurementTable 
+              searchTerm={searchTerm}
+              filterStatus={filterStatus}
+            />
           </CardContent>
         </Card>
       </div>
