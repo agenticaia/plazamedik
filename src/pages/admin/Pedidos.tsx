@@ -2,8 +2,11 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SalesOrderTable } from "@/components/admin/erp/SalesOrderTable";
+import { CrossDockingTracker } from "@/components/admin/erp/CrossDockingTracker";
 import { useSalesOrders } from "@/hooks/useSalesOrders";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle, CheckCircle2, Clock, Package } from "lucide-react";
 
 export default function Pedidos() {
   const { orders, isLoading } = useSalesOrders();
@@ -22,17 +25,30 @@ export default function Pedidos() {
       <div className="p-6 space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold">Gestión de Pedidos</h1>
+          <h1 className="text-3xl font-bold">Gestión de Pedidos & Cross-Docking</h1>
           <p className="text-muted-foreground">
-            Ciclo completo Order to Cash - Desde el pedido hasta el cobro
+            Ciclo completo Order to Cash - Validación de stock, reservas y flujo directo
           </p>
         </div>
 
+        {/* Alert para Escenarios */}
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Escenarios automáticos activos:</strong>
+            <ul className="mt-2 space-y-1 text-sm">
+              <li>✅ <strong>Con Stock:</strong> Orden → Picking → Reserva stock automáticamente</li>
+              <li>⚠️ <strong>Sin Stock:</strong> Orden → Esperando Stock → Genera PO automática para Cross-Docking</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+
         {/* Status Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Package className="h-4 w-4" />
                 Total Pedidos
               </CardTitle>
             </CardHeader>
@@ -42,7 +58,8 @@ export default function Pedidos() {
           </Card>
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Clock className="h-4 w-4" />
                 Pendientes
               </CardTitle>
             </CardHeader>
@@ -54,7 +71,8 @@ export default function Pedidos() {
           </Card>
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4" />
                 Esperando Stock
               </CardTitle>
             </CardHeader>
@@ -66,7 +84,21 @@ export default function Pedidos() {
           </Card>
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                Parcial
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">
+                {getStatusCount("PARTIAL")}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4" />
                 Completados
               </CardTitle>
             </CardHeader>
@@ -77,6 +109,11 @@ export default function Pedidos() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Cross-Docking Tracker */}
+        {getStatusCount("WAITING_STOCK") > 0 && (
+          <CrossDockingTracker />
+        )}
 
         {/* Orders Table with Tabs */}
         <Tabs defaultValue="all" className="space-y-4">

@@ -147,7 +147,7 @@ export const OrderDetailDrawer = ({
                 {order.items?.map((item: any) => (
                   <div key={item.id} className="border rounded-lg p-3 space-y-2">
                     <div className="flex justify-between items-start">
-                      <div>
+                      <div className="flex-1">
                         <p className="font-medium">{item.product_name}</p>
                         <p className="text-sm text-muted-foreground">
                           SKU: {item.product_code}
@@ -160,9 +160,32 @@ export const OrderDetailDrawer = ({
                       </div>
                     </div>
                     {item.is_backorder && (
-                      <Badge variant="destructive" className="text-xs">
-                        ⚠️ Backorder - {item.linked_purchase_order_id ? 'PO Creada Automáticamente' : 'Esperando PO'}
-                      </Badge>
+                      <div className="space-y-2">
+                        <Badge variant="destructive" className="text-xs flex items-center gap-1 w-fit">
+                          <AlertTriangle className="h-3 w-3" />
+                          Cross-Docking - {item.linked_purchase_order_id ? 'PO Automática Creada' : 'Generando PO...'}
+                        </Badge>
+                        {item.linked_purchase_order_id && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs h-7"
+                            onClick={async () => {
+                              const { data: po } = await supabase
+                                .from('purchase_orders')
+                                .select('order_number')
+                                .eq('id', item.linked_purchase_order_id)
+                                .single();
+                              if (po) {
+                                window.open(`/admin/ordenes-compra?search=${po.order_number}`, '_blank');
+                              }
+                            }}
+                          >
+                            <Send className="h-3 w-3 mr-1" />
+                            Ver OC: {item.linked_purchase_order_id.slice(0, 8)}...
+                          </Button>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}
