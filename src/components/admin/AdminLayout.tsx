@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -10,6 +10,7 @@ const navigation = [
   { name: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
   { name: 'Proveedores', href: '/admin/proveedores', icon: Building2 },
   { name: 'Órdenes de Compra', href: '/admin/ordenes-compra', icon: ShoppingCart },
+  { name: 'Punto Reorden IA', href: '/admin/punto-reorden-ia', icon: Target },
   { name: 'Predicción IA', href: '/admin/inventario-ia', icon: Brain },
   { name: 'Sincronizar DB', href: '/admin/sincronizar-productos', icon: Database },
 ];
