@@ -39,6 +39,12 @@ export default function InventoryIA() {
 
   const { predictions } = useInventoryPrediction();
 
+  useEffect(() => {
+    if (selectedProduct) {
+      fetchProductPerformance(selectedProduct);
+    }
+  }, [selectedProduct]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -46,12 +52,6 @@ export default function InventoryIA() {
       </div>
     );
   }
-
-  useEffect(() => {
-    if (selectedProduct) {
-      fetchProductPerformance(selectedProduct);
-    }
-  }, [selectedProduct]);
 
   const fetchProductPerformance = async (product: ProductWithMetrics) => {
     try {
