@@ -27,6 +27,10 @@ export interface ProductWithMetrics extends BaseProduct {
   dias_restantes_stock: number;
   fecha_proximo_pedido: string | null;
   
+  // AI fields
+  ai_reorder_point?: number | null;
+  ai_churn_risk?: number | null;
+  
   // Badges
   badges: string[];
   
@@ -120,6 +124,8 @@ export function useProductWithMetrics(options: UseProductMetricsOptions = {}) {
           demanda_diaria: demandaDiaria,
           dias_restantes_stock: diasRestantes,
           fecha_proximo_pedido: fechaProximoPedido,
+          ai_reorder_point: dbProduct.ai_reorder_point,
+          ai_churn_risk: dbProduct.ai_churn_risk,
           badges,
           created_at: dbProduct.created_at || new Date().toISOString(),
           updated_at: dbProduct.updated_at || new Date().toISOString(),
@@ -399,16 +405,21 @@ export function useInventoryPrediction() {
   }, []);
 
   // Calcular predicciones desde productos si no hay forecasts en BD
-  const predictions = forecasts.length > 0 ? forecasts.map(f => ({
-    product_code: f.product_code,
-    nombre_producto: products.find(p => p.code === f.product_code)?.name || f.product_code,
-    stock_actual: f.current_stock,
-    demanda_7d: f.predicted_demand,
-    dias_restantes: f.days_until_stockout || 999,
-    confianza: parseConfidence(f.confidence_level),
-    accion: f.reorder_alert ? '🚨 Reabastecer urgente' : getRecommendedAction(f.days_until_stockout || 999, f.current_stock),
-    suggested_reorder_qty: f.suggested_reorder_qty || 0,
-  })) : products.map(product => {
+  const predictions = forecasts.length > 0 ? forecasts.map(f => {
+    const product = products.find(p => p.code === f.product_code);
+    return {
+      product_code: f.product_code,
+      nombre_producto: product?.name || f.product_code,
+      stock_actual: f.current_stock,
+      demanda_7d: f.predicted_demand,
+      dias_restantes: f.days_until_stockout || 999,
+      confianza: parseConfidence(f.confidence_level),
+      accion: f.reorder_alert ? '🚨 Reabastecer urgente' : getRecommendedAction(f.days_until_stockout || 999, f.current_stock),
+      suggested_reorder_qty: f.suggested_reorder_qty || 0,
+      ai_reorder_point: product?.ai_reorder_point || null,
+      ai_churn_risk: product?.ai_churn_risk || null,
+    };
+  }) : products.map(product => {
     const demanda7d = Math.ceil(product.demanda_diaria * 7);
     const confianza = calculateConfidence(product.total_vendido, product.total_views);
     const accion = getRecommendedAction(product.dias_restantes_stock, product.cantidad_stock);
@@ -422,6 +433,8 @@ export function useInventoryPrediction() {
       confianza,
       accion,
       suggested_reorder_qty: Math.max(demanda7d * 2, 10),
+      ai_reorder_point: product.ai_reorder_point || null,
+      ai_churn_risk: product.ai_churn_risk || null,
     };
   });
 

@@ -22,7 +22,6 @@ import Seguimiento from "./pages/Seguimiento";
 import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
 import Pedidos from "./pages/admin/Pedidos";
-import Products from "./pages/admin/Products";
 import InventoryIA from "./pages/admin/InventoryIA";
 import SyncProducts from "./pages/admin/SyncProducts";
 import SuppliersManagement from "./pages/admin/SuppliersManagement";
@@ -77,14 +76,6 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <Pedidos />
-                </ProtectedAdminRoute>
-              }
-            />
-            <Route
-              path="/admin/productos"
-              element={
-                <ProtectedAdminRoute>
-                  <Products />
                 </ProtectedAdminRoute>
               }
             />

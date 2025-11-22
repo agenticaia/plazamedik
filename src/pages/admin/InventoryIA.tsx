@@ -220,6 +220,8 @@ export default function InventoryIA() {
                 <tr className="border-b">
                   <th className="text-left p-3 font-semibold">PRODUCTO</th>
                   <th className="text-center p-3 font-semibold">STOCK ACTUAL</th>
+                  <th className="text-center p-3 font-semibold">PUNTO REORDEN AI</th>
+                  <th className="text-center p-3 font-semibold">RIESGO CHURN</th>
                   <th className="text-center p-3 font-semibold">DEMANDA 7D</th>
                   <th className="text-center p-3 font-semibold">DÍAS RESTANTES</th>
                   <th className="text-center p-3 font-semibold">CONFIANZA</th>
@@ -241,6 +243,15 @@ export default function InventoryIA() {
                       </td>
                       <td className="text-center p-3">
                         <StockBadge stock={pred.stock_actual} />
+                      </td>
+                      <td className="text-center p-3">
+                        <AiReorderPointBadge 
+                          reorderPoint={pred.ai_reorder_point} 
+                          currentStock={pred.stock_actual}
+                        />
+                      </td>
+                      <td className="text-center p-3">
+                        <ChurnRiskBadge risk={pred.ai_churn_risk} />
                       </td>
                       <td className="text-center p-3 font-semibold">
                         {pred.demanda_7d}
@@ -477,4 +488,54 @@ function ActionBadge({ action }: { action: string }) {
   return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300 whitespace-nowrap">
     {action}
   </Badge>;
+}
+
+function AiReorderPointBadge({ reorderPoint, currentStock }: { reorderPoint?: number | null; currentStock: number }) {
+  if (!reorderPoint) {
+    return <span className="text-gray-400 text-sm">N/A</span>;
+  }
+  
+  const isBelowReorder = currentStock <= reorderPoint;
+  
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <Badge 
+        variant={isBelowReorder ? "destructive" : "outline"} 
+        className={!isBelowReorder ? "bg-blue-50 text-blue-700 border-blue-300" : ""}
+      >
+        {reorderPoint}
+      </Badge>
+      {isBelowReorder && (
+        <span className="text-xs text-red-600 font-semibold">¡Reordenar!</span>
+      )}
+    </div>
+  );
+}
+
+function ChurnRiskBadge({ risk }: { risk?: number | null }) {
+  if (risk === null || risk === undefined) {
+    return <span className="text-gray-400 text-sm">N/A</span>;
+  }
+  
+  const percentage = Math.round(risk * 100);
+  
+  if (risk >= 0.7) {
+    return (
+      <Badge variant="destructive">
+        {percentage}% Alto
+      </Badge>
+    );
+  }
+  if (risk >= 0.4) {
+    return (
+      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
+        {percentage}% Medio
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
+      {percentage}% Bajo
+    </Badge>
+  );
 }
