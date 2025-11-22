@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Sparkles, Building2, ShoppingCart } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -10,7 +10,6 @@ const navigation = [
   { name: 'Productos', href: '/admin/productos', icon: Package },
   { name: 'Proveedores', href: '/admin/proveedores', icon: Building2 },
   { name: 'Órdenes de Compra', href: '/admin/ordenes-compra', icon: ShoppingCart },
-  { name: 'Inventario IA', href: '/admin/inventario-dashboard', icon: Sparkles },
   { name: 'Predicción IA', href: '/admin/inventario-ia', icon: Brain },
   { name: 'Sincronizar DB', href: '/admin/sincronizar-productos', icon: Database },
 ];
@@ -35,8 +34,8 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       <aside className="w-64 border-r bg-card">
         <div className="flex flex-col h-full">
           <div className="p-6 border-b">
-            <h2 className="text-xl font-bold text-primary">plazamedik</h2>
-            <p className="text-sm text-muted-foreground">Panel Admin</p>
+            <h2 className="text-xl font-bold text-primary">PlazaMedik Admin</h2>
+            <p className="text-sm text-muted-foreground">ERP Dashboard</p>
           </div>
           
           <nav className="flex-1 p-4 space-y-2">

@@ -3,12 +3,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AdminLayout } from '@/components/admin/AdminLayout';
-import { DollarSign, ShoppingBag, TrendingUp } from 'lucide-react';
+import { DollarSign, ShoppingBag, TrendingUp, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import InventoryForecast from '@/components/admin/InventoryForecast';
 import AIConsumptionDashboard from '@/components/admin/AIConsumptionDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SalesOrderTable } from '@/components/admin/erp/SalesOrderTable';
+import { ProcurementTable } from '@/components/admin/erp/ProcurementTable';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -86,16 +89,54 @@ export default function Dashboard() {
     <AdminLayout>
       <div className="p-8 space-y-8">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Resumen de operaciones</p>
+          <h1 className="text-3xl font-bold">Dashboard ERP</h1>
+          <p className="text-muted-foreground">
+            Centro de Comando: Order to Cash + Procure to Pay
+          </p>
         </div>
 
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs defaultValue="erp" className="w-full">
           <TabsList>
+            <TabsTrigger value="erp">Vista ERP Unificada</TabsTrigger>
             <TabsTrigger value="overview">Resumen</TabsTrigger>
             <TabsTrigger value="inventory">Inventario IA</TabsTrigger>
             <TabsTrigger value="ai-consumption">Consumo IA</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="erp" className="space-y-6 mt-6">
+            {/* Unified Search */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar por Order ID, SKU, Cliente, o N° de Tracking..."
+                    className="pl-10 h-12 text-base"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Sales Orders Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Pedidos de Venta - Order to Cash</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SalesOrderTable />
+              </CardContent>
+            </Card>
+
+            {/* Procurement Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Órdenes de Compra Activas - Procure to Pay</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ProcurementTable />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="overview" className="space-y-8 mt-6">
             {/* Stats Cards */}

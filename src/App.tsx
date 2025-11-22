@@ -21,10 +21,9 @@ import ComoElegirTallaCorrecta from "@/pages/blog/ComoElegirTallaCorrecta";
 import Seguimiento from "./pages/Seguimiento";
 import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
-import Orders from "./pages/admin/Orders";
+import Pedidos from "./pages/admin/Pedidos";
 import Products from "./pages/admin/Products";
 import InventoryIA from "./pages/admin/InventoryIA";
-import InventoryDashboard from "./pages/admin/InventoryDashboard";
 import SyncProducts from "./pages/admin/SyncProducts";
 import SuppliersManagement from "./pages/admin/SuppliersManagement";
 import PurchaseOrders from "./pages/admin/PurchaseOrders";
@@ -58,14 +57,6 @@ const App = () => (
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLogin />} />
             <Route
-              path="/admin/inventario-dashboard"
-              element={
-                <ProtectedAdminRoute>
-                  <InventoryDashboard />
-                </ProtectedAdminRoute>
-              }
-            />
-            <Route
               path="/admin/inventario-ia"
               element={
                 <ProtectedAdminRoute>
@@ -85,7 +76,7 @@ const App = () => (
               path="/admin/pedidos"
               element={
                 <ProtectedAdminRoute>
-                  <Orders />
+                  <Pedidos />
                 </ProtectedAdminRoute>
               }
             />
