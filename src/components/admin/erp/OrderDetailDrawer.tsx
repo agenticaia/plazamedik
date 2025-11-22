@@ -3,16 +3,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { 
   User, Phone, MapPin, Package, CreditCard, Truck, 
-  Clock, CheckCircle2, AlertTriangle, FileText, Send 
+  Clock, CheckCircle2, AlertTriangle, FileText, Send, Edit 
 } from "lucide-react";
 import { SalesOrder } from "@/hooks/useSalesOrders";
 import { OrderTimeline } from "./OrderTimeline";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface OrderDetailDrawerProps {
   order: SalesOrder | null;
@@ -27,6 +31,12 @@ export const OrderDetailDrawer = ({
   onClose,
   onUpdateStatus 
 }: OrderDetailDrawerProps) => {
+  const { toast } = useToast();
+  const [isEditingStatus, setIsEditingStatus] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<string>(order?.payment_status || 'PENDING');
+  const [fulfillmentStatus, setFulfillmentStatus] = useState<string>(order?.fulfillment_status || 'UNFULFILLED');
+  const [isSaving, setIsSaving] = useState(false);
+
   const { data: stateLog = [] } = useQuery({
     queryKey: ['order-state-log', order?.id],
     queryFn: async () => {
@@ -42,6 +52,37 @@ export const OrderDetailDrawer = ({
   });
 
   if (!order) return null;
+
+  const handleSaveStatus = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('sales_orders')
+        .update({
+          payment_status: paymentStatus,
+          fulfillment_status: fulfillmentStatus,
+        })
+        .eq('id', order.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "✅ Estados actualizados",
+        description: "Los estados del pedido se han actualizado correctamente",
+      });
+      setIsEditingStatus(false);
+      onUpdateStatus(order.id, fulfillmentStatus);
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar los estados",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const getPaymentBadge = () => {
     const variants = {
@@ -98,16 +139,79 @@ export const OrderDetailDrawer = ({
           <div className="space-y-6 mt-6">
             {/* Estado General */}
             <div className="space-y-3">
-              <h3 className="font-semibold flex items-center gap-2">
-                <Package className="h-4 w-4" />
-                Estado del Pedido
-              </h3>
-              <div className="flex gap-2">
-                {getPaymentBadge()}
-                {getFulfillmentBadge()}
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Package className="h-4 w-4" />
+                  Estado del Pedido
+                </h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsEditingStatus(!isEditingStatus);
+                    if (!isEditingStatus) {
+                      setPaymentStatus(order.payment_status || 'PENDING');
+                      setFulfillmentStatus(order.fulfillment_status || 'UNFULFILLED');
+                    }
+                  }}
+                >
+                  <Edit className="h-3 w-3 mr-1" />
+                  {isEditingStatus ? 'Cancelar' : 'Editar Estados'}
+                </Button>
               </div>
-              {order.customer_type === 'VIP' && (
-                <Badge className="bg-amber-500">⭐ Cliente VIP</Badge>
+
+              {!isEditingStatus ? (
+                <>
+                  <div className="flex gap-2">
+                    {getPaymentBadge()}
+                    {getFulfillmentBadge()}
+                  </div>
+                  {order.customer_type === 'VIP' && (
+                    <Badge className="bg-amber-500">⭐ Cliente VIP</Badge>
+                  )}
+                </>
+              ) : (
+                <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
+                  <div className="space-y-2">
+                    <Label htmlFor="payment-status">Estado de Pago</Label>
+                    <Select value={paymentStatus} onValueChange={setPaymentStatus}>
+                      <SelectTrigger id="payment-status">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PENDING">⏳ Pendiente</SelectItem>
+                        <SelectItem value="PAID">✅ Pagado</SelectItem>
+                        <SelectItem value="REFUNDED">↩️ Reembolsado</SelectItem>
+                        <SelectItem value="CANCELLED">❌ Cancelado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="fulfillment-status">Estado Logístico</Label>
+                    <Select value={fulfillmentStatus} onValueChange={setFulfillmentStatus}>
+                      <SelectTrigger id="fulfillment-status">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="UNFULFILLED">⏳ Sin cumplir</SelectItem>
+                        <SelectItem value="PARTIAL">📦 Parcial</SelectItem>
+                        <SelectItem value="FULFILLED">✅ Completado</SelectItem>
+                        <SelectItem value="WAITING_STOCK">⚠️ Esperando Stock</SelectItem>
+                        <SelectItem value="CANCELLED">❌ Cancelado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button 
+                    onClick={handleSaveStatus} 
+                    className="w-full"
+                    disabled={isSaving}
+                  >
+                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                    {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+                  </Button>
+                </div>
               )}
             </div>
 

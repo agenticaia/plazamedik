@@ -4,12 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Package, Truck, CheckCircle2, Clock } from "lucide-react";
+import { Search, Package, Truck, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 import { Helmet } from "react-helmet";
 
 const Seguimiento = () => {
@@ -32,25 +33,39 @@ const Seguimiento = () => {
     setOrder(null);
 
     try {
-      const { data, error } = await supabase
+      // Primero buscar en sales_orders (sistema nuevo)
+      const { data: salesOrder, error: salesError } = await supabase
+        .from("sales_orders")
+        .select(`
+          *,
+          items:sales_order_items(*)
+        `)
+        .eq("order_number", orderCode.trim().toUpperCase())
+        .maybeSingle();
+
+      if (salesOrder) {
+        setOrder(salesOrder);
+        return;
+      }
+
+      // Si no se encuentra, buscar en orders (sistema antiguo)
+      const { data: oldOrder, error: oldError } = await supabase
         .from("orders")
         .select("*")
         .eq("order_code", orderCode.trim().toUpperCase())
         .maybeSingle();
 
-      if (error) {
-        if (error.code === "PGRST116") {
-          toast({
-            title: "Pedido no encontrado",
-            description: "No encontramos un pedido con ese código. Verifica e intenta nuevamente.",
-            variant: "destructive",
-          });
-        } else {
-          throw error;
-        }
-      } else {
-        setOrder(data);
+      if (oldOrder) {
+        setOrder(oldOrder);
+        return;
       }
+
+      // Si no se encuentra en ninguna tabla
+      toast({
+        title: "Pedido no encontrado",
+        description: "No encontramos un pedido con ese código. Verifica e intenta nuevamente.",
+        variant: "destructive",
+      });
     } catch (error) {
       console.error("Error al buscar pedido:", error);
       toast({
@@ -64,50 +79,80 @@ const Seguimiento = () => {
   };
 
   const getStatusInfo = (status: string) => {
-    switch (status) {
-      case "recibido":
-        return {
-          label: "Recibido",
-          icon: Clock,
-          color: "bg-blue-500",
-          description: "Tu pedido ha sido recibido y está siendo procesado",
-        };
-      case "preparacion":
-        return {
-          label: "En Preparación",
-          icon: Package,
-          color: "bg-yellow-500",
-          description: "Estamos preparando tu pedido para el envío",
-        };
-      case "enviado":
-        return {
-          label: "Enviado",
-          icon: Truck,
-          color: "bg-purple-500",
-          description: "Tu pedido está en camino",
-        };
-      case "entregado":
-        return {
-          label: "Entregado",
-          icon: CheckCircle2,
-          color: "bg-green-500",
-          description: "¡Tu pedido ha sido entregado con éxito!",
-        };
-      case "cancelado":
-        return {
-          label: "Cancelado",
-          icon: Clock,
-          color: "bg-red-500",
-          description: "Este pedido ha sido cancelado",
-        };
-      default:
-        return {
-          label: status,
-          icon: Clock,
-          color: "bg-gray-500",
-          description: "Estado desconocido",
-        };
-    }
+    // Mapeo de estados nuevos (sales_orders)
+    const newStatusMap: Record<string, any> = {
+      UNFULFILLED: {
+        label: "En Preparación",
+        icon: Package,
+        color: "bg-yellow-500",
+        description: "Tu pedido está siendo preparado",
+      },
+      PARTIAL: {
+        label: "Envío Parcial",
+        icon: Package,
+        color: "bg-blue-500",
+        description: "Parte de tu pedido ha sido enviado",
+      },
+      FULFILLED: {
+        label: "Entregado",
+        icon: CheckCircle2,
+        color: "bg-green-500",
+        description: "¡Tu pedido ha sido entregado con éxito!",
+      },
+      WAITING_STOCK: {
+        label: "Esperando Stock",
+        icon: Clock,
+        color: "bg-orange-500",
+        description: "Estamos esperando stock para completar tu pedido",
+      },
+      CANCELLED: {
+        label: "Cancelado",
+        icon: AlertTriangle,
+        color: "bg-red-500",
+        description: "Este pedido ha sido cancelado",
+      },
+    };
+
+    // Mapeo de estados antiguos (orders)
+    const oldStatusMap: Record<string, any> = {
+      recibido: {
+        label: "Recibido",
+        icon: Clock,
+        color: "bg-blue-500",
+        description: "Tu pedido ha sido recibido y está siendo procesado",
+      },
+      preparacion: {
+        label: "En Preparación",
+        icon: Package,
+        color: "bg-yellow-500",
+        description: "Estamos preparando tu pedido para el envío",
+      },
+      enviado: {
+        label: "Enviado",
+        icon: Truck,
+        color: "bg-purple-500",
+        description: "Tu pedido está en camino",
+      },
+      entregado: {
+        label: "Entregado",
+        icon: CheckCircle2,
+        color: "bg-green-500",
+        description: "¡Tu pedido ha sido entregado con éxito!",
+      },
+      cancelado: {
+        label: "Cancelado",
+        icon: Clock,
+        color: "bg-red-500",
+        description: "Este pedido ha sido cancelado",
+      },
+    };
+
+    return newStatusMap[status] || oldStatusMap[status] || {
+      label: status,
+      icon: Clock,
+      color: "bg-gray-500",
+      description: "Estado desconocido",
+    };
   };
 
   return (
@@ -169,48 +214,106 @@ const Seguimiento = () => {
                   <Card className="mt-6">
                     <CardHeader>
                       <div className="flex items-center justify-between">
-                        <CardTitle>Pedido {order.order_code}</CardTitle>
-                        <Badge variant="outline">{new Date(order.created_at).toLocaleDateString("es-PE")}</Badge>
+                        <CardTitle className="font-mono">
+                          {order.order_number || order.order_code}
+                        </CardTitle>
+                        <Badge variant="outline">
+                          {new Date(order.created_at).toLocaleDateString("es-PE")}
+                        </Badge>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      {/* Estado */}
-                      <div className="text-center py-6 bg-muted/50 rounded-lg">
-                        {(() => {
-                          const statusInfo = getStatusInfo(order.status);
-                          const StatusIcon = statusInfo.icon;
-                          return (
-                            <>
-                              <div
-                                className={`w-16 h-16 ${statusInfo.color} rounded-full flex items-center justify-center mx-auto mb-4`}
-                              >
-                                <StatusIcon className="w-8 h-8 text-white" />
-                              </div>
-                              <h3 className="text-xl font-bold text-foreground mb-2">{statusInfo.label}</h3>
-                              <p className="text-sm text-muted-foreground">{statusInfo.description}</p>
-                            </>
-                          );
-                        })()}
+                      {/* Estado del Pedido */}
+                      <div className="space-y-3">
+                        <h4 className="font-semibold flex items-center gap-2">
+                          <Package className="h-4 w-4" />
+                          Estado del Pedido
+                        </h4>
+                        <div className="text-center py-6 bg-muted/50 rounded-lg">
+                          {(() => {
+                            const status = order.fulfillment_status || order.status;
+                            const statusInfo = getStatusInfo(status);
+                            const StatusIcon = statusInfo.icon;
+                            return (
+                              <>
+                                <div
+                                  className={`w-16 h-16 ${statusInfo.color} rounded-full flex items-center justify-center mx-auto mb-4`}
+                                >
+                                  <StatusIcon className="w-8 h-8 text-white" />
+                                </div>
+                                <h3 className="text-xl font-bold text-foreground mb-2">{statusInfo.label}</h3>
+                                <p className="text-sm text-muted-foreground">{statusInfo.description}</p>
+                              </>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Payment Status Badge (solo para sales_orders) */}
+                        {order.payment_status && (
+                          <div className="flex justify-center">
+                            <Badge variant={order.payment_status === 'PAID' ? 'default' : 'secondary'}>
+                              {order.payment_status === 'PAID' ? '✅ Pagado' : '⏳ Pago Pendiente'}
+                            </Badge>
+                          </div>
+                        )}
                       </div>
 
-                      {/* Producto */}
+                      <Separator />
+
+                      {/* Items del Pedido */}
                       <div>
-                        <h4 className="font-semibold text-foreground mb-3">Detalles del Producto</h4>
-                        <div className="bg-muted/30 p-4 rounded-lg space-y-2">
-                          <p className="text-sm">
-                            <span className="text-muted-foreground">Producto:</span>{" "}
-                            <span className="font-medium text-foreground">{order.product_name}</span>
-                          </p>
-                          <p className="text-sm">
-                            <span className="text-muted-foreground">Color:</span>{" "}
-                            <span className="font-medium text-foreground">{order.product_color}</span>
-                          </p>
-                          <p className="text-sm">
-                            <span className="text-muted-foreground">Precio:</span>{" "}
-                            <span className="font-bold text-primary">S/ {order.product_price}</span>
-                          </p>
+                        <h4 className="font-semibold text-foreground mb-3">
+                          Items del Pedido ({order.items?.length || 1})
+                        </h4>
+                        <div className="space-y-3">
+                          {order.items ? (
+                            order.items.map((item: any, idx: number) => (
+                              <div key={idx} className="bg-muted/30 p-4 rounded-lg space-y-2">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <p className="font-medium text-foreground">{item.product_name}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      SKU: {item.product_code}
+                                      {item.product_color && ` • Color: ${item.product_color}`}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-bold text-primary">S/ {Number(item.unit_price).toFixed(2)}</p>
+                                    <p className="text-sm text-muted-foreground">Cant: {item.quantity}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="bg-muted/30 p-4 rounded-lg space-y-2">
+                              <p className="text-sm">
+                                <span className="text-muted-foreground">Producto:</span>{" "}
+                                <span className="font-medium text-foreground">{order.product_name}</span>
+                              </p>
+                              {order.product_color && (
+                                <p className="text-sm">
+                                  <span className="text-muted-foreground">Color:</span>{" "}
+                                  <span className="font-medium text-foreground">{order.product_color}</span>
+                                </p>
+                              )}
+                              <p className="text-sm">
+                                <span className="text-muted-foreground">Precio:</span>{" "}
+                                <span className="font-bold text-primary">S/ {order.product_price}</span>
+                              </p>
+                            </div>
+                          )}
+                          
+                          {/* Total */}
+                          {order.total && (
+                            <div className="flex justify-between items-center pt-2 border-t font-bold">
+                              <span>Total:</span>
+                              <span className="text-lg text-primary">S/ {Number(order.total).toFixed(2)}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
+
+                      <Separator />
 
                       {/* Datos de entrega */}
                       <div>
