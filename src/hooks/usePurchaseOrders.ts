@@ -11,7 +11,7 @@ export interface PurchaseOrder {
   quantity: number;
   unit_price: number;
   total_amount: number;
-  status: "pendiente" | "aprobada" | "enviada" | "recibida" | "cancelada";
+  status: "DRAFT" | "SENT" | "PARTIAL_RECEIPT" | "CLOSED" | "CANCELLED";
   order_type: "manual" | "automatica";
   expected_delivery_date: string | null;
   actual_delivery_date: string | null;
@@ -67,7 +67,7 @@ export const usePurchaseOrders = () => {
           order_number: orderNumber,
           total_amount,
           created_by: user.user?.id,
-          status: "pendiente",
+          status: "DRAFT",
         })
         .select()
         .single();
@@ -90,7 +90,7 @@ export const usePurchaseOrders = () => {
       
       const updates: any = { status };
       
-      if (status === "aprobada") {
+      if (status === "SENT") {
         updates.approved_by = user.user?.id;
       }
 

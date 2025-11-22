@@ -83,19 +83,20 @@ const PurchaseOrders = () => {
   };
 
   const getStatusBadge = (status: PurchaseOrder["status"]) => {
-    const variants: Record<PurchaseOrder["status"], { variant: any; icon: any }> = {
-      pendiente: { variant: "secondary", icon: Clock },
-      aprobada: { variant: "default", icon: CheckCircle },
-      enviada: { variant: "default", icon: Truck },
-      recibida: { variant: "default", icon: Package },
-      cancelada: { variant: "destructive", icon: XCircle },
+    const variants: Record<string, { variant: any; icon: any; label: string }> = {
+      DRAFT: { variant: "secondary", icon: Clock, label: "Borrador" },
+      SENT: { variant: "default", icon: Truck, label: "Enviada" },
+      PARTIAL_RECEIPT: { variant: "default", icon: Package, label: "Recepción Parcial" },
+      CLOSED: { variant: "default", icon: CheckCircle, label: "Cerrada" },
+      CANCELLED: { variant: "destructive", icon: XCircle, label: "Cancelada" },
     };
 
-    const { variant, icon: Icon } = variants[status];
+    const config = variants[status || ""] || { variant: "outline", icon: Clock, label: status };
+    const Icon = config.icon;
     return (
-      <Badge variant={variant} className="gap-1">
+      <Badge variant={config.variant} className="gap-1">
         <Icon className="h-3 w-3" />
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {config.label}
       </Badge>
     );
   };
@@ -146,33 +147,23 @@ const PurchaseOrders = () => {
             </TableCell>
             <TableCell>
               <div className="flex gap-2">
-                {order.status === "pendiente" && (
+                {order.status === "DRAFT" && (
                   <Button
                     size="sm"
                     onClick={() =>
-                      updateOrderStatus.mutateAsync({ id: order.id, status: "aprobada" })
+                      updateOrderStatus.mutateAsync({ id: order.id, status: "SENT" })
                     }
                   >
-                    Aprobar
+                    Enviar
                   </Button>
                 )}
-                {order.status === "aprobada" && (
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      updateOrderStatus.mutateAsync({ id: order.id, status: "enviada" })
-                    }
-                  >
-                    Marcar Enviada
-                  </Button>
-                )}
-                {order.status === "enviada" && (
+                {(order.status === "SENT" || order.status === "PARTIAL_RECEIPT") && (
                   <Button
                     size="sm"
                     variant="default"
                     onClick={() => markAsReceived.mutateAsync(order.id)}
                   >
-                    Recibida
+                    Recibir
                   </Button>
                 )}
               </div>
@@ -359,27 +350,25 @@ const PurchaseOrders = () => {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="all">
-              <TabsList className="grid w-full grid-cols-6">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="all">Todas</TabsTrigger>
-                <TabsTrigger value="pendiente">Pendientes</TabsTrigger>
-                <TabsTrigger value="aprobada">Aprobadas</TabsTrigger>
-                <TabsTrigger value="enviada">Enviadas</TabsTrigger>
-                <TabsTrigger value="recibida">Recibidas</TabsTrigger>
-                <TabsTrigger value="cancelada">Canceladas</TabsTrigger>
+                <TabsTrigger value="DRAFT">Borrador</TabsTrigger>
+                <TabsTrigger value="SENT">Enviadas</TabsTrigger>
+                <TabsTrigger value="PARTIAL_RECEIPT">Recepción Parcial</TabsTrigger>
+                <TabsTrigger value="CLOSED">Cerradas</TabsTrigger>
               </TabsList>
               <TabsContent value="all">{renderOrdersTable(purchaseOrders)}</TabsContent>
-              <TabsContent value="pendiente">
-                {renderOrdersTable(filterOrders("pendiente"))}
+              <TabsContent value="DRAFT">
+                {renderOrdersTable(filterOrders("DRAFT" as any))}
               </TabsContent>
-              <TabsContent value="aprobada">
-                {renderOrdersTable(filterOrders("aprobada"))}
+              <TabsContent value="SENT">
+                {renderOrdersTable(filterOrders("SENT" as any))}
               </TabsContent>
-              <TabsContent value="enviada">{renderOrdersTable(filterOrders("enviada"))}</TabsContent>
-              <TabsContent value="recibida">
-                {renderOrdersTable(filterOrders("recibida"))}
+              <TabsContent value="PARTIAL_RECEIPT">
+                {renderOrdersTable(filterOrders("PARTIAL_RECEIPT" as any))}
               </TabsContent>
-              <TabsContent value="cancelada">
-                {renderOrdersTable(filterOrders("cancelada"))}
+              <TabsContent value="CLOSED">
+                {renderOrdersTable(filterOrders("CLOSED" as any))}
               </TabsContent>
             </Tabs>
           </CardContent>
