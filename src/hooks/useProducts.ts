@@ -7,7 +7,7 @@ export interface Product extends BaseProduct {
   stock: number;
 }
 
-export function useProducts() {
+export function useProducts(adminView: boolean = false) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,12 +16,18 @@ export function useProducts() {
     try {
       setLoading(true);
 
-      const { data, error: fetchError } = await supabase
+      let query = supabase
         .from('products')
-        .select('*')
-        .gt('cantidad_stock', 0) // Solo productos con stock
-        .or('is_discontinued.is.null,is_discontinued.eq.false') // Ocultar descontinuados
-        .order('nombre_producto');
+        .select('*');
+      
+      // En vista de admin, mostrar todos los productos
+      if (!adminView) {
+        query = query
+          .gt('cantidad_stock', 0) // Solo productos con stock
+          .or('is_discontinued.is.null,is_discontinued.eq.false'); // Ocultar descontinuados
+      }
+      
+      const { data, error: fetchError } = await query.order('nombre_producto');
 
       if (fetchError) throw fetchError;
 
