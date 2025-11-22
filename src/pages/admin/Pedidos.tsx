@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SalesOrderTable } from "@/components/admin/erp/SalesOrderTable";
 import { CrossDockingTracker } from "@/components/admin/erp/CrossDockingTracker";
+import { OrderMetricsDashboard } from "@/components/admin/OrderMetricsDashboard";
 import { useSalesOrders } from "@/hooks/useSalesOrders";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -109,6 +110,9 @@ export default function Pedidos() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Dashboard de Métricas */}
+        <OrderMetricsDashboard />
 
         {/* Cross-Docking Tracker */}
         {getStatusCount("WAITING_STOCK") > 0 && (

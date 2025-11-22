@@ -9,10 +9,11 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { 
   User, Phone, MapPin, Package, CreditCard, Truck, 
-  Clock, CheckCircle2, AlertTriangle, FileText, Send, Edit 
+  Clock, CheckCircle2, AlertTriangle, FileText, Send, Edit, Printer 
 } from "lucide-react";
 import { SalesOrder } from "@/hooks/useSalesOrders";
 import { OrderTimeline } from "./OrderTimeline";
+import { ShippingLabelPrint } from "../ShippingLabelPrint";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
@@ -394,6 +395,19 @@ export const OrderDetailDrawer = ({
                     Completar
                   </Button>
                 )}
+                <ShippingLabelPrint 
+                  order={order}
+                  trigger={
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex items-center gap-2"
+                    >
+                      <Printer className="h-4 w-4" />
+                      Guía de Remisión
+                    </Button>
+                  }
+                />
                 <Button
                   size="sm"
                   variant="outline"
