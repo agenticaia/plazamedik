@@ -43,6 +43,9 @@ const PurchaseOrders = () => {
     unit_price: 0,
     expected_delivery_date: "",
     notes: "",
+    po_type: "STOCK_REPLENISHMENT", // STOCK_REPLENISHMENT, BACKORDER_FULFILLMENT, CROSS_DOCKING
+    priority: "NORMAL", // URGENT, HIGH, NORMAL, LOW
+    linked_sales_order_id: "", // Opcional: vincular con orden de venta
   });
 
   const filteredOrders = purchaseOrders.filter((po: any) => {
@@ -64,6 +67,9 @@ const PurchaseOrders = () => {
       unit_price: 0,
       expected_delivery_date: "",
       notes: "",
+      po_type: "STOCK_REPLENISHMENT",
+      priority: "NORMAL",
+      linked_sales_order_id: "",
     });
   };
 
@@ -127,11 +133,12 @@ const PurchaseOrders = () => {
                 Nueva Orden
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Nueva Orden de Compra</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Tipo de Orden */}
                 <div className="space-y-2">
                   <Label>Tipo de Orden</Label>
                   <div className="flex gap-4">
@@ -149,6 +156,52 @@ const PurchaseOrders = () => {
                     >
                       Automática (IA)
                     </Button>
+                  </div>
+                </div>
+
+                {/* Tipo de PO y Prioridad */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="po_type">Propósito de la Orden *</Label>
+                    <Select
+                      value={formData.po_type}
+                      onValueChange={(value) => setFormData({ ...formData, po_type: value })}
+                      required
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona el propósito" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="STOCK_REPLENISHMENT">
+                          Reposición de Stock
+                        </SelectItem>
+                        <SelectItem value="BACKORDER_FULFILLMENT">
+                          Cumplimiento de Backorder
+                        </SelectItem>
+                        <SelectItem value="CROSS_DOCKING">
+                          Cross-Docking (Directo a Cliente)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="priority">Prioridad *</Label>
+                    <Select
+                      value={formData.priority}
+                      onValueChange={(value) => setFormData({ ...formData, priority: value })}
+                      required
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona prioridad" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="URGENT">🔴 Urgente</SelectItem>
+                        <SelectItem value="HIGH">🟠 Alta</SelectItem>
+                        <SelectItem value="NORMAL">🟢 Normal</SelectItem>
+                        <SelectItem value="LOW">⚪ Baja</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
@@ -213,8 +266,12 @@ const PurchaseOrders = () => {
                       required
                     />
                   </div>
+                </div>
+
+                {/* Precio y Fecha */}
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="unit_price">Precio Unitario *</Label>
+                    <Label htmlFor="unit_price">Precio Unitario (S/) *</Label>
                     <Input
                       id="unit_price"
                       type="number"
@@ -232,33 +289,60 @@ const PurchaseOrders = () => {
                     <Input
                       id="expected_delivery_date"
                       type="date"
+                      min={new Date().toISOString().split('T')[0]}
                       value={formData.expected_delivery_date}
                       onChange={(e) =>
                         setFormData({ ...formData, expected_delivery_date: e.target.value })
                       }
                     />
                   </div>
-                  <div>
+                </div>
+
+                {/* Total y Notas */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
                     <Label>Total</Label>
-                    <div className="text-2xl font-bold mt-2">
+                    <div className="text-3xl font-bold text-primary">
                       S/ {(formData.quantity * formData.unit_price).toFixed(2)}
                     </div>
+                    <p className="text-sm text-muted-foreground">
+                      {formData.quantity} unidad(es) × S/ {formData.unit_price.toFixed(2)}
+                    </p>
                   </div>
-                  <div className="col-span-2">
-                    <Label htmlFor="notes">Notas</Label>
+                  <div>
+                    <Label htmlFor="notes">Notas Adicionales</Label>
                     <Textarea
                       id="notes"
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                       rows={3}
+                      placeholder="Instrucciones especiales, condiciones de pago, etc."
                     />
                   </div>
                 </div>
-                <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit">Crear Orden</Button>
+
+                {/* Botones */}
+                <div className="flex justify-between items-center pt-4 border-t">
+                  <div className="text-sm text-muted-foreground">
+                    {formData.po_type === "BACKORDER_FULFILLMENT" && (
+                      <span className="flex items-center gap-1">
+                        ⚠️ Esta orden cumplirá un backorder existente
+                      </span>
+                    )}
+                    {formData.po_type === "CROSS_DOCKING" && (
+                      <span className="flex items-center gap-1">
+                        🚚 Envío directo al cliente sin almacenamiento
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      Cancelar
+                    </Button>
+                    <Button type="submit">
+                      Crear Orden de Compra
+                    </Button>
+                  </div>
                 </div>
               </form>
             </DialogContent>
