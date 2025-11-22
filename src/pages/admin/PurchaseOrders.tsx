@@ -27,6 +27,7 @@ import { useProducts } from "@/hooks/useProducts";
 import { Plus, Search } from "lucide-react";
 import { ProcurementTable } from "@/components/admin/erp/ProcurementTable";
 import { CrossDockingTracker } from "@/components/admin/erp/CrossDockingTracker";
+import { SmartReplenishmentWidget } from "@/components/admin/SmartReplenishmentWidget";
 
 const PurchaseOrders = () => {
   const { purchaseOrders, isLoading, createPurchaseOrder, updateOrderStatus, markAsReceived } =
@@ -119,6 +120,9 @@ const PurchaseOrders = () => {
   return (
     <AdminLayout>
       <div className="p-6 space-y-6">
+        {/* Smart Replenishment Widget - AI Stock Alerts */}
+        <SmartReplenishmentWidget />
+
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
