@@ -22,14 +22,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { useSuppliers, Supplier } from "@/hooks/useSuppliers";
+import { useVendors, Vendor } from "@/hooks/useVendors";
 import { Plus, Edit, Trash2, Star } from "lucide-react";
 import { toast } from "sonner";
 
 const SuppliersManagement = () => {
-  const { suppliers, isLoading, createSupplier, updateSupplier, deleteSupplier } = useSuppliers();
+  const { vendors, isLoading, createVendor, updateVendor, deleteVendor } = useVendors();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
+  const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     contact_person: "",
@@ -38,7 +38,7 @@ const SuppliersManagement = () => {
     address: "",
     payment_terms: "",
     lead_time_days: 7,
-    rating: 5,
+    performance_rating: 5.00,
     is_active: true,
     notes: "",
   });
@@ -52,27 +52,27 @@ const SuppliersManagement = () => {
       address: "",
       payment_terms: "",
       lead_time_days: 7,
-      rating: 5,
+      performance_rating: 5.00,
       is_active: true,
       notes: "",
     });
-    setEditingSupplier(null);
+    setEditingVendor(null);
   };
 
-  const handleOpenDialog = (supplier?: Supplier) => {
-    if (supplier) {
-      setEditingSupplier(supplier);
+  const handleOpenDialog = (vendor?: Vendor) => {
+    if (vendor) {
+      setEditingVendor(vendor);
       setFormData({
-        name: supplier.name,
-        contact_person: supplier.contact_person || "",
-        email: supplier.email || "",
-        phone: supplier.phone || "",
-        address: supplier.address || "",
-        payment_terms: supplier.payment_terms || "",
-        lead_time_days: supplier.lead_time_days,
-        rating: supplier.rating,
-        is_active: supplier.is_active,
-        notes: supplier.notes || "",
+        name: vendor.name,
+        contact_person: vendor.contact_person || "",
+        email: vendor.email || "",
+        phone: vendor.phone || "",
+        address: vendor.address || "",
+        payment_terms: vendor.payment_terms || "",
+        lead_time_days: vendor.lead_time_days,
+        performance_rating: vendor.performance_rating,
+        is_active: vendor.is_active,
+        notes: vendor.notes || "",
       });
     } else {
       resetForm();
@@ -84,10 +84,10 @@ const SuppliersManagement = () => {
     e.preventDefault();
 
     try {
-      if (editingSupplier) {
-        await updateSupplier.mutateAsync({ id: editingSupplier.id, ...formData });
+      if (editingVendor) {
+        await updateVendor.mutateAsync({ id: editingVendor.id, ...formData });
       } else {
-        await createSupplier.mutateAsync(formData as any);
+        await createVendor.mutateAsync(formData as any);
       }
       setIsDialogOpen(false);
       resetForm();
@@ -98,7 +98,7 @@ const SuppliersManagement = () => {
 
   const handleDelete = async (id: string) => {
     if (confirm("¿Estás seguro de eliminar este proveedor?")) {
-      await deleteSupplier.mutateAsync(id);
+      await deleteVendor.mutateAsync(id);
     }
   };
 
@@ -132,7 +132,7 @@ const SuppliersManagement = () => {
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
-                  {editingSupplier ? "Editar Proveedor" : "Nuevo Proveedor"}
+                  {editingVendor ? "Editar Proveedor" : "Nuevo Proveedor"}
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -205,16 +205,16 @@ const SuppliersManagement = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="rating">Calificación (0-5)</Label>
+                    <Label htmlFor="performance_rating">Calificación (0-5)</Label>
                     <Input
-                      id="rating"
+                      id="performance_rating"
                       type="number"
                       step="0.1"
                       min="0"
                       max="5"
-                      value={formData.rating}
+                      value={formData.performance_rating}
                       onChange={(e) =>
-                        setFormData({ ...formData, rating: parseFloat(e.target.value) })
+                        setFormData({ ...formData, performance_rating: parseFloat(e.target.value) })
                       }
                     />
                   </div>
@@ -247,7 +247,7 @@ const SuppliersManagement = () => {
                     Cancelar
                   </Button>
                   <Button type="submit">
-                    {editingSupplier ? "Actualizar" : "Crear"}
+                    {editingVendor ? "Actualizar" : "Crear"}
                   </Button>
                 </div>
               </form>
@@ -274,27 +274,27 @@ const SuppliersManagement = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {suppliers.map((supplier) => (
-                  <TableRow key={supplier.id}>
-                    <TableCell className="font-medium">{supplier.name}</TableCell>
-                    <TableCell>{supplier.contact_person || "-"}</TableCell>
+                {vendors.map((vendor) => (
+                  <TableRow key={vendor.id}>
+                    <TableCell className="font-medium">{vendor.name}</TableCell>
+                    <TableCell>{vendor.contact_person || "-"}</TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        <div>{supplier.email || "-"}</div>
-                        <div className="text-muted-foreground">{supplier.phone || "-"}</div>
+                        <div>{vendor.email || "-"}</div>
+                        <div className="text-muted-foreground">{vendor.phone || "-"}</div>
                       </div>
                     </TableCell>
-                    <TableCell>{supplier.payment_terms || "-"}</TableCell>
-                    <TableCell>{supplier.lead_time_days} días</TableCell>
+                    <TableCell>{vendor.payment_terms || "-"}</TableCell>
+                    <TableCell>{vendor.lead_time_days} días</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        {supplier.rating.toFixed(1)}
+                        {vendor.performance_rating.toFixed(1)}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={supplier.is_active ? "default" : "secondary"}>
-                        {supplier.is_active ? "Activo" : "Inactivo"}
+                      <Badge variant={vendor.is_active ? "default" : "secondary"}>
+                        {vendor.is_active ? "Activo" : "Inactivo"}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -302,14 +302,14 @@ const SuppliersManagement = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleOpenDialog(supplier)}
+                          onClick={() => handleOpenDialog(vendor)}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
                           variant="destructive"
-                          onClick={() => handleDelete(supplier.id)}
+                          onClick={() => handleDelete(vendor.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

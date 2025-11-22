@@ -190,11 +190,14 @@ export type Database = {
       }
       products: {
         Row: {
+          ai_churn_risk: number | null
+          ai_reorder_point: number | null
           avg_days_to_restock: number | null
           beneficios: string[] | null
           cantidad_stock: number | null
           categoria: string
           colores_disponibles: string[] | null
+          cost: number | null
           created_at: string | null
           descripcion_corta: string | null
           discontinue_reason: string | null
@@ -217,13 +220,17 @@ export type Database = {
           total_vendido: number | null
           total_views: number | null
           updated_at: string | null
+          vendor_id: string | null
         }
         Insert: {
+          ai_churn_risk?: number | null
+          ai_reorder_point?: number | null
           avg_days_to_restock?: number | null
           beneficios?: string[] | null
           cantidad_stock?: number | null
           categoria: string
           colores_disponibles?: string[] | null
+          cost?: number | null
           created_at?: string | null
           descripcion_corta?: string | null
           discontinue_reason?: string | null
@@ -246,13 +253,17 @@ export type Database = {
           total_vendido?: number | null
           total_views?: number | null
           updated_at?: string | null
+          vendor_id?: string | null
         }
         Update: {
+          ai_churn_risk?: number | null
+          ai_reorder_point?: number | null
           avg_days_to_restock?: number | null
           beneficios?: string[] | null
           cantidad_stock?: number | null
           categoria?: string
           colores_disponibles?: string[] | null
+          cost?: number | null
           created_at?: string | null
           descripcion_corta?: string | null
           discontinue_reason?: string | null
@@ -275,6 +286,7 @@ export type Database = {
           total_vendido?: number | null
           total_views?: number | null
           updated_at?: string | null
+          vendor_id?: string | null
         }
         Relationships: [
           {
@@ -282,6 +294,13 @@ export type Database = {
             columns: ["preferred_supplier_id"]
             isOneToOne: false
             referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
             referencedColumns: ["id"]
           },
         ]
@@ -313,6 +332,50 @@ export type Database = {
         }
         Relationships: []
       }
+      purchase_order_items: {
+        Row: {
+          cost_per_unit: number
+          created_at: string | null
+          id: string
+          product_code: string
+          product_name: string
+          purchase_order_id: string
+          qty_ordered: number
+          qty_received: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          cost_per_unit: number
+          created_at?: string | null
+          id?: string
+          product_code: string
+          product_name: string
+          purchase_order_id: string
+          qty_ordered: number
+          qty_received?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          cost_per_unit?: number
+          created_at?: string | null
+          id?: string
+          product_code?: string
+          product_name?: string
+          purchase_order_id?: string
+          qty_ordered?: number
+          qty_received?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       purchase_orders: {
         Row: {
           actual_delivery_date: string | null
@@ -325,14 +388,17 @@ export type Database = {
           notes: string | null
           order_number: string
           order_type: string | null
+          po_type: string | null
           product_code: string
           product_name: string
           quantity: number
           status: string | null
           supplier_id: string
           total_amount: number
+          tracking_number: string | null
           unit_price: number
           updated_at: string | null
+          vendor_id: string | null
         }
         Insert: {
           actual_delivery_date?: string | null
@@ -345,14 +411,17 @@ export type Database = {
           notes?: string | null
           order_number: string
           order_type?: string | null
+          po_type?: string | null
           product_code: string
           product_name: string
           quantity: number
           status?: string | null
           supplier_id: string
           total_amount: number
+          tracking_number?: string | null
           unit_price: number
           updated_at?: string | null
+          vendor_id?: string | null
         }
         Update: {
           actual_delivery_date?: string | null
@@ -365,14 +434,17 @@ export type Database = {
           notes?: string | null
           order_number?: string
           order_type?: string | null
+          po_type?: string | null
           product_code?: string
           product_name?: string
           quantity?: number
           status?: string | null
           supplier_id?: string
           total_amount?: number
+          tracking_number?: string | null
           unit_price?: number
           updated_at?: string | null
+          vendor_id?: string | null
         }
         Relationships: [
           {
@@ -382,7 +454,109 @@ export type Database = {
             referencedRelation: "suppliers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "purchase_orders_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      sales_order_items: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_backorder: boolean | null
+          linked_purchase_order_id: string | null
+          product_code: string
+          product_color: string | null
+          product_name: string
+          quantity: number
+          sales_order_id: string
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_backorder?: boolean | null
+          linked_purchase_order_id?: string | null
+          product_code: string
+          product_color?: string | null
+          product_name: string
+          quantity?: number
+          sales_order_id: string
+          unit_price: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_backorder?: boolean | null
+          linked_purchase_order_id?: string | null
+          product_code?: string
+          product_color?: string | null
+          product_name?: string
+          quantity?: number
+          sales_order_id?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_order_items_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "sales_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_orders: {
+        Row: {
+          created_at: string | null
+          customer_district: string | null
+          customer_lastname: string | null
+          customer_name: string
+          customer_phone: string | null
+          fulfillment_status: string | null
+          id: string
+          order_number: string
+          payment_status: string | null
+          recommended_by: string | null
+          source: string | null
+          total: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_district?: string | null
+          customer_lastname?: string | null
+          customer_name: string
+          customer_phone?: string | null
+          fulfillment_status?: string | null
+          id?: string
+          order_number: string
+          payment_status?: string | null
+          recommended_by?: string | null
+          source?: string | null
+          total: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_district?: string | null
+          customer_lastname?: string | null
+          customer_name?: string
+          customer_phone?: string | null
+          fulfillment_status?: string | null
+          id?: string
+          order_number?: string
+          payment_status?: string | null
+          recommended_by?: string | null
+          source?: string | null
+          total?: number
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       suppliers: {
         Row: {
@@ -498,6 +672,54 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      vendors: {
+        Row: {
+          address: string | null
+          contact_person: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          lead_time_days: number | null
+          name: string
+          notes: string | null
+          payment_terms: string | null
+          performance_rating: number | null
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          contact_person?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          lead_time_days?: number | null
+          name: string
+          notes?: string | null
+          payment_terms?: string | null
+          performance_rating?: number | null
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          contact_person?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          lead_time_days?: number | null
+          name?: string
+          notes?: string | null
+          payment_terms?: string | null
+          performance_rating?: number | null
+          phone?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
