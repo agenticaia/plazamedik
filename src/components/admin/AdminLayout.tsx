@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Productos', href: '/admin/productos', icon: Package },
   { name: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
   { name: 'Proveedores', href: '/admin/proveedores', icon: Building2 },
   { name: 'Órdenes de Compra', href: '/admin/ordenes-compra', icon: ShoppingCart },
