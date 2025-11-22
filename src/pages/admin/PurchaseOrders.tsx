@@ -26,6 +26,7 @@ import { useSuppliers } from "@/hooks/useSuppliers";
 import { useProducts } from "@/hooks/useProducts";
 import { Plus, Search } from "lucide-react";
 import { ProcurementTable } from "@/components/admin/erp/ProcurementTable";
+import { CrossDockingTracker } from "@/components/admin/erp/CrossDockingTracker";
 
 const PurchaseOrders = () => {
   const { purchaseOrders, isLoading, createPurchaseOrder, updateOrderStatus, markAsReceived } =
@@ -121,9 +122,9 @@ const PurchaseOrders = () => {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">Órdenes de Compra</h1>
+            <h1 className="text-3xl font-bold">Órdenes de Compra & Cross-Docking</h1>
             <p className="text-muted-foreground mt-1">
-              Ciclo completo Procure to Pay - Desde la solicitud hasta el pago
+              Gestión de procurement, proveedores y flujo directo al cliente
             </p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -406,6 +407,9 @@ const PurchaseOrders = () => {
             </div>
           </Card>
         </div>
+
+        {/* Cross-Docking Tracker */}
+        <CrossDockingTracker />
 
         {/* Orders Table */}
         <Card>
