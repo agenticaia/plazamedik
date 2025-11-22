@@ -12,6 +12,7 @@ import { DiscontinueProductDialog } from '@/components/admin/DiscontinueProductD
 import { QuickPurchaseOrderDialog } from '@/components/admin/QuickPurchaseOrderDialog';
 import { supabase } from '@/integrations/supabase/client';
 import type { ProductWithMetrics } from '@/hooks/useProductWithMetrics';
+import { AdminLayout } from '@/components/admin/AdminLayout';
 
 interface ProductPerformanceData {
   sales_7d: number;
@@ -47,9 +48,11 @@ export default function InventoryIA() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <RefreshCw className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
     );
   }
 
@@ -127,18 +130,19 @@ export default function InventoryIA() {
   const outOfStock = getOutOfStock();
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">📦 Predicción de Inventario</h1>
-          <p className="text-gray-600">Pronóstico basado en IA para los próximos 7-30 días</p>
+    <AdminLayout>
+      <div className="p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">📦 Predicción de Inventario</h1>
+            <p className="text-muted-foreground">Pronóstico basado en IA para los próximos 7-30 días</p>
+          </div>
+          <Button onClick={refresh} variant="outline" size="sm">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Actualizar
+          </Button>
         </div>
-        <Button onClick={refresh} variant="outline" size="sm">
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Actualizar
-        </Button>
-      </div>
 
       {/* Métricas Generales */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -379,7 +383,8 @@ export default function InventoryIA() {
         }
         onSuccess={handleSuccess}
       />
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
 
