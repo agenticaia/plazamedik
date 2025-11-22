@@ -51,7 +51,7 @@ export const KPIBanner = ({ metrics, inventoryValue, isLoading }: KPIBannerProps
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold text-primary">
-            ${inventoryValue.toLocaleString()}
+            S/ {inventoryValue.toLocaleString()}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
             {metrics.total_stock.toLocaleString()} unidades disponibles
@@ -99,7 +99,7 @@ export const KPIBanner = ({ metrics, inventoryValue, isLoading }: KPIBannerProps
             Tasa de Conversión Promedio
           </p>
           <p className="text-sm font-semibold mt-2 text-foreground">
-            ${metrics.total_ingresos.toLocaleString()}
+            S/ {metrics.total_ingresos.toLocaleString()}
           </p>
           <p className="text-xs text-muted-foreground">Ventas Históricas Totales</p>
         </CardContent>

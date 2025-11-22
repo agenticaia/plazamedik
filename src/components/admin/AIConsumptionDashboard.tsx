@@ -145,8 +145,8 @@ export default function AIConsumptionDashboard() {
         <div className="bg-card rounded-lg border border-border shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Costo USD</p>
-              <p className="text-3xl font-bold text-green-600">${stats.total_cost_usd.toFixed(2)}</p>
+              <p className="text-sm text-muted-foreground mb-1">Costo en Soles</p>
+              <p className="text-3xl font-bold text-green-600">S/ {stats.total_cost_soles.toFixed(2)}</p>
             </div>
             <DollarSign className="w-12 h-12 text-green-200" />
           </div>

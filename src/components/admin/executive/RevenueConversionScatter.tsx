@@ -103,10 +103,10 @@ export const RevenueConversionScatter = ({ products, isLoading }: RevenueConvers
               type="number"
               dataKey="revenue"
               name="Ingresos"
-              unit="$"
-              label={{ value: "Ingresos ($)", angle: -90, position: "insideLeft" }}
+              unit="S/"
+              label={{ value: "Ingresos (S/)", angle: -90, position: "insideLeft" }}
               tick={{ fill: "hsl(var(--muted-foreground))" }}
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              tickFormatter={(value) => `S/ ${(value / 1000).toFixed(0)}k`}
             />
             <Tooltip
               cursor={{ strokeDasharray: "3 3" }}
@@ -128,7 +128,7 @@ export const RevenueConversionScatter = ({ products, isLoading }: RevenueConvers
                         Conversión: <span className="font-semibold">{data.conversionRate}%</span>
                       </p>
                       <p className="text-xs">
-                        Ingresos: <span className="font-semibold">${data.revenue.toLocaleString()}</span>
+                        Ingresos: <span className="font-semibold">S/ {data.revenue.toLocaleString()}</span>
                       </p>
                     </div>
                   );
