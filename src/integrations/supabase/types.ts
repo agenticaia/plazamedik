@@ -421,21 +421,33 @@ export type Database = {
             referencedRelation: "purchase_orders"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "v_purchase_orders_payment_summary"
+            referencedColumns: ["id"]
+          },
         ]
       }
       purchase_orders: {
         Row: {
           actual_delivery_date: string | null
+          advance_payment_amount: number | null
           ai_recommendation: Json | null
           approved_by: string | null
           created_at: string | null
           created_by: string | null
+          currency: string | null
           expected_delivery_date: string | null
           id: string
           linked_sales_order_id: string | null
           notes: string | null
           order_number: string
           order_type: string | null
+          payment_method: string | null
+          payment_status: string | null
+          payment_terms: string | null
           po_type: string | null
           priority: string | null
           product_code: string
@@ -444,23 +456,32 @@ export type Database = {
           status: string | null
           supplier_id: string
           total_amount: number
+          total_cost: number | null
           tracking_number: string | null
           unit_price: number
           updated_at: string | null
           vendor_id: string | null
+          vendor_invoice_number: string | null
+          vendor_reference_number: string | null
+          warehouse_destination: string | null
         }
         Insert: {
           actual_delivery_date?: string | null
+          advance_payment_amount?: number | null
           ai_recommendation?: Json | null
           approved_by?: string | null
           created_at?: string | null
           created_by?: string | null
+          currency?: string | null
           expected_delivery_date?: string | null
           id?: string
           linked_sales_order_id?: string | null
           notes?: string | null
           order_number: string
           order_type?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
+          payment_terms?: string | null
           po_type?: string | null
           priority?: string | null
           product_code: string
@@ -469,23 +490,32 @@ export type Database = {
           status?: string | null
           supplier_id: string
           total_amount: number
+          total_cost?: number | null
           tracking_number?: string | null
           unit_price: number
           updated_at?: string | null
           vendor_id?: string | null
+          vendor_invoice_number?: string | null
+          vendor_reference_number?: string | null
+          warehouse_destination?: string | null
         }
         Update: {
           actual_delivery_date?: string | null
+          advance_payment_amount?: number | null
           ai_recommendation?: Json | null
           approved_by?: string | null
           created_at?: string | null
           created_by?: string | null
+          currency?: string | null
           expected_delivery_date?: string | null
           id?: string
           linked_sales_order_id?: string | null
           notes?: string | null
           order_number?: string
           order_type?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
+          payment_terms?: string | null
           po_type?: string | null
           priority?: string | null
           product_code?: string
@@ -494,10 +524,14 @@ export type Database = {
           status?: string | null
           supplier_id?: string
           total_amount?: number
+          total_cost?: number | null
           tracking_number?: string | null
           unit_price?: number
           updated_at?: string | null
           vendor_id?: string | null
+          vendor_invoice_number?: string | null
+          vendor_reference_number?: string | null
+          warehouse_destination?: string | null
         }
         Relationships: [
           {
@@ -815,9 +849,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_purchase_orders_payment_summary: {
+        Row: {
+          actual_delivery_date: string | null
+          advance_payment_amount: number | null
+          balance_due: number | null
+          created_at: string | null
+          days_overdue: number | null
+          expected_delivery_date: string | null
+          id: string | null
+          order_number: string | null
+          payment_status: string | null
+          payment_terms: string | null
+          status: string | null
+          supplier_id: string | null
+          supplier_name: string | null
+          total_cost: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      calculate_po_total: { Args: { po_id: string }; Returns: number }
       calculate_reorder_points: {
         Args: never
         Returns: {
@@ -836,6 +897,10 @@ export type Database = {
           window_hours?: number
         }
         Returns: boolean
+      }
+      duplicate_purchase_order: {
+        Args: { new_notes?: string; source_po_id: string }
+        Returns: string
       }
       generate_order_code: { Args: never; Returns: string }
       generate_po_number_sequential: { Args: never; Returns: string }
@@ -873,6 +938,7 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_po_items_summary: { Args: { po_id: string }; Returns: Json }
       get_product_conversion_metrics: {
         Args: { p_product_code: string }
         Returns: Json
