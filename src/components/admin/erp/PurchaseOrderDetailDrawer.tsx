@@ -21,11 +21,21 @@ import {
   MapPin,
   User,
   FileText,
-  Clock
+  Clock,
+  Building2,
+  CreditCard
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { usePurchaseOrderItems } from '@/hooks/usePurchaseOrderItems';
+import { PaymentStatusBadge } from './PaymentStatusBadge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -47,6 +57,8 @@ export function PurchaseOrderDetailDrawer({
   const queryClient = useQueryClient();
   const [receiving, setReceiving] = useState(false);
   const [receiptQuantities, setReceiptQuantities] = useState<Record<string, number>>({});
+  const [paymentStatus, setPaymentStatus] = useState<string>(order?.payment_status || "PENDING");
+  const [advancePayment, setAdvancePayment] = useState<string>(order?.advance_payment_amount?.toString() || "0");
 
   if (!order) return null;
 
@@ -148,6 +160,28 @@ export function PurchaseOrderDetailDrawer({
     }
   };
 
+  const handleUpdatePaymentStatus = async () => {
+    try {
+      const { error } = await supabase
+        .from('purchase_orders')
+        .update({ 
+          payment_status: paymentStatus,
+          advance_payment_amount: parseFloat(advancePayment) || 0
+        })
+        .eq('id', order.id);
+
+      if (error) throw error;
+
+      toast.success('Estado de pago actualizado');
+      queryClient.invalidateQueries({ queryKey: ["purchase-orders"] });
+      onSuccess?.();
+    } catch (error: any) {
+      toast.error('Error al actualizar el pago', {
+        description: error.message
+      });
+    }
+  };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
@@ -205,10 +239,10 @@ export function PurchaseOrderDetailDrawer({
             <CardHeader>
               <CardTitle className="text-sm flex items-center gap-2">
                 <User className="h-4 w-4" />
-                Proveedor
+                Proveedor & Referencias
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-3">
               <div>
                 <div className="font-medium">{order.supplier?.name || 'N/A'}</div>
                 {order.supplier?.contact_person && (
@@ -220,6 +254,102 @@ export function PurchaseOrderDetailDrawer({
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 Lead time: {order.supplier?.lead_time_days || 0} días
+              </div>
+              {order.vendor_reference_number && (
+                <div className="pt-2 border-t">
+                  <div className="text-xs text-muted-foreground">Referencia del Proveedor</div>
+                  <div className="font-mono text-sm">{order.vendor_reference_number}</div>
+                </div>
+              )}
+              {order.vendor_invoice_number && (
+                <div>
+                  <div className="text-xs text-muted-foreground">Factura del Proveedor</div>
+                  <div className="font-mono text-sm">{order.vendor_invoice_number}</div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Estado de Pago */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                Estado de Pago
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Estado Actual</span>
+                <PaymentStatusBadge 
+                  status={order.payment_status || "PENDING"}
+                  advanceAmount={order.advance_payment_amount}
+                  totalCost={order.total_cost}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs">Actualizar Estado de Pago</Label>
+                <Select value={paymentStatus} onValueChange={setPaymentStatus}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PENDING">Pendiente</SelectItem>
+                    <SelectItem value="PARTIAL_PAID">Pago Parcial</SelectItem>
+                    <SelectItem value="PAID">Pagado</SelectItem>
+                    <SelectItem value="OVERDUE">Vencido</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {paymentStatus === "PARTIAL_PAID" && (
+                <div className="space-y-2">
+                  <Label className="text-xs">Monto de Anticipo (S/)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={advancePayment}
+                    onChange={(e) => setAdvancePayment(e.target.value)}
+                    placeholder="0.00"
+                  />
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4 pt-2 border-t text-sm">
+                <div>
+                  <div className="text-muted-foreground">Total de la Orden</div>
+                  <div className="font-semibold text-lg">S/ {(order.total_cost || 0).toFixed(2)}</div>
+                </div>
+                {paymentStatus === "PARTIAL_PAID" && (
+                  <div>
+                    <div className="text-muted-foreground">Saldo Pendiente</div>
+                    <div className="font-semibold text-lg text-amber-600">
+                      S/ {((order.total_cost || 0) - parseFloat(advancePayment || "0")).toFixed(2)}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <Button onClick={handleUpdatePaymentStatus} variant="outline" className="w-full">
+                <DollarSign className="h-4 w-4 mr-2" />
+                Actualizar Estado de Pago
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Almacén de Destino */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Building2 className="h-4 w-4" />
+                Destino
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <span>{order.warehouse_destination || "Almacén Principal"}</span>
               </div>
             </CardContent>
           </Card>
