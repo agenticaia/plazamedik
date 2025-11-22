@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Package, Eye, Clock, Truck, CheckCircle as CheckCircleIcon, XCircle } from "lucide-react";
+import { Package, Eye, Clock, Truck, CheckCircle as CheckCircleIcon, XCircle, Calendar } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,7 +14,12 @@ import { usePurchaseOrders } from "@/hooks/usePurchaseOrders";
 import { PartialReceiptProgress } from "./PartialReceiptProgress";
 import { usePurchaseOrderItems } from "@/hooks/usePurchaseOrderItems";
 import { PurchaseOrderDetailDrawer } from "./PurchaseOrderDetailDrawer";
+import { POItemsSummary } from "./POItemsSummary";
+import { PaymentStatusBadge } from "./PaymentStatusBadge";
+import { POActionsMenu } from "./POActionsMenu";
 import { useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface ProcurementTableProps {
   searchTerm?: string;
@@ -77,11 +82,12 @@ export const ProcurementTable = ({ searchTerm = "", filterStatus = "ALL" }: Proc
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>N° OC</TableHead>
-            <TableHead>Proveedor</TableHead>
-            <TableHead>Tipo</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead>Progreso Recepción</TableHead>
+            <TableHead>N° OC / Fecha</TableHead>
+            <TableHead>Proveedor / Ref. Vendor</TableHead>
+            <TableHead>Items (Resumen)</TableHead>
+            <TableHead>Estado Logístico</TableHead>
+            <TableHead>Estado de Pago</TableHead>
+            <TableHead>Progreso</TableHead>
             <TableHead>Destino</TableHead>
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
@@ -89,7 +95,7 @@ export const ProcurementTable = ({ searchTerm = "", filterStatus = "ALL" }: Proc
         <TableBody>
           {filteredOrders.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+              <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                 No se encontraron órdenes de compra
               </TableCell>
             </TableRow>
@@ -98,37 +104,58 @@ export const ProcurementTable = ({ searchTerm = "", filterStatus = "ALL" }: Proc
             const isAutomatic = po.order_type === "automatica" || po.po_type === "CROSS_DOCKING";
             
             return (
-              <TableRow key={po.id}>
-                <TableCell className="font-mono text-sm">{po.order_number}</TableCell>
+              <TableRow key={po.id} className="hover:bg-muted/50">
+                <TableCell>
+                  <div>
+                    <p className="font-mono text-sm font-semibold">{po.order_number}</p>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                      <Calendar className="h-3 w-3" />
+                      {po.created_at && format(new Date(po.created_at), 'dd MMM yyyy', { locale: es })}
+                    </div>
+                  </div>
+                </TableCell>
                 <TableCell>
                   <div>
                     <p className="font-medium">{po.supplier?.name || "N/A"}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Lead time: {po.supplier?.lead_time_days || 0} días
-                    </p>
+                    <div className="text-xs text-muted-foreground space-y-0.5">
+                      <p>Lead time: {po.supplier?.lead_time_days || 0} días</p>
+                      {po.vendor_reference_number && (
+                        <p className="font-mono">Ref: {po.vendor_reference_number}</p>
+                      )}
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={isAutomatic ? "default" : "outline"}>
-                    {isAutomatic ? "Automática" : "Manual"}
-                  </Badge>
+                  <POItemsSummary poId={po.id} />
                 </TableCell>
-                <TableCell>{getStatusBadge(po.status)}</TableCell>
+                <TableCell>
+                  <div className="space-y-2">
+                    {getStatusBadge(po.status)}
+                    {isAutomatic && (
+                      <Badge variant="outline" className="block w-fit text-xs">
+                        IA Automática
+                      </Badge>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <PaymentStatusBadge 
+                    status={po.payment_status || "PENDING"}
+                    advanceAmount={po.advance_payment_amount}
+                    totalCost={po.total_cost}
+                  />
+                </TableCell>
                 <TableCell>
                   <PurchaseOrderItemProgress poId={po.id} />
                 </TableCell>
-                <TableCell>Almacén Principal</TableCell>
+                <TableCell>
+                  <span className="text-sm">{po.warehouse_destination || "Almacén Principal"}</span>
+                </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleViewDetails(po)}
-                      title="Ver detalles"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <POActionsMenu 
+                    order={po}
+                    onViewDetails={() => handleViewDetails(po)}
+                  />
                 </TableCell>
               </TableRow>
             );
