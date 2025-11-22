@@ -69,6 +69,7 @@ export const usePurchaseOrders = () => {
           ...order,
           order_number: orderNumber,
           total_amount,
+          total_cost: total_amount,
           created_by: user.user?.id,
           status: "DRAFT",
         })
@@ -76,6 +77,21 @@ export const usePurchaseOrders = () => {
         .single();
 
       if (error) throw error;
+
+      // Create the purchase order item
+      const { error: itemError } = await supabase
+        .from("purchase_order_items")
+        .insert({
+          purchase_order_id: data.id,
+          product_code: order.product_code,
+          product_name: order.product_name,
+          qty_ordered: order.quantity,
+          cost_per_unit: order.unit_price,
+          qty_received: 0,
+        });
+
+      if (itemError) throw itemError;
+
       return data;
     },
     onSuccess: () => {

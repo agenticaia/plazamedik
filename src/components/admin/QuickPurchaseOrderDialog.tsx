@@ -99,22 +99,42 @@ export function QuickPurchaseOrderDialog({
 
       const totalAmount = quantity * unitPrice;
 
-      const { error } = await supabase.from('purchase_orders').insert({
-        order_number: orderNumber,
-        supplier_id: selectedSupplierId,
-        product_code: product.code,
-        product_name: product.name,
-        quantity,
-        unit_price: unitPrice,
-        total_amount: totalAmount,
-        expected_delivery_date: expectedDeliveryDate.toISOString().split('T')[0],
-        notes: notes.trim(),
-        status: 'pendiente',
-        order_type: 'ai_generated',
-        ai_recommendation: predictionData || null,
-      });
+      // Crear la orden de compra
+      const { data: newPO, error: poError } = await supabase
+        .from('purchase_orders')
+        .insert({
+          order_number: orderNumber,
+          supplier_id: selectedSupplierId,
+          product_code: product.code,
+          product_name: product.name,
+          quantity,
+          unit_price: unitPrice,
+          total_amount: totalAmount,
+          total_cost: totalAmount,
+          expected_delivery_date: expectedDeliveryDate.toISOString().split('T')[0],
+          notes: notes.trim(),
+          status: 'DRAFT',
+          order_type: 'automatica',
+          ai_recommendation: predictionData || null,
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (poError) throw poError;
+
+      // Crear el item de la orden de compra
+      const { error: itemError } = await supabase
+        .from('purchase_order_items')
+        .insert({
+          purchase_order_id: newPO.id,
+          product_code: product.code,
+          product_name: product.name,
+          qty_ordered: quantity,
+          cost_per_unit: unitPrice,
+          qty_received: 0,
+        });
+
+      if (itemError) throw itemError;
 
       toast.success(`Orden de compra ${orderNumber} creada exitosamente`);
       resetForm();
