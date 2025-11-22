@@ -111,6 +111,7 @@ export const SalesOrderTable = () => {
                       <BackorderBadge 
                         isBackorder={true}
                         linkedPurchaseOrderId={firstItem?.linked_purchase_order_id}
+                        linkedPONumber={firstItem?.linked_purchase_order_id ? 'Ver OC' : undefined}
                       />
                     )}
                   </div>
