@@ -17,7 +17,7 @@ export default function ExecutiveDashboard() {
     queryClient.invalidateQueries({ queryKey: ["dashboard-metrics"] });
     queryClient.invalidateQueries({ queryKey: ["low-stock-products"] });
     queryClient.invalidateQueries({ queryKey: ["products-executive"] });
-    toast.success("Dashboard data refreshed");
+    toast.success("Datos del dashboard actualizados");
   };
 
   return (
@@ -29,16 +29,16 @@ export default function ExecutiveDashboard() {
             <div className="flex items-center gap-3 mb-2">
               <BarChart3 className="h-8 w-8 text-primary" />
               <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                Executive Analytics Dashboard
+                Dashboard Ejecutivo de Análisis
               </h1>
             </div>
             <p className="text-muted-foreground">
-              Real-time business intelligence and inventory analytics
+              Inteligencia de negocios en tiempo real y análisis de inventario
             </p>
           </div>
           <Button onClick={handleRefresh} variant="outline" className="gap-2">
             <RefreshCw className="h-4 w-4" />
-            Refresh Data
+            Actualizar Datos
           </Button>
         </div>
 
@@ -50,7 +50,7 @@ export default function ExecutiveDashboard() {
         {/* SECTION 2: Mid-Section Charts */}
         <section>
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            📊 Tactical Analysis
+            📊 Análisis Táctico
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <InventoryRiskChart products={products} isLoading={isLoading} />

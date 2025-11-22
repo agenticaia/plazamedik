@@ -29,7 +29,7 @@ export const CriticalRestockTable = ({ products, isLoading }: CriticalRestockTab
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-destructive" />
-            Critical Restock Recommendations
+            Recomendaciones Críticas de Reabastecimiento
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -45,13 +45,13 @@ export const CriticalRestockTable = ({ products, isLoading }: CriticalRestockTab
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-green-600" />
-            Critical Restock Recommendations
+            Recomendaciones Críticas de Reabastecimiento
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <p className="text-muted-foreground">✅ All products are well-stocked</p>
-            <p className="text-sm text-muted-foreground mt-2">No immediate restock actions required</p>
+            <p className="text-muted-foreground">✅ Todos los productos tienen stock suficiente</p>
+            <p className="text-sm text-muted-foreground mt-2">No se requieren acciones inmediatas de reabastecimiento</p>
           </div>
         </CardContent>
       </Card>
@@ -60,11 +60,11 @@ export const CriticalRestockTable = ({ products, isLoading }: CriticalRestockTab
 
   const getStockBadge = (stock: number) => {
     if (stock === 0) {
-      return <Badge variant="destructive">OUT OF STOCK</Badge>;
+      return <Badge variant="destructive">SIN STOCK</Badge>;
     } else if (stock <= 5) {
-      return <Badge variant="destructive" className="bg-red-600/90">CRITICAL</Badge>;
+      return <Badge variant="destructive" className="bg-red-600/90">CRÍTICO</Badge>;
     } else if (stock <= 10) {
-      return <Badge className="bg-amber-600 text-white hover:bg-amber-700">LOW</Badge>;
+      return <Badge className="bg-amber-600 text-white hover:bg-amber-700">BAJO</Badge>;
     } else {
       return <Badge variant="secondary">{stock}</Badge>;
     }
@@ -89,10 +89,10 @@ export const CriticalRestockTable = ({ products, isLoading }: CriticalRestockTab
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-destructive" />
-          Critical Restock Recommendations
+          Recomendaciones Críticas de Reabastecimiento
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Immediate action required for {products.length} product{products.length !== 1 ? 's' : ''}
+          Acción inmediata requerida para {products.length} producto{products.length !== 1 ? 's' : ''}
         </p>
       </CardHeader>
       <CardContent>
@@ -100,11 +100,11 @@ export const CriticalRestockTable = ({ products, isLoading }: CriticalRestockTab
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product Name</TableHead>
-                <TableHead className="text-center">Current Stock</TableHead>
-                <TableHead className="text-center">Sales Velocity</TableHead>
-                <TableHead className="text-center">Estimated Coverage</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead>Nombre del Producto</TableHead>
+                <TableHead className="text-center">Stock Actual</TableHead>
+                <TableHead className="text-center">Velocidad de Ventas</TableHead>
+                <TableHead className="text-center">Cobertura Estimada</TableHead>
+                <TableHead className="text-right">Acción</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -123,12 +123,12 @@ export const CriticalRestockTable = ({ products, isLoading }: CriticalRestockTab
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="font-semibold">{product.demanda_diaria.toFixed(1)}</div>
-                    <div className="text-xs text-muted-foreground">units/day</div>
+                    <div className="text-xs text-muted-foreground">unidades/día</div>
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="flex flex-col items-center gap-1">
                       {getDaysRemainingBadge(product.dias_restantes)}
-                      <div className="text-xs text-muted-foreground">Days left</div>
+                      <div className="text-xs text-muted-foreground">Días restantes</div>
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
@@ -138,7 +138,7 @@ export const CriticalRestockTable = ({ products, isLoading }: CriticalRestockTab
                       className="gap-2"
                     >
                       <ShoppingCart className="h-4 w-4" />
-                      Create PO
+                      Crear OC
                     </Button>
                   </TableCell>
                 </TableRow>
