@@ -420,6 +420,44 @@ export const OrderDetailDrawer = ({
                   size="sm"
                   variant="outline"
                   className="flex items-center gap-2"
+                  onClick={async () => {
+                    try {
+                      // Get customer email from phone (assuming it's stored somewhere)
+                      // For now, using a placeholder - you may need to add email to sales_orders table
+                      const customerEmail = order.customer_phone ? `${order.customer_phone}@placeholder.com` : '';
+                      
+                      await supabase.functions.invoke('notify-customer-order', {
+                        body: {
+                          orderNumber: order.order_number,
+                          customerName: `${order.customer_name} ${order.customer_lastname || ''}`.trim(),
+                          customerEmail: customerEmail,
+                          items: order.items?.map(item => ({
+                            productName: item.product_name,
+                            quantity: item.quantity,
+                            unitPrice: item.unit_price,
+                            color: item.product_color,
+                          })) || [],
+                          total: order.total,
+                          fulfillmentStatus: order.fulfillment_status || 'UNFULFILLED',
+                          paymentStatus: order.payment_status || 'PENDING',
+                          trackingNumber: order.tracking_number,
+                          courier: order.courier,
+                        }
+                      });
+
+                      toast({
+                        title: "📧 Email enviado",
+                        description: "El cliente ha sido notificado exitosamente",
+                      });
+                    } catch (error) {
+                      console.error('Error sending notification:', error);
+                      toast({
+                        title: "Error",
+                        description: "No se pudo enviar la notificación",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
                 >
                   <Send className="h-4 w-4" />
                   Notificar Cliente
