@@ -44,18 +44,20 @@ export default function Products() {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Gestión de Productos</h1>
-            <p className="text-muted-foreground mt-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground truncate">
+              Gestión de Productos
+            </h1>
+            <p className="text-muted-foreground mt-1 text-sm">
               Administra el catálogo de productos del e-commerce
             </p>
           </div>
-          <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
+          <Button onClick={() => setCreateDialogOpen(true)} className="gap-2 w-full sm:w-auto">
             <Plus className="h-4 w-4" />
-            Crear Producto
+            <span className="sm:inline">Crear Producto</span>
           </Button>
         </div>
 
@@ -84,14 +86,14 @@ export default function Products() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Código</TableHead>
-                  <TableHead>Imagen</TableHead>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Categoría</TableHead>
-                  <TableHead>Precio</TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
+                  <TableHead className="whitespace-nowrap">Código</TableHead>
+                  <TableHead className="whitespace-nowrap">Imagen</TableHead>
+                  <TableHead className="whitespace-nowrap">Nombre</TableHead>
+                  <TableHead className="whitespace-nowrap">Categoría</TableHead>
+                  <TableHead className="whitespace-nowrap">Precio</TableHead>
+                  <TableHead className="whitespace-nowrap">Stock</TableHead>
+                  <TableHead className="whitespace-nowrap">Estado</TableHead>
+                  <TableHead className="text-right whitespace-nowrap">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -239,7 +239,7 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] md:w-full">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Crear Nuevo Producto</DialogTitle>

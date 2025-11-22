@@ -126,22 +126,22 @@ export const OrderDetailDrawer = ({
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="flex items-center justify-between">
-            <span className="font-mono text-2xl">{order.order_number}</span>
+      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6">
+        <SheetHeader className="pb-4">
+          <SheetTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span className="font-mono text-xl sm:text-2xl">{order.order_number}</span>
             {order.priority && order.priority !== 'NORMAL' && (
               <Badge variant="destructive">{order.priority}</Badge>
             )}
           </SheetTitle>
         </SheetHeader>
 
-        <ScrollArea className="h-[calc(100vh-100px)] pr-4">
-          <div className="space-y-6 mt-6">
+        <ScrollArea className="h-[calc(100vh-140px)] sm:h-[calc(100vh-100px)]">
+          <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
             {/* Estado General */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h3 className="font-semibold flex items-center gap-2 text-sm sm:text-base">
                   <Package className="h-4 w-4" />
                   Estado del Pedido
                 </h3>
@@ -155,6 +155,7 @@ export const OrderDetailDrawer = ({
                       setFulfillmentStatus(order.fulfillment_status || 'UNFULFILLED');
                     }
                   }}
+                  className="w-full sm:w-auto"
                 >
                   <Edit className="h-3 w-3 mr-1" />
                   {isEditingStatus ? 'Cancelar' : 'Editar Estados'}
@@ -163,7 +164,7 @@ export const OrderDetailDrawer = ({
 
               {!isEditingStatus ? (
                 <>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {getPaymentBadge()}
                     {getFulfillmentBadge()}
                   </div>
@@ -244,24 +245,24 @@ export const OrderDetailDrawer = ({
 
             {/* Items */}
             <div className="space-y-3">
-              <h3 className="font-semibold flex items-center gap-2">
+              <h3 className="font-semibold flex items-center gap-2 text-sm sm:text-base">
                 <Package className="h-4 w-4" />
                 Items del Pedido ({order.items?.length || 0})
               </h3>
               <div className="space-y-2">
                 {order.items?.map((item: any) => (
                   <div key={item.id} className="border rounded-lg p-3 space-y-2">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <p className="font-medium">{item.product_name}</p>
-                        <p className="text-sm text-muted-foreground">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm sm:text-base truncate">{item.product_name}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           SKU: {item.product_code}
                           {item.product_color && ` • Color: ${item.product_color}`}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold">S/ {Number(item.unit_price).toFixed(2)}</p>
-                        <p className="text-sm text-muted-foreground">Cant: {item.quantity}</p>
+                      <div className="text-left sm:text-right">
+                        <p className="font-semibold text-sm sm:text-base">S/ {Number(item.unit_price).toFixed(2)}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Cant: {item.quantity}</p>
                       </div>
                     </div>
                     {item.is_backorder && (
@@ -295,9 +296,9 @@ export const OrderDetailDrawer = ({
                   </div>
                 ))}
               </div>
-              <div className="flex justify-between items-center pt-2 border-t font-bold">
-                <span>Total:</span>
-                <span className="text-lg">S/ {Number(order.total).toFixed(2)}</span>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pt-2 border-t font-bold gap-1">
+                <span className="text-sm sm:text-base">Total:</span>
+                <span className="text-base sm:text-lg">S/ {Number(order.total).toFixed(2)}</span>
               </div>
             </div>
 
@@ -305,25 +306,25 @@ export const OrderDetailDrawer = ({
 
             {/* Payment & Shipping Info */}
             <div className="space-y-3">
-              <h3 className="font-semibold flex items-center gap-2">
+              <h3 className="font-semibold flex items-center gap-2 text-sm sm:text-base">
                 <CreditCard className="h-4 w-4" />
                 Información de Pago y Envío
               </h3>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-2 text-xs sm:text-sm">
                 {order.payment_method && (
-                  <div className="flex justify-between">
+                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                     <span className="text-muted-foreground">Método de Pago:</span>
                     <span className="font-medium">{order.payment_method}</span>
                   </div>
                 )}
                 {order.tracking_number && (
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
                     <span className="text-muted-foreground">N° Tracking:</span>
-                    <Badge variant="outline" className="font-mono">{order.tracking_number}</Badge>
+                    <Badge variant="outline" className="font-mono text-xs">{order.tracking_number}</Badge>
                   </div>
                 )}
                 {order.courier && (
-                  <div className="flex justify-between">
+                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                     <span className="text-muted-foreground">Courier:</span>
                     <span className="font-medium">{order.courier}</span>
                   </div>
@@ -361,8 +362,8 @@ export const OrderDetailDrawer = ({
             {/* Actions */}
             <Separator />
             <div className="space-y-2">
-              <h3 className="font-semibold">Acciones Rápidas</h3>
-              <div className="flex flex-wrap gap-2">
+              <h3 className="font-semibold text-sm sm:text-base">Acciones Rápidas</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {canStartPicking && (
                   <Button
                     size="sm"

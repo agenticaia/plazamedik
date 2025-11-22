@@ -221,7 +221,7 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] md:w-full">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Editar Producto</DialogTitle>
