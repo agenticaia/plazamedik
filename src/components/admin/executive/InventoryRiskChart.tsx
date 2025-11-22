@@ -20,7 +20,7 @@ export const InventoryRiskChart = ({ products, isLoading }: InventoryRiskChartPr
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
-            Inventory Risk Projection (Next 30 Days)
+            Proyección de Riesgo de Inventario (Próximos 30 Días)
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -36,11 +36,11 @@ export const InventoryRiskChart = ({ products, isLoading }: InventoryRiskChartPr
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
-            Inventory Risk Projection (Next 30 Days)
+            Proyección de Riesgo de Inventario (Próximos 30 Días)
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-center py-8">No data available</p>
+          <p className="text-muted-foreground text-center py-8">No hay datos disponibles</p>
         </CardContent>
       </Card>
     );
@@ -64,9 +64,9 @@ export const InventoryRiskChart = ({ products, isLoading }: InventoryRiskChartPr
   const healthy = categorizedProducts.filter((p) => p.diasRestantes > 14).length;
 
   const data = [
-    { name: "🔴 Urgent (0-7 days)", value: urgent, color: "hsl(var(--destructive))" },
-    { name: "🟡 Warning (8-14 days)", value: warning, color: "hsl(45, 93%, 47%)" },
-    { name: "🟢 Healthy (15+ days)", value: healthy, color: "hsl(142, 76%, 36%)" },
+    { name: "🔴 Urgente (0-7 días)", value: urgent, color: "hsl(var(--destructive))" },
+    { name: "🟡 Advertencia (8-14 días)", value: warning, color: "hsl(45, 93%, 47%)" },
+    { name: "🟢 Saludable (15+ días)", value: healthy, color: "hsl(142, 76%, 36%)" },
   ];
 
   return (
@@ -74,10 +74,10 @@ export const InventoryRiskChart = ({ products, isLoading }: InventoryRiskChartPr
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <AlertTriangle className="h-5 w-5 text-amber-600" />
-          Inventory Risk Projection (Next 30 Days)
+          Proyección de Riesgo de Inventario (Próximos 30 Días)
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Products categorized by estimated days until stockout
+          Productos categorizados por días estimados hasta agotamiento
         </p>
       </CardHeader>
       <CardContent>
@@ -110,15 +110,15 @@ export const InventoryRiskChart = ({ products, isLoading }: InventoryRiskChartPr
         <div className="grid grid-cols-3 gap-4 mt-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-destructive">{urgent}</div>
-            <div className="text-xs text-muted-foreground">Urgent</div>
+            <div className="text-xs text-muted-foreground">Urgente</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-amber-600">{warning}</div>
-            <div className="text-xs text-muted-foreground">Warning</div>
+            <div className="text-xs text-muted-foreground">Advertencia</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">{healthy}</div>
-            <div className="text-xs text-muted-foreground">Healthy</div>
+            <div className="text-xs text-muted-foreground">Saludable</div>
           </div>
         </div>
       </CardContent>

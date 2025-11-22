@@ -46,7 +46,7 @@ export const KPIBanner = ({ metrics, inventoryValue, isLoading }: KPIBannerProps
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
             <DollarSign className="h-4 w-4 text-primary" />
-            Total Inventory Value
+            Valor Total de Inventario
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -54,7 +54,7 @@ export const KPIBanner = ({ metrics, inventoryValue, isLoading }: KPIBannerProps
             ${inventoryValue.toLocaleString()}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            {metrics.total_stock.toLocaleString()} units on hand
+            {metrics.total_stock.toLocaleString()} unidades disponibles
           </p>
         </CardContent>
       </Card>
@@ -64,7 +64,7 @@ export const KPIBanner = ({ metrics, inventoryValue, isLoading }: KPIBannerProps
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
             <Package className="h-4 w-4 text-destructive" />
-            Stock Health Monitor
+            Monitor de Salud de Stock
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -72,13 +72,13 @@ export const KPIBanner = ({ metrics, inventoryValue, isLoading }: KPIBannerProps
             <Badge variant="destructive" className="text-lg font-bold px-3 py-1">
               {metrics.productos_agotados}
             </Badge>
-            <span className="text-sm text-muted-foreground">Out of Stock</span>
+            <span className="text-sm text-muted-foreground">Agotados</span>
           </div>
           <div className="flex items-center gap-3">
             <Badge variant="secondary" className="bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30 text-sm font-semibold">
               {metrics.productos_bajo_stock}
             </Badge>
-            <span className="text-xs text-muted-foreground">Critical Low Stock</span>
+            <span className="text-xs text-muted-foreground">Stock Crítico Bajo</span>
           </div>
         </CardContent>
       </Card>
@@ -88,7 +88,7 @@ export const KPIBanner = ({ metrics, inventoryValue, isLoading }: KPIBannerProps
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
             <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-500" />
-            Sales Efficiency
+            Eficiencia de Ventas
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -96,12 +96,12 @@ export const KPIBanner = ({ metrics, inventoryValue, isLoading }: KPIBannerProps
             {metrics.conversion_rate_promedio.toFixed(2)}%
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Avg. Conversion Rate
+            Tasa de Conversión Promedio
           </p>
           <p className="text-sm font-semibold mt-2 text-foreground">
             ${metrics.total_ingresos.toLocaleString()}
           </p>
-          <p className="text-xs text-muted-foreground">Total Historical Sales</p>
+          <p className="text-xs text-muted-foreground">Ventas Históricas Totales</p>
         </CardContent>
       </Card>
 
@@ -110,18 +110,18 @@ export const KPIBanner = ({ metrics, inventoryValue, isLoading }: KPIBannerProps
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
             <Layers className="h-4 w-4 text-blue-600 dark:text-blue-500" />
-            Catalog Scope
+            Alcance del Catálogo
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold text-blue-600 dark:text-blue-500">
             {metrics.total_productos}
           </div>
-          <p className="text-xs text-muted-foreground mt-1">Active SKUs</p>
+          <p className="text-xs text-muted-foreground mt-1">SKUs Activos</p>
           <p className="text-sm font-semibold mt-2 text-foreground">
             {metrics.total_views.toLocaleString()}
           </p>
-          <p className="text-xs text-muted-foreground">Total Catalog Views</p>
+          <p className="text-xs text-muted-foreground">Vistas Totales del Catálogo</p>
         </CardContent>
       </Card>
     </div>

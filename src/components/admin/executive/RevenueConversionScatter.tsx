@@ -21,7 +21,7 @@ export const RevenueConversionScatter = ({ products, isLoading }: RevenueConvers
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            Revenue vs. Conversion Analysis
+            Análisis de Ingresos vs. Conversión
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -37,11 +37,11 @@ export const RevenueConversionScatter = ({ products, isLoading }: RevenueConvers
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            Revenue vs. Conversion Analysis
+            Análisis de Ingresos vs. Conversión
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-center py-8">No data available</p>
+          <p className="text-muted-foreground text-center py-8">No hay datos disponibles</p>
         </CardContent>
       </Card>
     );
@@ -81,10 +81,10 @@ export const RevenueConversionScatter = ({ products, isLoading }: RevenueConvers
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-500" />
-          Revenue vs. Conversion Analysis
+          Análisis de Ingresos vs. Conversión
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Product performance scatter plot - hover for details
+          Gráfico de dispersión de rendimiento de productos - pase el cursor para ver detalles
         </p>
       </CardHeader>
       <CardContent>
@@ -94,17 +94,17 @@ export const RevenueConversionScatter = ({ products, isLoading }: RevenueConvers
             <XAxis
               type="number"
               dataKey="conversionRate"
-              name="Conversion Rate"
+              name="Tasa de Conversión"
               unit="%"
-              label={{ value: "Conversion Rate (%)", position: "insideBottom", offset: -10 }}
+              label={{ value: "Tasa de Conversión (%)", position: "insideBottom", offset: -10 }}
               tick={{ fill: "hsl(var(--muted-foreground))" }}
             />
             <YAxis
               type="number"
               dataKey="revenue"
-              name="Revenue"
+              name="Ingresos"
               unit="$"
-              label={{ value: "Revenue ($)", angle: -90, position: "insideLeft" }}
+              label={{ value: "Ingresos ($)", angle: -90, position: "insideLeft" }}
               tick={{ fill: "hsl(var(--muted-foreground))" }}
               tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
             />
@@ -122,13 +122,13 @@ export const RevenueConversionScatter = ({ products, isLoading }: RevenueConvers
                     <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
                       <p className="font-semibold text-sm mb-1">{data.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        Code: {data.productCode}
+                        Código: {data.productCode}
                       </p>
                       <p className="text-xs mt-1">
-                        Conversion: <span className="font-semibold">{data.conversionRate}%</span>
+                        Conversión: <span className="font-semibold">{data.conversionRate}%</span>
                       </p>
                       <p className="text-xs">
-                        Revenue: <span className="font-semibold">${data.revenue.toLocaleString()}</span>
+                        Ingresos: <span className="font-semibold">${data.revenue.toLocaleString()}</span>
                       </p>
                     </div>
                   );
@@ -146,15 +146,15 @@ export const RevenueConversionScatter = ({ products, isLoading }: RevenueConvers
         <div className="flex items-center justify-center gap-4 mt-4 text-xs">
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-green-600" />
-            <span className="text-muted-foreground">High Performers</span>
+            <span className="text-muted-foreground">Alto Rendimiento</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-amber-600" />
-            <span className="text-muted-foreground">Mixed Performance</span>
+            <span className="text-muted-foreground">Rendimiento Mixto</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-destructive" />
-            <span className="text-muted-foreground">Underperformers</span>
+            <span className="text-muted-foreground">Bajo Rendimiento</span>
           </div>
         </div>
       </CardContent>
