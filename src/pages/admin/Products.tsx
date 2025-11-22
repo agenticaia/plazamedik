@@ -12,7 +12,7 @@ import { DiscontinueProductDialog } from '@/components/admin/DiscontinueProductD
 import { Card } from '@/components/ui/card';
 
 export default function Products() {
-  const { products, loading, refetch } = useProducts();
+  const { products, loading, refetch } = useProducts(true); // Admin view - mostrar todos
   const [searchTerm, setSearchTerm] = useState('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
