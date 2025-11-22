@@ -426,10 +426,12 @@ export type Database = {
           created_by: string | null
           expected_delivery_date: string | null
           id: string
+          linked_sales_order_id: string | null
           notes: string | null
           order_number: string
           order_type: string | null
           po_type: string | null
+          priority: string | null
           product_code: string
           product_name: string
           quantity: number
@@ -449,10 +451,12 @@ export type Database = {
           created_by?: string | null
           expected_delivery_date?: string | null
           id?: string
+          linked_sales_order_id?: string | null
           notes?: string | null
           order_number: string
           order_type?: string | null
           po_type?: string | null
+          priority?: string | null
           product_code: string
           product_name: string
           quantity: number
@@ -472,10 +476,12 @@ export type Database = {
           created_by?: string | null
           expected_delivery_date?: string | null
           id?: string
+          linked_sales_order_id?: string | null
           notes?: string | null
           order_number?: string
           order_type?: string | null
           po_type?: string | null
+          priority?: string | null
           product_code?: string
           product_name?: string
           quantity?: number
@@ -488,6 +494,13 @@ export type Database = {
           vendor_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "purchase_orders_linked_sales_order_id_fkey"
+            columns: ["linked_sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "sales_orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "purchase_orders_supplier_id_fkey"
             columns: ["supplier_id"]
