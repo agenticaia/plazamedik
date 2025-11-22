@@ -812,6 +812,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_reorder_points: {
+        Args: never
+        Returns: {
+          avg_daily_sales: number
+          calculated_rop: number
+          max_daily_sales: number
+          message: string
+          product_code: string
+          safety_stock: number
+        }[]
+      }
       check_order_rate_limit: {
         Args: {
           client_ip: string
@@ -884,6 +895,7 @@ export type Database = {
         Args: { p_product_code: string; p_quantity?: number }
         Returns: Json
       }
+      run_reorder_calculation: { Args: never; Returns: Json }
       update_product_stock: {
         Args: { p_new_stock: number; p_product_code: string }
         Returns: Json
