@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useSalesOrders } from "@/hooks/useSalesOrders";
-import { Clock, TrendingUp, TrendingDown, AlertCircle, Package, CheckCircle2 } from "lucide-react";
-import { differenceInDays, differenceInHours, format } from "date-fns";
+import { Clock, TrendingUp, TrendingDown, AlertCircle, Package, CheckCircle2, BarChart3 } from "lucide-react";
+import { differenceInDays, differenceInHours, format, startOfWeek, endOfWeek, eachDayOfInterval, subDays } from "date-fns";
 import { es } from "date-fns/locale";
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export const OrderMetricsDashboard = () => {
   const { orders } = useSalesOrders();
@@ -80,10 +81,67 @@ export const OrderMetricsDashboard = () => {
     ).length;
   };
 
+  // Tendencias de entregas por día (últimos 30 días)
+  const getDeliveryTrendsByDay = () => {
+    const last30Days = eachDayOfInterval({
+      start: subDays(new Date(), 29),
+      end: new Date()
+    });
+
+    return last30Days.map(day => {
+      const dayStr = format(day, 'yyyy-MM-dd');
+      const delivered = orders.filter((order: any) => {
+        if (!order.delivered_at) return false;
+        const deliveredDate = format(new Date(order.delivered_at), 'yyyy-MM-dd');
+        return deliveredDate === dayStr;
+      }).length;
+
+      const created = orders.filter((order: any) => {
+        const createdDate = format(new Date(order.created_at), 'yyyy-MM-dd');
+        return createdDate === dayStr;
+      }).length;
+
+      return {
+        date: format(day, 'dd/MM', { locale: es }),
+        entregados: delivered,
+        creados: created
+      };
+    });
+  };
+
+  // Tendencias por semana (últimas 8 semanas)
+  const getDeliveryTrendsByWeek = () => {
+    const weeks = [];
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = startOfWeek(subDays(new Date(), i * 7), { weekStartsOn: 1 });
+      const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
+      
+      const delivered = orders.filter((order: any) => {
+        if (!order.delivered_at) return false;
+        const deliveredDate = new Date(order.delivered_at);
+        return deliveredDate >= weekStart && deliveredDate <= weekEnd;
+      }).length;
+
+      const created = orders.filter((order: any) => {
+        const createdDate = new Date(order.created_at);
+        return createdDate >= weekStart && createdDate <= weekEnd;
+      }).length;
+
+      weeks.push({
+        semana: `Sem ${format(weekStart, 'dd/MM')}`,
+        entregados: delivered,
+        creados: created
+      });
+    }
+    return weeks;
+  };
+
   const avgDelivery = calculateAverageDeliveryTime();
   const statusSummary = getOrderStatusSummary();
   const delayAnalysis = getDelayAnalysis();
   const inTransit = getInTransitOrders();
+  const dailyTrends = getDeliveryTrendsByDay();
+  const weeklyTrends = getDeliveryTrendsByWeek();
 
   return (
     <div className="space-y-4">
@@ -239,6 +297,106 @@ export const OrderMetricsDashboard = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Gráficos de tendencias */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Tendencia diaria (últimos 30 días) */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <BarChart3 className="h-4 w-4" />
+              Entregas por Día (Últimos 30 días)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={dailyTrends}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                  dataKey="date" 
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <YAxis 
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="entregados" 
+                  stroke="hsl(var(--primary))" 
+                  strokeWidth={2}
+                  name="Entregados"
+                  dot={{ fill: 'hsl(var(--primary))' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="creados" 
+                  stroke="hsl(var(--muted-foreground))" 
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  name="Creados"
+                  dot={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Tendencia semanal */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <TrendingUp className="h-4 w-4" />
+              Entregas por Semana (Últimas 8 semanas)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={weeklyTrends}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                  dataKey="semana" 
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <YAxis 
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+                <Bar 
+                  dataKey="entregados" 
+                  fill="hsl(var(--primary))" 
+                  name="Entregados"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar 
+                  dataKey="creados" 
+                  fill="hsl(var(--muted-foreground))" 
+                  name="Creados"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Comparación período */}
       <Card>
