@@ -27,6 +27,7 @@ import SyncProducts from "./pages/admin/SyncProducts";
 import SuppliersManagement from "./pages/admin/SuppliersManagement";
 import PurchaseOrders from "./pages/admin/PurchaseOrders";
 import Products from "./pages/admin/Products";
+import ReorderPointsIA from "./pages/admin/ReorderPointsIA";
 import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
 
 const queryClient = new QueryClient();
@@ -61,6 +62,14 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <InventoryIA />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/punto-reorden-ia"
+              element={
+                <ProtectedAdminRoute>
+                  <ReorderPointsIA />
                 </ProtectedAdminRoute>
               }
             />
