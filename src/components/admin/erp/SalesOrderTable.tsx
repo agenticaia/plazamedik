@@ -11,9 +11,37 @@ import {
 } from "@/components/ui/table";
 import { useSalesOrders, SalesOrder } from "@/hooks/useSalesOrders";
 import { BackorderBadge } from "./BackorderBadge";
+import { OrderDetailDrawer } from "./OrderDetailDrawer";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export const SalesOrderTable = () => {
-  const { orders, isLoading } = useSalesOrders();
+  const { orders, isLoading, updateStatus } = useSalesOrders();
+  const [selectedOrder, setSelectedOrder] = useState<SalesOrder | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const handleViewDetails = (order: SalesOrder) => {
+    setSelectedOrder(order);
+    setDrawerOpen(true);
+  };
+
+  const handleUpdateStatus = async (orderId: string, status: string) => {
+    try {
+      await updateStatus.mutateAsync({ 
+        orderId, 
+        status: status as any 
+      });
+      toast.success("Estado actualizado exitosamente");
+    } catch (error) {
+      toast.error("Error al actualizar estado");
+    }
+  };
+
+  const handleCreatePO = (order: SalesOrder) => {
+    // Navigate to purchase orders page with pre-filled data
+    toast.info("Redirigiendo a crear orden de compra...");
+    // TODO: Navigate with order context
+  };
 
   if (isLoading) {
     return <div className="text-center py-8">Cargando pedidos...</div>;
@@ -94,14 +122,28 @@ export const SalesOrderTable = () => {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleViewDetails(order)}
+                      title="Ver detalles completos"
+                    >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      title="Generar factura"
+                    >
                       <FileText className="h-4 w-4" />
                     </Button>
                     {hasBackorder && (
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleCreatePO(order)}
+                        title="Crear orden de compra"
+                      >
                         <ShoppingCart className="h-4 w-4" />
                       </Button>
                     )}
@@ -112,6 +154,13 @@ export const SalesOrderTable = () => {
           })}
         </TableBody>
       </Table>
+
+      <OrderDetailDrawer
+        order={selectedOrder}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        onUpdateStatus={handleUpdateStatus}
+      />
     </div>
   );
 };

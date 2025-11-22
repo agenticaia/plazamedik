@@ -16,6 +16,17 @@ export interface SalesOrder {
   recommended_by: string | null;
   created_at: string;
   updated_at: string;
+  items?: SalesOrderItem[];
+  picking_started_at?: string | null;
+  packed_at?: string | null;
+  shipped_at?: string | null;
+  delivered_at?: string | null;
+  tracking_number?: string | null;
+  courier?: string | null;
+  priority?: string | null;
+  customer_type?: string | null;
+  payment_method?: string | null;
+  notes?: string | null;
 }
 
 export interface SalesOrderItem {
@@ -52,22 +63,38 @@ export const useSalesOrders = () => {
 
   const updateStatus = useMutation({
     mutationFn: async ({ 
-      id, 
+      orderId, 
+      status,
       payment_status, 
       fulfillment_status 
     }: { 
-      id: string; 
+      orderId: string; 
+      status?: string;
       payment_status?: SalesOrder["payment_status"];
       fulfillment_status?: SalesOrder["fulfillment_status"];
     }) => {
       const updates: any = {};
+      
+      // Handle status string shortcuts
+      if (status === 'PICKING') {
+        updates.fulfillment_status = 'UNFULFILLED';
+        updates.picking_started_at = new Date().toISOString();
+      } else if (status === 'SHIPPED') {
+        updates.fulfillment_status = 'PARTIAL';
+        updates.shipped_at = new Date().toISOString();
+      } else if (status === 'FULFILLED') {
+        updates.fulfillment_status = 'FULFILLED';
+        updates.delivered_at = new Date().toISOString();
+      }
+      
+      // Direct status updates
       if (payment_status) updates.payment_status = payment_status;
       if (fulfillment_status) updates.fulfillment_status = fulfillment_status;
 
       const { data, error } = await supabase
         .from("sales_orders")
         .update(updates)
-        .eq("id", id)
+        .eq("id", orderId)
         .select()
         .single();
 
@@ -76,6 +103,7 @@ export const useSalesOrders = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order-state-log"] });
       toast.success("Estado actualizado exitosamente");
     },
     onError: (error) => {

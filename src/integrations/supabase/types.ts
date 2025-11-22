@@ -110,6 +110,47 @@ export type Database = {
         }
         Relationships: []
       }
+      order_state_log: {
+        Row: {
+          automated: boolean | null
+          changed_at: string
+          changed_by: string | null
+          from_state: string | null
+          id: string
+          notes: string | null
+          sales_order_id: string
+          to_state: string
+        }
+        Insert: {
+          automated?: boolean | null
+          changed_at?: string
+          changed_by?: string | null
+          from_state?: string | null
+          id?: string
+          notes?: string | null
+          sales_order_id: string
+          to_state: string
+        }
+        Update: {
+          automated?: boolean | null
+          changed_at?: string
+          changed_by?: string | null
+          from_state?: string | null
+          id?: string
+          notes?: string | null
+          sales_order_id?: string
+          to_state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_state_log_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "sales_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           created_at: string
@@ -512,48 +553,78 @@ export type Database = {
       }
       sales_orders: {
         Row: {
+          courier: string | null
           created_at: string | null
           customer_district: string | null
           customer_lastname: string | null
           customer_name: string
           customer_phone: string | null
+          customer_type: string | null
+          delivered_at: string | null
           fulfillment_status: string | null
           id: string
+          notes: string | null
           order_number: string
+          packed_at: string | null
+          payment_method: string | null
           payment_status: string | null
+          picking_started_at: string | null
+          priority: string | null
           recommended_by: string | null
+          shipped_at: string | null
           source: string | null
           total: number
+          tracking_number: string | null
           updated_at: string | null
         }
         Insert: {
+          courier?: string | null
           created_at?: string | null
           customer_district?: string | null
           customer_lastname?: string | null
           customer_name: string
           customer_phone?: string | null
+          customer_type?: string | null
+          delivered_at?: string | null
           fulfillment_status?: string | null
           id?: string
+          notes?: string | null
           order_number: string
+          packed_at?: string | null
+          payment_method?: string | null
           payment_status?: string | null
+          picking_started_at?: string | null
+          priority?: string | null
           recommended_by?: string | null
+          shipped_at?: string | null
           source?: string | null
           total: number
+          tracking_number?: string | null
           updated_at?: string | null
         }
         Update: {
+          courier?: string | null
           created_at?: string | null
           customer_district?: string | null
           customer_lastname?: string | null
           customer_name?: string
           customer_phone?: string | null
+          customer_type?: string | null
+          delivered_at?: string | null
           fulfillment_status?: string | null
           id?: string
+          notes?: string | null
           order_number?: string
+          packed_at?: string | null
+          payment_method?: string | null
           payment_status?: string | null
+          picking_started_at?: string | null
+          priority?: string | null
           recommended_by?: string | null
+          shipped_at?: string | null
           source?: string | null
           total?: number
+          tracking_number?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -737,7 +808,9 @@ export type Database = {
         Returns: boolean
       }
       generate_order_code: { Args: never; Returns: string }
+      generate_po_number_sequential: { Args: never; Returns: string }
       generate_purchase_order_number: { Args: never; Returns: string }
+      generate_sales_order_number: { Args: never; Returns: string }
       get_dashboard_metrics: { Args: never; Returns: Json }
       get_low_stock_products: {
         Args: { p_threshold?: number }

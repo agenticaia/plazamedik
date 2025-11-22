@@ -54,7 +54,7 @@ export const usePurchaseOrders = () => {
       ai_recommendation?: any;
       notes?: string;
     }) => {
-      const { data: orderNumber } = await supabase.rpc("generate_purchase_order_number");
+      const { data: orderNumber } = await supabase.rpc("generate_po_number_sequential");
       
       const total_amount = order.quantity * order.unit_price;
       
