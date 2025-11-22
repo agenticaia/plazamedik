@@ -53,6 +53,9 @@ export const usePurchaseOrders = () => {
       expected_delivery_date?: string;
       ai_recommendation?: any;
       notes?: string;
+      po_type?: string;
+      priority?: string;
+      linked_sales_order_id?: string;
     }) => {
       const { data: orderNumber } = await supabase.rpc("generate_po_number_sequential");
       
