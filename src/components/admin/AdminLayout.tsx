@@ -1,8 +1,22 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart, Target, BarChart3, CreditCard, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart, Target, BarChart3, CreditCard, TrendingUp, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
+} from '@/components/ui/sidebar';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -18,7 +32,72 @@ const navigation = [
   { name: 'Sincronizar DB', href: '/admin/sincronizar-productos', icon: Database },
 ];
 
-export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+function AppSidebar() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { state } = useSidebar();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: 'Sesión cerrada',
+      description: 'Has cerrado sesión correctamente.',
+    });
+    navigate('/admin');
+  };
+
+  return (
+    <Sidebar collapsible="icon">
+      <SidebarContent>
+        <div className="p-4 border-b">
+          <h2 className={`text-xl font-bold text-primary transition-opacity ${state === 'collapsed' ? 'opacity-0' : 'opacity-100'}`}>
+            PlazaMedik Admin
+          </h2>
+          {state !== 'collapsed' && (
+            <p className="text-sm text-muted-foreground">ERP Dashboard</p>
+          )}
+        </div>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Navegación</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.href;
+                
+                return (
+                  <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton asChild isActive={isActive}>
+                      <Link to={item.href}>
+                        <Icon className="h-5 w-5" />
+                        <span>{item.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <div className="mt-auto p-4 border-t">
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-3 h-5 w-5" />
+            {state !== 'collapsed' && <span>Cerrar Sesión</span>}
+          </Button>
+        </div>
+      </SidebarContent>
+    </Sidebar>
+  );
+}
+
+function MobileNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -33,9 +112,13 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <aside className="w-64 border-r bg-card">
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-6 w-6" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-64 p-0">
         <div className="flex flex-col h-full">
           <div className="p-6 border-b">
             <h2 className="text-xl font-bold text-primary">PlazaMedik Admin</h2>
@@ -75,12 +158,35 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
             </Button>
           </div>
         </div>
-      </aside>
+      </SheetContent>
+    </Sheet>
+  );
+}
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
-    </div>
+export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        {/* Desktop Sidebar */}
+        <div className="hidden md:flex">
+          <AppSidebar />
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col w-full">
+          {/* Mobile Header */}
+          <header className="h-14 border-b flex items-center px-4 md:px-6 bg-background sticky top-0 z-10">
+            <MobileNav />
+            <SidebarTrigger className="hidden md:flex" />
+            <h1 className="text-lg font-semibold ml-4 md:ml-0">PlazaMedik Admin</h1>
+          </header>
+
+          {/* Page Content */}
+          <main className="flex-1 overflow-auto">
+            {children}
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 };

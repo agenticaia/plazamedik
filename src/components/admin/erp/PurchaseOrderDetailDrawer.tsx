@@ -184,25 +184,25 @@ export function PurchaseOrderDetailDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="flex items-center justify-between">
+      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6">
+        <SheetHeader className="pb-4">
+          <SheetTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <StatusIcon className={`h-6 w-6 ${statusConfig.color}`} />
+              <StatusIcon className={`h-5 w-5 sm:h-6 sm:w-6 ${statusConfig.color}`} />
               <div>
-                <div className="font-mono text-lg">{order.order_number}</div>
-                <div className="text-sm text-muted-foreground font-normal">
+                <div className="font-mono text-base sm:text-lg">{order.order_number}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground font-normal">
                   Orden de Compra
                 </div>
               </div>
             </div>
-            <Badge variant={order.order_type === 'automatica' ? 'default' : 'outline'}>
+            <Badge variant={order.order_type === 'automatica' ? 'default' : 'outline'} className="self-start sm:self-center">
               {order.order_type === 'automatica' ? 'Automática' : 'Manual'}
             </Badge>
           </SheetTitle>
         </SheetHeader>
 
-        <div className="space-y-6 mt-6">
+        <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
           {/* Estado y Progreso */}
           <Card>
             <CardHeader>
