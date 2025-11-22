@@ -248,6 +248,7 @@ export type Database = {
           ideal_para: string | null
           imagen_url: string | null
           is_discontinued: boolean | null
+          lead_time_days_override: number | null
           max_stock_level: number | null
           min_stock_level: number | null
           nombre_producto: string
@@ -256,6 +257,7 @@ export type Database = {
           preferred_supplier_id: string | null
           product_code: string
           reorder_point: number | null
+          sales_velocity_7d: number | null
           tallas_disponibles: string[] | null
           total_recommendations: number | null
           total_vendido: number | null
@@ -281,6 +283,7 @@ export type Database = {
           ideal_para?: string | null
           imagen_url?: string | null
           is_discontinued?: boolean | null
+          lead_time_days_override?: number | null
           max_stock_level?: number | null
           min_stock_level?: number | null
           nombre_producto: string
@@ -289,6 +292,7 @@ export type Database = {
           preferred_supplier_id?: string | null
           product_code: string
           reorder_point?: number | null
+          sales_velocity_7d?: number | null
           tallas_disponibles?: string[] | null
           total_recommendations?: number | null
           total_vendido?: number | null
@@ -314,6 +318,7 @@ export type Database = {
           ideal_para?: string | null
           imagen_url?: string | null
           is_discontinued?: boolean | null
+          lead_time_days_override?: number | null
           max_stock_level?: number | null
           min_stock_level?: number | null
           nombre_producto?: string
@@ -322,6 +327,7 @@ export type Database = {
           preferred_supplier_id?: string | null
           product_code?: string
           reorder_point?: number | null
+          sales_velocity_7d?: number | null
           tallas_disponibles?: string[] | null
           total_recommendations?: number | null
           total_vendido?: number | null
