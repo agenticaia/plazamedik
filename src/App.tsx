@@ -29,6 +29,7 @@ import PurchaseOrders from "./pages/admin/PurchaseOrders";
 import Products from "./pages/admin/Products";
 import ReorderPointsIA from "./pages/admin/ReorderPointsIA";
 import ExecutiveDashboard from "./pages/admin/ExecutiveDashboard";
+import PaymentDashboard from "./pages/admin/PaymentDashboard";
 import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
 
 const queryClient = new QueryClient();
@@ -127,6 +128,14 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <ExecutiveDashboard />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/pagos"
+              element={
+                <ProtectedAdminRoute>
+                  <PaymentDashboard />
                 </ProtectedAdminRoute>
               }
             />
