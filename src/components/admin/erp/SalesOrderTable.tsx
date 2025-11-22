@@ -47,15 +47,28 @@ export const SalesOrderTable = () => {
     return <div className="text-center py-8">Cargando pedidos...</div>;
   }
 
-  const getPaymentBadge = (status: SalesOrder["payment_status"]) => {
+  const getPaymentBadge = (
+    status: SalesOrder["payment_status"], 
+    fulfillmentStatus: SalesOrder["fulfillment_status"],
+    paymentMethod?: string | null
+  ) => {
     const variants = {
       PAID: { variant: "default" as const, label: "Pagado" },
-      PENDING: { variant: "secondary" as const, label: "Pendiente" },
+      PENDING: { 
+        variant: "secondary" as const, 
+        label: fulfillmentStatus === "FULFILLED" && paymentMethod === "contra_entrega" 
+          ? "⏳ Pendiente Courier" 
+          : "Pendiente" 
+      },
       REFUNDED: { variant: "outline" as const, label: "Reembolsado" },
       CANCELLED: { variant: "destructive" as const, label: "Cancelado" },
     };
     const config = variants[status];
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+    return <Badge variant={config.variant} title={
+      status === "PENDING" && fulfillmentStatus === "FULFILLED" && paymentMethod === "contra_entrega"
+        ? "Pedido entregado. Esperando transferencia del courier a Plaza Medik"
+        : undefined
+    }>{config.label}</Badge>;
   };
 
   const getFulfillmentBadge = (status: SalesOrder["fulfillment_status"]) => {
@@ -116,7 +129,7 @@ export const SalesOrderTable = () => {
                     )}
                   </div>
                 </TableCell>
-                <TableCell>{getPaymentBadge(order.payment_status)}</TableCell>
+                <TableCell>{getPaymentBadge(order.payment_status, order.fulfillment_status, order.payment_method)}</TableCell>
                 <TableCell>{getFulfillmentBadge(order.fulfillment_status)}</TableCell>
                 <TableCell className="font-semibold">
                   S/ {Number(order.total).toFixed(2)}
