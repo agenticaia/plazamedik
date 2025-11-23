@@ -47,13 +47,20 @@ export default function SalesStatistics() {
     avgOrderValue: 0,
     monthlyGrowth: 0,
   });
-  const [selectedPeriod, setSelectedPeriod] = useState<"6m" | "12m">("6m");
+  const [selectedPeriod, setSelectedPeriod] = useState<"7d" | "30d" | "6m" | "12m">("30d");
 
   const loadStatistics = async () => {
     setLoading(true);
     try {
-      const months = selectedPeriod === "6m" ? 6 : 12;
-      const startDate = subMonths(new Date(), months);
+      let startDate: Date;
+      if (selectedPeriod === "7d") {
+        startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      } else if (selectedPeriod === "30d") {
+        startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      } else {
+        const months = selectedPeriod === "6m" ? 6 : 12;
+        startDate = subMonths(new Date(), months);
+      }
 
       // Cargar ventas mensuales de sales_orders
       const { data: salesOrders, error: salesError } = await supabase
@@ -73,48 +80,53 @@ export default function SalesStatistics() {
 
       if (legacyError) throw legacyError;
 
-      // Procesar datos mensuales
-      const monthlyData: { [key: string]: { total: number; orders: number } } = {};
+      // Procesar datos por período (días o meses)
+      const periodData: { [key: string]: { total: number; orders: number } } = {};
+      const isDaily = selectedPeriod === "7d" || selectedPeriod === "30d";
       
       salesOrders?.forEach((order) => {
-        const monthKey = format(new Date(order.created_at), "MMM yyyy", { locale: es });
-        if (!monthlyData[monthKey]) {
-          monthlyData[monthKey] = { total: 0, orders: 0 };
+        const periodKey = isDaily 
+          ? format(new Date(order.created_at), "dd MMM", { locale: es })
+          : format(new Date(order.created_at), "MMM yyyy", { locale: es });
+        if (!periodData[periodKey]) {
+          periodData[periodKey] = { total: 0, orders: 0 };
         }
-        monthlyData[monthKey].total += Number(order.total);
-        monthlyData[monthKey].orders += 1;
+        periodData[periodKey].total += Number(order.total);
+        periodData[periodKey].orders += 1;
       });
 
       legacyOrders?.forEach((order) => {
-        const monthKey = format(new Date(order.created_at), "MMM yyyy", { locale: es });
-        if (!monthlyData[monthKey]) {
-          monthlyData[monthKey] = { total: 0, orders: 0 };
+        const periodKey = isDaily 
+          ? format(new Date(order.created_at), "dd MMM", { locale: es })
+          : format(new Date(order.created_at), "MMM yyyy", { locale: es });
+        if (!periodData[periodKey]) {
+          periodData[periodKey] = { total: 0, orders: 0 };
         }
-        monthlyData[monthKey].total += Number(order.product_price);
-        monthlyData[monthKey].orders += 1;
+        periodData[periodKey].total += Number(order.product_price);
+        periodData[periodKey].orders += 1;
       });
 
-      const monthlyArray: MonthlySales[] = Object.entries(monthlyData).map(([month, data]) => ({
+      const periodArray: MonthlySales[] = Object.entries(periodData).map(([month, data]) => ({
         month,
         total: data.total,
         orders: data.orders,
         avgOrderValue: data.orders > 0 ? data.total / data.orders : 0,
       }));
 
-      setMonthlySales(monthlyArray);
+      setMonthlySales(periodArray);
 
       // Calcular estadísticas generales
-      const totalRevenue = monthlyArray.reduce((sum, m) => sum + m.total, 0);
-      const totalOrders = monthlyArray.reduce((sum, m) => sum + m.orders, 0);
+      const totalRevenue = periodArray.reduce((sum, m) => sum + m.total, 0);
+      const totalOrders = periodArray.reduce((sum, m) => sum + m.orders, 0);
       const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-      // Calcular crecimiento mensual
+      // Calcular crecimiento del período
       let monthlyGrowth = 0;
-      if (monthlyArray.length >= 2) {
-        const lastMonth = monthlyArray[monthlyArray.length - 1].total;
-        const previousMonth = monthlyArray[monthlyArray.length - 2].total;
-        monthlyGrowth = previousMonth > 0 
-          ? ((lastMonth - previousMonth) / previousMonth) * 100 
+      if (periodArray.length >= 2) {
+        const lastPeriod = periodArray[periodArray.length - 1].total;
+        const previousPeriod = periodArray[periodArray.length - 2].total;
+        monthlyGrowth = previousPeriod > 0 
+          ? ((lastPeriod - previousPeriod) / previousPeriod) * 100 
           : 0;
       }
 
@@ -228,7 +240,21 @@ export default function SalesStatistics() {
               Análisis de rendimiento mensual en soles peruanos
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant={selectedPeriod === "7d" ? "default" : "outline"}
+              onClick={() => setSelectedPeriod("7d")}
+              size="sm"
+            >
+              7 Días
+            </Button>
+            <Button
+              variant={selectedPeriod === "30d" ? "default" : "outline"}
+              onClick={() => setSelectedPeriod("30d")}
+              size="sm"
+            >
+              30 Días
+            </Button>
             <Button
               variant={selectedPeriod === "6m" ? "default" : "outline"}
               onClick={() => setSelectedPeriod("6m")}
@@ -263,7 +289,11 @@ export default function SalesStatistics() {
                 S/ {stats.totalRevenue.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Últimos {selectedPeriod === "6m" ? "6" : "12"} meses
+                Últimos {
+                  selectedPeriod === "7d" ? "7 días" :
+                  selectedPeriod === "30d" ? "30 días" :
+                  selectedPeriod === "6m" ? "6 meses" : "12 meses"
+                }
               </p>
             </CardContent>
           </Card>
@@ -314,7 +344,9 @@ export default function SalesStatistics() {
                 )}
                 {Math.abs(stats.monthlyGrowth).toFixed(1)}%
               </div>
-              <p className="text-xs text-muted-foreground mt-1">vs mes anterior</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                vs {selectedPeriod === "7d" || selectedPeriod === "30d" ? "día anterior" : "mes anterior"}
+              </p>
             </CardContent>
           </Card>
         </div>
