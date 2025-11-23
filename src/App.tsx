@@ -31,6 +31,7 @@ import ReorderPointsIA from "./pages/admin/ReorderPointsIA";
 import ExecutiveDashboard from "./pages/admin/ExecutiveDashboard";
 import PaymentDashboard from "./pages/admin/PaymentDashboard";
 import SalesStatistics from "./pages/admin/SalesStatistics";
+import Wiki from "./pages/admin/Wiki";
 import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
 
 const queryClient = new QueryClient();
@@ -145,6 +146,14 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <SalesStatistics />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/wiki"
+              element={
+                <ProtectedAdminRoute>
+                  <Wiki />
                 </ProtectedAdminRoute>
               }
             />
