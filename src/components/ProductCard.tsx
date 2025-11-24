@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, MessageCircle, Sparkles, Heart } from "lucide-react";
-import type { Product } from "@/hooks/useProducts";
+import type { GroupedProduct } from "@/hooks/useProducts";
 import OrderModal from "@/components/OrderModal";
 import {
   Dialog,
@@ -18,7 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
-  product: Product;
+  product: GroupedProduct;
   featured?: boolean;
   showTreatmentButton?: boolean;
 }
@@ -26,9 +26,14 @@ interface ProductCardProps {
 const ProductCard = ({ product, featured = false, showTreatmentButton = false }: ProductCardProps) => {
   const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [recommendationsOpen, setRecommendationsOpen] = useState(false);
+  const [selectedColor, setSelectedColor] = useState(product.variants?.[0]?.color || product.colors[0] || "Piel");
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
+
+  // Get current variant based on selected color
+  const currentVariant = product.variants?.find(v => v.color === selectedColor) || product.variants?.[0];
+  const currentImage = currentVariant?.image || product.image;
 
   const handleCardClick = () => {
     navigate(`/producto?codigo=${product.code}`);
@@ -59,6 +64,7 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
         open={orderModalOpen}
         onOpenChange={setOrderModalOpen}
         product={product}
+        selectedColor={selectedColor}
       />
     <Card 
       onClick={handleCardClick}
@@ -67,7 +73,7 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
       <CardHeader className="p-0">
         <div className="relative aspect-[3/4] overflow-hidden bg-muted">
           <img
-            src={product.image}
+            src={currentImage}
             alt={product.name}
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
@@ -137,12 +143,34 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
           <Badge variant="outline" className="text-xs">
             Tallas {product.sizes[0]}-{product.sizes[product.sizes.length - 1]}
           </Badge>
-          {product.colors.length > 0 && (
-            <Badge variant="outline" className="text-xs">
-              {product.colors.join(", ")}
-            </Badge>
-          )}
         </div>
+
+        {/* Color Selector */}
+        {product.allColors && product.allColors.length > 1 && (
+          <div className="pt-2">
+            <p className="text-xs font-medium text-muted-foreground mb-2">Color:</p>
+            <div className="flex gap-2">
+              {product.allColors.map((color) => (
+                <button
+                  key={color}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedColor(color);
+                  }}
+                  className={cn(
+                    "w-8 h-8 rounded-full border-2 transition-all",
+                    selectedColor === color 
+                      ? "border-primary scale-110" 
+                      : "border-border hover:border-primary/50",
+                    color.toLowerCase() === "piel" && "bg-[#f5d7c4]",
+                    color.toLowerCase() === "negro" && "bg-[#1a1a1a]"
+                  )}
+                  title={color}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </CardContent>
 
       <CardFooter className="p-6 pt-0 flex flex-col gap-2">

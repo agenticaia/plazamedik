@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { mapDbProductToBase, type BaseProduct } from '@/lib/productMapping';
+import { groupProductsByName, type GroupedProduct } from '@/lib/productGrouping';
 import type { Tables } from '@/integrations/supabase/types';
 
 export interface Product extends BaseProduct {
   stock: number;
 }
 
-export function useProducts(adminView: boolean = false) {
+export type { GroupedProduct };
+
+export function useProducts(adminView: boolean = false, grouped: boolean = false) {
   const [products, setProducts] = useState<Product[]>([]);
+  const [groupedProducts, setGroupedProducts] = useState<GroupedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +47,13 @@ export function useProducts(adminView: boolean = false) {
       });
 
       setProducts(transformedProducts);
+      
+      // Group products if requested
+      if (grouped) {
+        const grouped = groupProductsByName(transformedProducts);
+        setGroupedProducts(grouped);
+      }
+      
       setError(null);
     } catch (err) {
       console.error('Error fetching products:', err);
@@ -73,9 +84,14 @@ export function useProducts(adminView: boolean = false) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [grouped]);
 
-  return { products, loading, error, refetch: fetchProducts };
+  return { 
+    products: grouped ? groupedProducts as any : products, 
+    loading, 
+    error, 
+    refetch: fetchProducts 
+  };
 }
 
 export function useProduct(code: string | null) {

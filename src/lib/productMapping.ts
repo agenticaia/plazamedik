@@ -23,7 +23,13 @@ export interface BaseProduct {
 
 // Mapea una fila de BD (tabla products) al modelo de producto que usa el frontend
 export function mapDbProductToBase(dbProduct: Tables<"products">): BaseProduct {
-  const name = dbProduct.nombre_producto;
+  // Extract color from name before removing it
+  const rawName = dbProduct.nombre_producto;
+  const colorMatch = rawName.match(/\s*-\s*(Piel|Negro|piel|negro)\s*$/i);
+  const extractedColor = colorMatch ? colorMatch[1].charAt(0).toUpperCase() + colorMatch[1].slice(1).toLowerCase() : "Piel";
+  
+  // Remove color suffix from name
+  const name = rawName.replace(/\s*-\s*(Piel|Negro|piel|negro)\s*$/i, '').trim();
   const lowerName = name.toLowerCase();
 
   // Marca por defecto (podemos hacerla dinámica más adelante)
@@ -41,10 +47,13 @@ export function mapDbProductToBase(dbProduct: Tables<"products">): BaseProduct {
   const compressionMatch = name.match(/(\d+-\d+\s*mmHg)/i);
   const compression = compressionMatch ? compressionMatch[1] : "20-30 mmHg";
 
-  const primaryColor = (dbProduct.colores_disponibles?.[0] || "Piel").toLowerCase();
+  // Use extracted color or fallback to colores_disponibles array
+  const colorsArray = dbProduct.colores_disponibles && dbProduct.colores_disponibles.length > 0 
+    ? dbProduct.colores_disponibles 
+    : [extractedColor];
 
   return {
-    id: `${dbProduct.product_code}-${primaryColor}`,
+    id: `${dbProduct.product_code}-${extractedColor.toLowerCase()}`,
     code: dbProduct.product_code,
     name,
     subtitle: dbProduct.descripcion_corta || "Compresión médica certificada",
@@ -55,7 +64,7 @@ export function mapDbProductToBase(dbProduct: Tables<"products">): BaseProduct {
     category: [dbProduct.categoria],
     type,
     sizes: dbProduct.tallas_disponibles || [],
-    colors: dbProduct.colores_disponibles || [],
+    colors: colorsArray,
     priceOriginal: Number(dbProduct.precio_anterior) || Number(dbProduct.precio) * 1.25,
     priceSale: Number(dbProduct.precio),
     compression,

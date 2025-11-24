@@ -30,7 +30,8 @@ import {
 
 const Home = () => {
   const [testOpen, setTestOpen] = useState(false);
-  const { products, loading } = useProducts();
+  // Use grouped products to avoid showing duplicates
+  const { products, loading } = useProducts(false, true);
   const featuredProducts = products.slice(0, 4);
 
   return (
