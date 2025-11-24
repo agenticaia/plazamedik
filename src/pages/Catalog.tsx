@@ -7,7 +7,7 @@ import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getWhatsAppLink } from "@/lib/productUtils";
-import { useProducts } from "@/hooks/useProducts";
+import { useGroupedProducts } from "@/hooks/useGroupedProducts";
 import { Filter, ClipboardCheck, MessageCircle, Loader2 } from "lucide-react";
 
 const Catalog = () => {
@@ -15,7 +15,7 @@ const Catalog = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   
-  const { products, loading, error } = useProducts();
+  const { products, loading, error } = useGroupedProducts();
 
   const filteredProducts = products.filter((product) => {
     const categoryMatch =
@@ -170,7 +170,12 @@ const Catalog = () => {
             {filteredProducts.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} showTreatmentButton />
+                  <ProductCard 
+                    key={product.code} 
+                    product={product} 
+                    showTreatmentButton 
+                    allImages={product.allImages}
+                  />
                 ))}
               </div>
             ) : (

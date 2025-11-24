@@ -9,7 +9,7 @@ import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useProducts } from "@/hooks/useProducts";
+import { useGroupedProducts } from "@/hooks/useGroupedProducts";
 import { getWhatsAppLink } from "@/lib/productUtils";
 import { 
   MessageCircle, 
@@ -30,7 +30,7 @@ import {
 
 const Home = () => {
   const [testOpen, setTestOpen] = useState(false);
-  const { products, loading } = useProducts();
+  const { products, loading } = useGroupedProducts();
   const featuredProducts = products.slice(0, 4);
 
   return (
