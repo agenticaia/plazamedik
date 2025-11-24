@@ -1,364 +1,383 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 import ProductCard from "@/components/ProductCard";
-import RecommendationsCarousel from "@/components/RecommendationsCarousel";
-import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, Heart, Shield, TrendingUp, MessageCircle, Star, ClipboardCheck, Loader2 } from "lucide-react";
-import { getWhatsAppLink } from "@/lib/productUtils";
+import { Badge } from "@/components/ui/badge";
 import { useProducts } from "@/hooks/useProducts";
-import heroBanner from "@/assets/hero-banner.png";
+import { getWhatsAppLink } from "@/lib/productUtils";
+import { 
+  MessageCircle, 
+  ShieldCheck, 
+  Truck, 
+  CreditCard, 
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  Award,
+  Users,
+  HeartPulse,
+  Activity,
+  Zap
+} from "lucide-react";
 
 const Home = () => {
-  const [testOpen, setTestOpen] = useState(false);
   const { products, loading } = useProducts();
-  
-  // Obtener productos destacados: los 4 más vendidos o con mejor rendimiento
-  const featuredProducts = products
-    .filter(p => p.stock > 0)
-    .slice(0, 4);
+  const featuredProducts = products.slice(0, 4);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       <WhatsAppFloat />
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-hero text-primary-foreground overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <img src={heroBanner} alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="relative container mx-auto px-4 py-20 md:py-32">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              Piernas ligeras, incluso después de un turno eterno
-            </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/90">
-              Medias de compresión Relaxsan Basic 20-30 mmHg. Alivio profesional para várices, trabajo de pie y piernas cansadas. Tallas S hasta 3XL.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button
-                size="lg"
-                onClick={() => setTestOpen(true)}
-                className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-8"
-              >
-                <ClipboardCheck className="w-5 h-5 mr-2" />
-                Hacer Test Gratis
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="bg-primary-foreground/10 border-primary-foreground/20 hover:bg-primary-foreground/20 text-primary-foreground text-lg px-8"
-              >
-                <a href="#productos">Ver Catálogo</a>
-              </Button>
+      {/* Hero Section - Medical Professional */}
+      <section className="relative bg-gradient-hero overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5 bg-cover bg-center" />
+        <div className="container mx-auto px-4 py-16 md:py-24 relative">
+          <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            <div className="space-y-6 text-white">
+              <Badge className="bg-health-green text-white border-0 px-4 py-2 text-sm font-medium">
+                <Clock className="w-4 h-4 mr-2" />
+                Entrega en 24-48 horas
+              </Badge>
+              
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                Alivio de piernas cansadas y varices en 24 horas
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-blue-50 leading-relaxed">
+                Te recomendaremos la media perfecta por WhatsApp en solo 2 minutos
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Button
+                  size="lg"
+                  className="bg-health-green hover:bg-health-green/90 text-white text-lg px-8 py-6 h-auto shadow-hover transition-all hover:scale-105"
+                  onClick={() => window.open(getWhatsAppLink("", "Hola, necesito asesoría sobre medias de compresión. Quiero aliviar mis piernas cansadas."), "_blank")}
+                >
+                  <MessageCircle className="w-6 h-6 mr-3" />
+                  Consulta Gratis por WhatsApp
+                </Button>
+                
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 h-auto backdrop-blur-sm"
+                  asChild
+                >
+                  <Link to="/catalog">
+                    Ver Catálogo
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Link>
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-6 pt-6 text-blue-50">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span className="text-sm">+5,000 clientes satisfechos</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Award className="w-5 h-5" />
+                  <span className="text-sm">Garantía médica</span>
+                </div>
+              </div>
             </div>
-            <p className="text-sm text-primary-foreground/80 mt-4">
-              Test creado con apoyo de especialistas • No reemplaza consulta médica
-            </p>
+
+            <div className="relative hidden md:block">
+              <div className="absolute -inset-4 bg-health-green/20 rounded-3xl blur-2xl" />
+              <img
+                src="/placeholder.svg"
+                alt="Persona usando medias de compresión"
+                className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      <TestDialog open={testOpen} onOpenChange={setTestOpen} />
-
-      {/* Banner Test */}
-      <section className="bg-accent py-6">
+      {/* Benefits Section - Iconography Minimalist */}
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-center md:text-left">
-              <h3 className="text-xl font-bold text-accent-foreground mb-1">
-                ¿No sabes qué media necesitas?
-              </h3>
-              <p className="text-accent-foreground/80">
-                Haz el test en 2 minutos y recibe una recomendación personalizada
-              </p>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
+              <CardContent className="pt-6 text-center space-y-3">
+                <div className="w-14 h-14 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                  <Users className="w-7 h-7 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground">Asesoría Personalizada</h3>
+                <p className="text-sm text-muted-foreground">Te ayudamos a elegir</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
+              <CardContent className="pt-6 text-center space-y-3">
+                <div className="w-14 h-14 mx-auto bg-health-green/10 rounded-full flex items-center justify-center">
+                  <Truck className="w-7 h-7 text-health-green" />
+                </div>
+                <h3 className="font-semibold text-foreground">Envío Rápido</h3>
+                <p className="text-sm text-muted-foreground">24-48 horas</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
+              <CardContent className="pt-6 text-center space-y-3">
+                <div className="w-14 h-14 mx-auto bg-secondary/10 rounded-full flex items-center justify-center">
+                  <CreditCard className="w-7 h-7 text-secondary" />
+                </div>
+                <h3 className="font-semibold text-foreground">Pago Contraentrega</h3>
+                <p className="text-sm text-muted-foreground">Seguro y fácil</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
+              <CardContent className="pt-6 text-center space-y-3">
+                <div className="w-14 h-14 mx-auto bg-clinical-alert/10 rounded-full flex items-center justify-center">
+                  <ShieldCheck className="w-7 h-7 text-clinical-alert" />
+                </div>
+                <h3 className="font-semibold text-foreground">Garantía de Talla</h3>
+                <p className="text-sm text-muted-foreground">Cambio gratis</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Educational Section - Simple Cards */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center space-y-6 mb-12">
+            <Badge className="bg-primary text-white text-sm px-4 py-2">Guía Médica</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+              ¿Qué compresión necesito?
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Elige según tu nivel de molestia y actividad diaria
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <Card className="border-2 hover:border-primary transition-all overflow-hidden group">
+              <div className="h-3 bg-gradient-to-r from-primary to-health-green" />
+              <CardContent className="p-8 space-y-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold text-foreground mb-2">15-20 mmHg</h3>
+                    <Badge variant="outline" className="text-sm">Compresión Suave</Badge>
+                  </div>
+                  <Activity className="w-10 h-10 text-primary" />
+                </div>
+
+                <p className="text-muted-foreground leading-relaxed">
+                  Ideal para prevención y molestias leves
+                </p>
+
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Piernas cansadas al final del día</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Hinchazón leve en tobillos</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Trabajos de pie o sentado prolongado</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Prevención durante embarazo</span>
+                  </li>
+                </ul>
+
+                <Button 
+                  className="w-full mt-4 bg-primary hover:bg-primary/90"
+                  onClick={() => window.open(getWhatsAppLink("", "Hola, necesito medias de compresión 15-20 mmHg"), "_blank")}
+                >
+                  Consultar por WhatsApp
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 hover:border-secondary transition-all overflow-hidden group">
+              <div className="h-3 bg-gradient-to-r from-secondary to-health-green" />
+              <CardContent className="p-8 space-y-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold text-foreground mb-2">20-30 mmHg</h3>
+                    <Badge variant="outline" className="text-sm border-secondary text-secondary">Compresión Moderada</Badge>
+                  </div>
+                  <HeartPulse className="w-10 h-10 text-secondary" />
+                </div>
+
+                <p className="text-muted-foreground leading-relaxed">
+                  Recomendado para problemas circulatorios moderados
+                </p>
+
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Varices visibles y arañitas</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Hinchazón moderada persistente</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Post-cirugía de varices</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Recomendación médica específica</span>
+                  </li>
+                </ul>
+
+                <Button 
+                  className="w-full mt-4 bg-secondary hover:bg-secondary/90"
+                  onClick={() => window.open(getWhatsAppLink("", "Hola, necesito medias de compresión 20-30 mmHg"), "_blank")}
+                >
+                  Consultar por WhatsApp
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-10">
+            <p className="text-muted-foreground mb-4">¿Aún tienes dudas sobre qué compresión elegir?</p>
             <Button
+              variant="outline"
               size="lg"
-              onClick={() => setTestOpen(true)}
-              className="bg-background text-foreground hover:bg-background/90 flex-shrink-0"
+              className="border-2 border-primary text-primary hover:bg-primary hover:text-white"
+              onClick={() => window.open(getWhatsAppLink("", "Hola, no estoy seguro qué nivel de compresión necesito"), "_blank")}
             >
-              <ClipboardCheck className="w-5 h-5 mr-2" />
-              Hacer Test Gratis
+              <MessageCircle className="w-5 h-5 mr-2" />
+              Habla con un asesor
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Carrusel de Recomendaciones IA */}
-      <RecommendationsCarousel />
-
-      {/* ¿Es para ti? */}
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            ¿Estas medias son para ti?
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Si te identificas con alguna de estas situaciones, nuestras medias pueden cambiar tu día a día
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          <Card className="border-border hover:shadow-card transition-shadow">
-            <CardContent className="pt-6 space-y-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Heart className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground">
-                Mujeres con várices
-              </h3>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Várices visibles que te duelen o te acomplejan</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Piernas hinchadas al final del día</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Tallas grandes (XL hasta 3XL disponibles)</span>
-                </li>
-              </ul>
-              <Button asChild className="w-full bg-primary hover:bg-primary/90">
-                <a href="/medias-para-varices">Ver medias para várices</a>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border hover:shadow-card transition-shadow">
-            <CardContent className="pt-6 space-y-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground">
-                Trabajo de pie todo el día
-              </h3>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Enfermeras con turnos de 12 horas</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Vendedoras, cajeras, personal de retail</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Peluqueras, esteticistas, servicios</span>
-                </li>
-              </ul>
-              <Button asChild className="w-full bg-primary hover:bg-primary/90">
-                <a href="/trabajo-de-pie">Ver medias para trabajo</a>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border hover:shadow-card transition-shadow">
-            <CardContent className="pt-6 space-y-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Shield className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground">
-                Piel sensible o clima cálido
-              </h3>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Piel que se irrita fácilmente</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Vives en clima tropical o muy caluroso</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Opción en algodón o punta abierta</span>
-                </li>
-              </ul>
-              <Button asChild className="w-full bg-primary hover:bg-primary/90">
-                <a href="/piel-sensible">Ver medias hipoalergénicas</a>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Productos Destacados */}
-      <section id="productos" className="bg-muted/30 py-16 md:py-24">
+      {/* Featured Products */}
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Productos más vendidos
+          <div className="text-center space-y-4 mb-12">
+            <Badge className="bg-health-green text-white text-sm px-4 py-2">Más Vendidas</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+              Productos Destacados
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Estas son las medias que más han ayudado a nuestras clientas a sentir alivio real
+              Las medias de compresión más recomendadas por nuestros clientes
             </p>
           </div>
 
           {loading ? (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <span className="ml-3 text-muted-foreground">Cargando productos...</span>
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
             </div>
           ) : (
-            <>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                {featuredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} featured />
-                ))}
-              </div>
-
-              <div className="text-center mt-12">
-                <Button asChild size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                  <a href="/catalogo">Ver catálogo completo</a>
-                </Button>
-              </div>
-            </>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} featured />
+              ))}
+            </div>
           )}
-        </div>
-      </section>
 
-      {/* Por qué confiar */}
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Por qué confiar en nuestras medias de compresión
-          </h2>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="text-center space-y-3">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-              <Shield className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="font-semibold text-foreground">Compresión Médica Certificada</h3>
-            <p className="text-sm text-muted-foreground">20-30 mmHg Clase II, aprobada para uso terapéutico</p>
-          </div>
-
-          <div className="text-center space-y-3">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-              <Heart className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="font-semibold text-foreground">Enfoque Ortopédico</h3>
-            <p className="text-sm text-muted-foreground">Diseñadas específicamente para várices y circulación</p>
-          </div>
-
-          <div className="text-center space-y-3">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-              <TrendingUp className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="font-semibold text-foreground">Guía de Tallas Personalizada</h3>
-            <p className="text-sm text-muted-foreground">Te ayudamos a elegir tu talla exacta por WhatsApp</p>
-          </div>
-
-          <div className="text-center space-y-3">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-              <Star className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="font-semibold text-foreground">Clientes Satisfechas</h3>
-            <p className="text-sm text-muted-foreground">Miles de mujeres ya sienten la diferencia</p>
+          <div className="text-center mt-10">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-2 border-primary text-primary hover:bg-primary hover:text-white"
+              asChild
+            >
+              <Link to="/catalog">
+                Ver todos los productos
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* Testimonios */}
-      <section className="bg-muted/30 py-16 md:py-24">
+      {/* Trust Section */}
+      <section className="py-16 bg-gradient-trust text-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Lo que dicen nuestras clientas
-            </h2>
-          </div>
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center space-y-4 mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Compra con Total Confianza
+              </h2>
+              <p className="text-xl text-green-50">
+                Tu satisfacción es nuestra prioridad
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Card className="border-border">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex text-accent">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-current" />
-                  ))}
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center space-y-3 hover:bg-white/20 transition-all">
+                <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
+                  <ShieldCheck className="w-8 h-8" />
                 </div>
-                <p className="text-muted-foreground">
-                  "Trabajo 12 horas de pie como enfermera y estas medias me salvaron la vida. Ya no llego a casa con las piernas hinchadas."
-                </p>
-                <div>
-                  <p className="font-semibold text-foreground">María González</p>
-                  <p className="text-sm text-muted-foreground">Enfermera, Bogotá</p>
-                </div>
-              </CardContent>
-            </Card>
+                <h3 className="font-semibold text-lg">Cambio de Talla Gratis</h3>
+                <p className="text-sm text-green-50">Si no te queda bien, lo cambiamos sin costo</p>
+              </div>
 
-            <Card className="border-border">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex text-accent">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-current" />
-                  ))}
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center space-y-3 hover:bg-white/20 transition-all">
+                <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
+                  <CreditCard className="w-8 h-8" />
                 </div>
-                <p className="text-muted-foreground">
-                  "Soy talla XL y me costaba encontrar medias para várices que me quedaran bien. Estas son perfectas y muy cómodas."
-                </p>
-                <div>
-                  <p className="font-semibold text-foreground">Ana Rodríguez</p>
-                  <p className="text-sm text-muted-foreground">Talla XL, Medellín</p>
-                </div>
-              </CardContent>
-            </Card>
+                <h3 className="font-semibold text-lg">Pago al Recibir</h3>
+                <p className="text-sm text-green-50">Paga cuando tengas tu producto en mano</p>
+              </div>
 
-            <Card className="border-border">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex text-accent">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-current" />
-                  ))}
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center space-y-3 hover:bg-white/20 transition-all">
+                <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
+                  <Award className="w-8 h-8" />
                 </div>
-                <p className="text-muted-foreground">
-                  "Como cajera paso todo el día de pie. Estas medias me dan energía y ya no me duelen las piernas al terminar el turno."
-                </p>
-                <div>
-                  <p className="font-semibold text-foreground">Carolina Pérez</p>
-                  <p className="text-sm text-muted-foreground">Cajera, Cali</p>
+                <h3 className="font-semibold text-lg">Compra Segura</h3>
+                <p className="text-sm text-green-50">Productos médicos certificados</p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center space-y-3 hover:bg-white/20 transition-all">
+                <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
+                  <Truck className="w-8 h-8" />
                 </div>
-              </CardContent>
-            </Card>
+                <h3 className="font-semibold text-lg">Envíos a Todo Perú</h3>
+                <p className="text-sm text-green-50">Entrega rápida en todo el país</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Final */}
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <Card className="bg-gradient-hero text-primary-foreground border-0 overflow-hidden">
-          <CardContent className="p-12 text-center space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold">
-              ¿Lista para sentir tus piernas más ligeras?
+      {/* Final CTA Section */}
+      <section className="py-20 bg-primary text-white">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-3xl mx-auto space-y-6">
+            <Zap className="w-16 h-16 mx-auto" />
+            <h2 className="text-3xl md:text-5xl font-bold">
+              ¿Listo para sentir el alivio?
             </h2>
-            <p className="text-lg text-primary-foreground/90 max-w-2xl mx-auto">
-              Escríbenos por WhatsApp y te ayudaremos a elegir las medias perfectas para ti en menos de 3 minutos
+            <p className="text-xl text-blue-50">
+              Recibe asesoría personalizada en 2 minutos y encuentra la media perfecta para ti
             </p>
             <Button
-              asChild
               size="lg"
-              className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-8"
+              className="bg-health-green hover:bg-health-green/90 text-white text-lg px-10 py-7 h-auto shadow-2xl hover:scale-105 transition-all mt-6"
+              onClick={() => window.open(getWhatsAppLink("", "Hola, quiero consultar sobre medias de compresión"), "_blank")}
             >
-              <a
-                href={getWhatsAppLink("", "Hola, quiero empezar a sentir alivio en mis piernas")}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <MessageCircle className="w-5 h-5 mr-2" />
-                Hablar con un asesor
-              </a>
+              <MessageCircle className="w-6 h-6 mr-3" />
+              Consulta Gratis por WhatsApp
             </Button>
-          </CardContent>
-        </Card>
+            <p className="text-sm text-blue-100 mt-4">
+              <CheckCircle2 className="w-4 h-4 inline mr-1" />
+              Respuesta en menos de 5 minutos · Lunes a Sábado 9am - 7pm
+            </p>
+          </div>
+        </div>
       </section>
 
       <Footer />
