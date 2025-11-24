@@ -13,7 +13,7 @@ import { Filter, ClipboardCheck, MessageCircle, Loader2 } from "lucide-react";
 const Catalog = () => {
   const [testOpen, setTestOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedZone, setSelectedZone] = useState<string>("all");
   
   // Use grouped products in catalog to avoid duplicates
   const { products, loading, error } = useProducts(false, true);
@@ -21,8 +21,8 @@ const Catalog = () => {
   const filteredProducts = products.filter((product) => {
     const categoryMatch =
       selectedCategory === "all" || product.category.includes(selectedCategory);
-    const typeMatch = selectedType === "all" || product.type === selectedType;
-    return categoryMatch && typeMatch;
+    const zoneMatch = selectedZone === "all" || (product as any).zona_pierna === selectedZone;
+    return categoryMatch && zoneMatch;
   });
 
   return (
@@ -111,37 +111,58 @@ const Catalog = () => {
             </div>
           </div>
 
-          {/* Type Filter */}
+          {/* Zone Filter */}
           <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-3">Tipo:</h3>
+            <h3 className="text-sm font-medium text-muted-foreground mb-3">Zona de la pierna:</h3>
             <div className="flex flex-wrap gap-2">
               <Badge
-                variant={selectedType === "all" ? "default" : "outline"}
+                variant={selectedZone === "all" ? "default" : "outline"}
                 className="cursor-pointer"
-                onClick={() => setSelectedType("all")}
+                onClick={() => setSelectedZone("all")}
               >
-                Todos
+                Todas
               </Badge>
               <Badge
-                variant={selectedType === "rodilla" ? "default" : "outline"}
+                variant={selectedZone === "pies" ? "default" : "outline"}
                 className="cursor-pointer"
-                onClick={() => setSelectedType("rodilla")}
+                onClick={() => setSelectedZone("pies")}
               >
-                Hasta rodilla
+                Pies
               </Badge>
               <Badge
-                variant={selectedType === "muslo" ? "default" : "outline"}
+                variant={selectedZone === "pantorrilla" ? "default" : "outline"}
                 className="cursor-pointer"
-                onClick={() => setSelectedType("muslo")}
+                onClick={() => setSelectedZone("pantorrilla")}
               >
-                Hasta muslo
+                Pantorrilla
               </Badge>
               <Badge
-                variant={selectedType === "panty" ? "default" : "outline"}
+                variant={selectedZone === "pierna_media" ? "default" : "outline"}
                 className="cursor-pointer"
-                onClick={() => setSelectedType("panty")}
+                onClick={() => setSelectedZone("pierna_media")}
               >
-                Panty completo
+                Pierna media
+              </Badge>
+              <Badge
+                variant={selectedZone === "rodilla" ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => setSelectedZone("rodilla")}
+              >
+                Rodilla
+              </Badge>
+              <Badge
+                variant={selectedZone === "muslo" ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => setSelectedZone("muslo")}
+              >
+                Muslo
+              </Badge>
+              <Badge
+                variant={selectedZone === "panty" ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => setSelectedZone("panty")}
+              >
+                Pierna completa / Panty
               </Badge>
             </div>
           </div>
@@ -179,7 +200,7 @@ const Catalog = () => {
                 <p className="text-muted-foreground mb-4">
                   No se encontraron productos con estos filtros
                 </p>
-                <Button onClick={() => { setSelectedCategory("all"); setSelectedType("all"); }}>
+                <Button onClick={() => { setSelectedCategory("all"); setSelectedZone("all"); }}>
                   Limpiar filtros
                 </Button>
               </div>

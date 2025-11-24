@@ -264,6 +264,7 @@ export type Database = {
           total_views: number | null
           updated_at: string | null
           vendor_id: string | null
+          zona_pierna: string | null
         }
         Insert: {
           ai_churn_risk?: number | null
@@ -299,6 +300,7 @@ export type Database = {
           total_views?: number | null
           updated_at?: string | null
           vendor_id?: string | null
+          zona_pierna?: string | null
         }
         Update: {
           ai_churn_risk?: number | null
@@ -334,6 +336,7 @@ export type Database = {
           total_views?: number | null
           updated_at?: string | null
           vendor_id?: string | null
+          zona_pierna?: string | null
         }
         Relationships: [
           {

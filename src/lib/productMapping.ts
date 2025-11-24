@@ -12,6 +12,7 @@ export interface BaseProduct {
   idealFor: string;
   category: string[];
   type: string;
+  zona_pierna?: string; // Nueva: Zona de la pierna donde actúa la prenda
   sizes: string[];
   colors: string[];
   priceOriginal: number; // Precio tachado (referencia)
@@ -63,6 +64,7 @@ export function mapDbProductToBase(dbProduct: Tables<"products">): BaseProduct {
     idealFor: dbProduct.ideal_para || "Uso terapéutico y preventivo",
     category: [dbProduct.categoria],
     type,
+    zona_pierna: (dbProduct as any).zona_pierna || type, // Usar zona_pierna de BD o type como fallback
     sizes: dbProduct.tallas_disponibles || [],
     colors: colorsArray,
     priceOriginal: Number(dbProduct.precio_anterior) || Number(dbProduct.precio) * 1.25,
