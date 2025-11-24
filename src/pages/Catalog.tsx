@@ -15,7 +15,8 @@ const Catalog = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   
-  const { products, loading, error } = useProducts();
+  // Use grouped products in catalog to avoid duplicates
+  const { products, loading, error } = useProducts(false, true);
 
   const filteredProducts = products.filter((product) => {
     const categoryMatch =

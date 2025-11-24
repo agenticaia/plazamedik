@@ -10,14 +10,24 @@ import { Badge } from "@/components/ui/badge";
 import { Check, MessageCircle, ArrowLeft, Loader2 } from "lucide-react";
 import { useProduct } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 
 const ProductDetail = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const codigo = searchParams.get("codigo");
   const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string>("");
 
   const { product, loading, error } = useProduct(codigo);
+
+  // Set initial selected color when product loads
+  useEffect(() => {
+    if (product && !selectedColor) {
+      const initialColor = product.colors?.[0] || "Piel";
+      setSelectedColor(initialColor);
+    }
+  }, [product, selectedColor]);
 
   // Incrementar vistas del producto
   useEffect(() => {
@@ -63,6 +73,7 @@ const ProductDetail = () => {
         open={orderModalOpen}
         onOpenChange={setOrderModalOpen}
         product={product}
+        selectedColor={selectedColor}
       />
 
       {/* Breadcrumb */}
@@ -134,11 +145,28 @@ const ProductDetail = () => {
                   {product.colors.length > 0 && (
                     <div>
                       <p className="text-sm font-medium text-foreground mb-2">Colores disponibles:</p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex gap-2">
                         {product.colors.map((color) => (
-                          <Badge key={color} variant="outline">{color}</Badge>
+                          <button
+                            key={color}
+                            onClick={() => setSelectedColor(color)}
+                            className={cn(
+                              "w-10 h-10 rounded-full border-2 transition-all",
+                              selectedColor === color 
+                                ? "border-primary scale-110 shadow-lg" 
+                                : "border-border hover:border-primary/50",
+                              color.toLowerCase() === "piel" && "bg-[#f5d7c4]",
+                              color.toLowerCase() === "negro" && "bg-[#1a1a1a]"
+                            )}
+                            title={color}
+                          >
+                            <span className="sr-only">{color}</span>
+                          </button>
                         ))}
                       </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Color seleccionado: <span className="font-semibold text-foreground">{selectedColor}</span>
+                      </p>
                     </div>
                   )}
                 </div>
