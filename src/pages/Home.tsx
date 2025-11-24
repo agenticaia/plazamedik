@@ -39,93 +39,173 @@ const Home = () => {
       <Navigation />
       <WhatsAppFloat />
 
-      {/* Hero Section - Medical Professional - Fully Responsive */}
+      {/* Hero Section - Premium Professional Design */}
       <section className="relative bg-gradient-hero overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5 bg-cover bg-center" />
-        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 lg:py-24 relative">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-7xl mx-auto">
-            {/* Content Column - Always on top in mobile */}
-            <div className="space-y-4 sm:space-y-6 text-white order-1">
-              <div className="flex flex-wrap gap-2 sm:gap-3">
-                <Badge className="bg-health-green text-white border-0 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold shadow-lg">
-                  <Truck className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
-                  Entrega en menos de 48h en todo Perú
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.03]">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.15) 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }} />
+        </div>
+        
+        <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-24 lg:py-28 relative">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-7xl mx-auto">
+            {/* Content Column */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="space-y-6 sm:space-y-8 text-white order-1"
+            >
+              {/* Trust badges */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="flex flex-wrap gap-3"
+              >
+                <Badge className="bg-white/15 backdrop-blur-md text-white border-0 px-4 py-2 text-sm font-medium hover:bg-white/20 transition-colors">
+                  <BadgeCheck className="w-4 h-4 mr-2" />
+                  Certificado Médico
                 </Badge>
-                <Badge className="bg-white/20 backdrop-blur-sm text-white border-0 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold">
-                  <CreditCard className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
-                  Paga al recibir
+                <Badge className="bg-white/15 backdrop-blur-md text-white border-0 px-4 py-2 text-sm font-medium hover:bg-white/20 transition-colors">
+                  <Heart className="w-4 h-4 mr-2" />
+                  +5,000 Clientes
                 </Badge>
-              </div>
+              </motion.div>
               
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Alivio de piernas cansadas y varices en 24 horas
-              </h1>
-              
-              <p className="text-lg sm:text-xl md:text-2xl text-blue-50 leading-relaxed">
-                Te recomendaremos la media perfecta por WhatsApp en solo 2 minutos
-              </p>
-
-              {/* Guarantee Box Hero */}
-              <div className="bg-white/10 backdrop-blur-md rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-1.5 sm:space-y-2 border border-white/20">
-                <div className="flex items-center gap-2 text-xs sm:text-sm">
-                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-health-green flex-shrink-0" />
-                  <span>Garantía de 7 días</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs sm:text-sm">
-                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-health-green flex-shrink-0" />
-                  <span>Cambio de talla sin costo</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs sm:text-sm">
-                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-health-green flex-shrink-0" />
-                  <span>Alivio desde las primeras 24 horas</span>
-                </div>
+              {/* Main headline with better hierarchy */}
+              <div className="space-y-4">
+                <motion.h1 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight"
+                >
+                  Alivio real para piernas cansadas
+                </motion.h1>
+                
+                {/* Strong emotional subheader */}
+                <motion.p 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="text-xl sm:text-2xl md:text-3xl text-blue-50 font-medium leading-relaxed"
+                >
+                  La tienda especialista en medias de compresión que <span className="text-white font-bold">sí alivian tu dolor</span>
+                </motion.p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
+              {/* Value proposition */}
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="text-lg sm:text-xl text-blue-100/90 leading-relaxed max-w-xl"
+              >
+                Recomendaciones personalizadas para personas que trabajan largas horas de pie. Te asesoramos gratis por WhatsApp en 2 minutos.
+              </motion.p>
+
+              {/* CTAs with better spacing */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="flex flex-col sm:flex-row gap-4 pt-2"
+              >
                 <Button
                   size="lg"
-                  className="bg-whatsapp-green hover:bg-whatsapp-green/90 text-white text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto shadow-hover transition-all hover:scale-105 font-semibold w-full sm:w-auto"
-                  onClick={() => window.open(getWhatsAppLink("", "Hola, necesito asesoría sobre medias de compresión. Quiero aliviar mis piernas cansadas."), "_blank")}
+                  className="group bg-whatsapp-green hover:bg-whatsapp-green/90 text-white text-lg px-8 py-7 h-auto shadow-2xl transition-all hover:scale-105 hover:shadow-whatsapp-green/50 font-semibold w-full sm:w-auto"
+                  onClick={() => window.open(getWhatsAppLink("", "Hola, necesito asesoría especializada sobre medias de compresión. Trabajo muchas horas de pie."), "_blank")}
                 >
-                  <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 flex-shrink-0" />
-                  <span className="flex-1">Consulta Gratis por WhatsApp</span>
-                  <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded flex-shrink-0">2 min</span>
+                  <MessageCircle className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
+                  <span>Consulta Gratis por WhatsApp</span>
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 
                 <Button
                   size="lg"
                   variant="outline"
-                  className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-primary text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto backdrop-blur-sm w-full sm:w-auto transition-all"
+                  className="bg-white/10 border-2 border-white/40 text-white hover:bg-white hover:text-primary text-lg px-8 py-7 h-auto backdrop-blur-md w-full sm:w-auto transition-all hover:scale-105 font-medium"
                   onClick={() => setTestOpen(true)}
                 >
-                  <Activity className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
+                  <Activity className="w-5 h-5 mr-2" />
                   Hacer el Test
                 </Button>
-              </div>
+              </motion.div>
+            </motion.div>
 
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-3 sm:pt-4 text-blue-50 text-xs sm:text-sm">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                  <span>+5,000 clientes satisfechos</span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Award className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                  <span>Certificación médica</span>
-                </div>
+            {/* Image Column - Premium visual */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="relative hidden lg:block order-2"
+            >
+              <div className="absolute -inset-8 bg-gradient-to-br from-health-green/30 to-transparent rounded-3xl blur-3xl" />
+              <div className="relative">
+                <img
+                  src="/images/product-750-1.jpg"
+                  alt="Medias de compresión profesionales para alivio de piernas"
+                  className="relative rounded-3xl shadow-2xl w-full h-auto object-cover border-4 border-white/10"
+                />
               </div>
-            </div>
-
-            {/* Image Column - Hidden on mobile, shown on lg+ */}
-            <div className="relative hidden lg:block order-2">
-              <div className="absolute -inset-4 bg-health-green/20 rounded-3xl blur-2xl" />
-              <img
-                src="/placeholder.svg"
-                alt="Persona usando medias de compresión"
-                className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
-              />
-            </div>
+            </motion.div>
           </div>
         </div>
+
+        {/* Credibility block - Compact and elegant */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="bg-white/10 backdrop-blur-lg border-t border-white/20"
+        >
+          <div className="container mx-auto px-4 sm:px-6 py-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto text-white">
+              <div className="flex items-center gap-3 justify-center md:justify-start">
+                <div className="w-10 h-10 bg-white/15 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-bold text-lg">+5,000</div>
+                  <div className="text-xs text-blue-100/80">Peruanos aliviados</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 justify-center md:justify-start">
+                <div className="w-10 h-10 bg-white/15 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Truck className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-bold text-lg">24-48h</div>
+                  <div className="text-xs text-blue-100/80">Entrega rápida</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 justify-center md:justify-start">
+                <div className="w-10 h-10 bg-white/15 rounded-full flex items-center justify-center flex-shrink-0">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-bold text-lg">100%</div>
+                  <div className="text-xs text-blue-100/80">Pago seguro</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 justify-center md:justify-start">
+                <div className="w-10 h-10 bg-white/15 rounded-full flex items-center justify-center flex-shrink-0">
+                  <BadgeCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-bold text-lg">Experto</div>
+                  <div className="text-xs text-blue-100/80">Asesoría gratis</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       <TestDialog open={testOpen} onOpenChange={setTestOpen} />
