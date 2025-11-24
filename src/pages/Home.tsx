@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import ProductCard from "@/components/ProductCard";
+import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,7 @@ import {
 } from "lucide-react";
 
 const Home = () => {
+  const [testOpen, setTestOpen] = useState(false);
   const { products, loading } = useProducts();
   const featuredProducts = products.slice(0, 4);
 
@@ -89,12 +91,10 @@ const Home = () => {
                   size="lg"
                   variant="outline"
                   className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 h-auto backdrop-blur-sm"
-                  asChild
+                  onClick={() => setTestOpen(true)}
                 >
-                  <Link to="/catalogo">
-                    Ver Catálogo
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Link>
+                  <Activity className="w-5 h-5 mr-2" />
+                  Hacer el Test
                 </Button>
               </div>
 
@@ -121,6 +121,8 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      <TestDialog open={testOpen} onOpenChange={setTestOpen} />
 
       {/* Benefits Section - Enhanced with Delivery & Payment */}
       <section className="py-16 bg-background">
