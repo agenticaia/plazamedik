@@ -41,7 +41,7 @@ const Navigation = () => {
                 {item.label}
               </Link>
             ))}
-            <Button asChild size="sm" className="bg-primary hover:bg-primary/90">
+            <Button asChild size="sm" className="bg-whatsapp-green hover:bg-whatsapp-green/90 text-white transition-all">
               <a
                 href={getWhatsAppLink("", "Hola, necesito asesoría sobre medias de compresión")}
                 target="_blank"
@@ -93,7 +93,7 @@ const Navigation = () => {
                   {item.label}
                 </Link>
               ))}
-              <Button asChild className="bg-primary hover:bg-primary/90 w-full">
+              <Button asChild className="bg-whatsapp-green hover:bg-whatsapp-green/90 text-white w-full transition-all">
                 <a
                   href={getWhatsAppLink("", "Hola, necesito asesoría sobre medias de compresión")}
                   target="_blank"

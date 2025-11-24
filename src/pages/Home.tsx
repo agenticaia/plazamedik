@@ -83,7 +83,7 @@ const Home = () => {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
                 <Button
                   size="lg"
-                  className="bg-health-green hover:bg-health-green/90 text-white text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto shadow-hover transition-all hover:scale-105 font-semibold w-full sm:w-auto"
+                  className="bg-whatsapp-green hover:bg-whatsapp-green/90 text-white text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto shadow-hover transition-all hover:scale-105 font-semibold w-full sm:w-auto"
                   onClick={() => window.open(getWhatsAppLink("", "Hola, necesito asesoría sobre medias de compresión. Quiero aliviar mis piernas cansadas."), "_blank")}
                 >
                   <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 flex-shrink-0" />
@@ -94,7 +94,7 @@ const Home = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-primary text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto backdrop-blur-sm w-full sm:w-auto"
+                  className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-primary text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto backdrop-blur-sm w-full sm:w-auto transition-all"
                   onClick={() => setTestOpen(true)}
                 >
                   <Activity className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
