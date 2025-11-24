@@ -51,12 +51,12 @@ const Catalog = () => {
             <p className="text-sm text-muted-foreground">
               <span className="font-semibold text-foreground">¿No sabes qué modelo elegir?</span> Haz el test o escríbenos
             </p>
-            <div className="flex gap-2">
-              <Button size="sm" onClick={() => setTestOpen(true)}>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button size="sm" onClick={() => setTestOpen(true)} className="bg-health-green hover:bg-health-green/90 text-white transition-all">
                 <ClipboardCheck className="w-4 h-4 mr-2" />
                 Hacer Test
               </Button>
-              <Button asChild size="sm" variant="outline">
+              <Button asChild size="sm" className="bg-whatsapp-green hover:bg-whatsapp-green/90 text-white transition-all">
                 <a href={getWhatsAppLink("", "Hola, necesito ayuda")} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="w-4 h-4 mr-2" />
                   WhatsApp

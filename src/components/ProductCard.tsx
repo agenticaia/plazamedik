@@ -156,7 +156,7 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
         ) : (
           <Button
             onClick={handleOrderClick}
-            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground group-hover:scale-105 transition-transform"
+            className="w-full bg-whatsapp-green hover:bg-whatsapp-green/90 text-white group-hover:scale-105 transition-all"
           >
             <MessageCircle className="w-4 h-4 mr-2" />
             Pedir por WhatsApp

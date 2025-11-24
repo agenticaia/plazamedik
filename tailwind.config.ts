@@ -62,6 +62,7 @@ export default {
         "dark-accent": "hsl(var(--dark-accent))",
         "clinical-alert": "hsl(var(--clinical-alert))",
         "soft-white": "hsl(var(--soft-white))",
+        "whatsapp-green": "hsl(var(--whatsapp-green))",
       },
       backgroundImage: {
         "gradient-hero": "var(--gradient-hero)",

@@ -33,12 +33,12 @@ const TrabajoPie = () => {
             <p className="text-lg text-primary-foreground/90">
               Energía que dura todo el turno. Di adiós a las piernas hinchadas y cansadas al final del día
             </p>
-            <div className="flex gap-4 justify-center pt-4">
-              <Button size="lg" onClick={() => setTestOpen(true)} className="bg-accent hover:bg-accent/90">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+              <Button size="lg" onClick={() => setTestOpen(true)} className="bg-health-green hover:bg-health-green/90 text-white transition-all hover:scale-105">
                 <ClipboardCheck className="w-5 h-5 mr-2" />
                 Hacer Test Gratis
               </Button>
-              <Button asChild size="lg" variant="outline" className="bg-primary-foreground/10 border-primary-foreground/20">
+              <Button asChild size="lg" variant="outline" className="bg-primary-foreground/10 border-primary-foreground/20 hover:bg-primary-foreground/20 transition-all">
                 <a href="/catalogo">Ver catálogo</a>
               </Button>
             </div>
