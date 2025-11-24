@@ -8,52 +8,45 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 40 20% 98%;
-    --foreground: 200 15% 20%;
-
+    --background: 210 14% 97%;
+    --foreground: 210 20% 18%;
     --card: 0 0% 100%;
-    --card-foreground: 200 15% 20%;
-
+    --card-foreground: 210 20% 18%;
     --popover: 0 0% 100%;
-    --popover-foreground: 200 15% 20%;
-
-    --primary: 195 65% 45%;
+    --popover-foreground: 210 20% 18%;
+    --primary: 215 76% 48%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 28 45% 85%;
-    --secondary-foreground: 200 15% 20%;
-
-    --muted: 40 20% 94%;
-    --muted-foreground: 200 8% 46%;
-
-    --accent: 18 80% 65%;
+    --secondary: 152 55% 46%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 14% 96%;
+    --muted-foreground: 210 10% 45%;
+    --accent: 210 20% 26%;
     --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 65% 62%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 40 20% 88%;
-    --input: 40 20% 88%;
-    --ring: 195 65% 45%;
-
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+    --ring: 215 76% 48%;
     --radius: 0.75rem;
     
-    /* Custom design tokens */
-    --trust-blue: 195 65% 45%;
-    --comfort-beige: 28 45% 85%;
-    --relief-teal: 180 50% 50%;
-    --warm-coral: 18 80% 65%;
+    /* Plaza Medic Brand Colors */
+    --medical-blue: 215 76% 48%;
+    --health-green: 152 55% 46%;
+    --dark-accent: 210 20% 26%;
+    --clinical-alert: 0 65% 62%;
+    --soft-white: 210 14% 97%;
     
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(195 65% 45% / 0.95), hsl(180 50% 50% / 0.9));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(40 20% 98%));
+    --gradient-hero: linear-gradient(135deg, hsl(215, 76%, 48%) 0%, hsl(215, 76%, 58%) 100%);
+    --gradient-card: linear-gradient(to bottom, hsl(0, 0%, 100%) 0%, hsl(210, 14%, 98%) 100%);
+    --gradient-trust: linear-gradient(135deg, hsl(152, 55%, 46%) 0%, hsl(152, 55%, 56%) 100%);
     
     /* Shadows */
-    --shadow-soft: 0 2px 8px hsl(195 30% 50% / 0.08);
-    --shadow-card: 0 4px 16px hsl(195 30% 50% / 0.12);
-    --shadow-hover: 0 8px 24px hsl(195 40% 50% / 0.16);
+    --shadow-soft: 0 2px 12px rgba(30, 106, 210, 0.08);
+    --shadow-card: 0 4px 16px rgba(30, 106, 210, 0.12);
+    --shadow-hover: 0 8px 32px rgba(30, 106, 210, 0.2);
     
-    /* Animations */
+    /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
@@ -75,33 +68,25 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 200 20% 12%;
-    --foreground: 40 20% 95%;
-
-    --card: 200 18% 15%;
-    --card-foreground: 40 20% 95%;
-
-    --popover: 200 18% 15%;
-    --popover-foreground: 40 20% 95%;
-
-    --primary: 195 70% 55%;
+    --background: 210 30% 8%;
+    --foreground: 210 14% 97%;
+    --card: 210 25% 12%;
+    --card-foreground: 210 14% 97%;
+    --popover: 210 25% 12%;
+    --popover-foreground: 210 14% 97%;
+    --primary: 215 76% 48%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 200 15% 25%;
-    --secondary-foreground: 40 20% 95%;
-
-    --muted: 200 15% 20%;
-    --muted-foreground: 200 8% 60%;
-
-    --accent: 18 75% 60%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62.8% 50%;
+    --secondary: 152 55% 46%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 25% 16%;
+    --muted-foreground: 210 10% 65%;
+    --accent: 210 20% 26%;
+    --accent-foreground: 210 14% 97%;
+    --destructive: 0 65% 62%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 200 15% 25%;
-    --input: 200 15% 25%;
-    --ring: 195 70% 55%;
+    --border: 210 25% 20%;
+    --input: 210 25% 20%;
+    --ring: 215 76% 48%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
