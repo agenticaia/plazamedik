@@ -397,7 +397,7 @@ const Home = () => {
             <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
               Las medias de compresión más recomendadas por nuestros clientes
             </p>
-          </div>
+          </motion.div>
 
           {/* Delivery reminder before products */}
           <div className="max-w-3xl mx-auto mb-6 sm:mb-8">
@@ -441,12 +441,24 @@ const Home = () => {
             </Button>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Testimonials Section - Real UGC Style */}
-      <section className="py-12 sm:py-16 bg-background">
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-12 sm:py-16 bg-background"
+      >
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12"
+          >
             <Badge className="bg-health-green text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2">Testimonios Reales</Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground px-4">
               Lo que dicen nuestros clientes
@@ -454,7 +466,7 @@ const Home = () => {
             <p className="text-sm sm:text-base lg:text-lg text-muted-foreground px-4">
               Experiencias reales de personas que aliviaron sus piernas
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
             <Card className="border-2 hover:shadow-hover transition-all">
@@ -521,7 +533,7 @@ const Home = () => {
             </Card>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Trust Section - Enhanced Visual Design */}
       <motion.section 
@@ -672,7 +684,13 @@ const Home = () => {
       </motion.section>
 
       {/* Final CTA Section - Enhanced with Benefits */}
-      <section className="py-16 sm:py-20 bg-primary text-white mb-16 sm:mb-0">
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-16 sm:py-20 bg-primary text-white mb-16 sm:mb-0"
+      >
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
             <Zap className="w-12 h-12 sm:w-16 sm:h-16 mx-auto" />
@@ -715,7 +733,7 @@ const Home = () => {
             </p>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Mobile Sticky CTA - WhatsApp */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-health-green to-health-green/90 p-3 shadow-2xl border-t border-white/10">
