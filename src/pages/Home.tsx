@@ -17,7 +17,6 @@ import {
   CreditCard, 
   ArrowRight,
   CheckCircle2,
-  Clock,
   Award,
   Users,
   HeartPulse,
@@ -35,82 +34,84 @@ const Home = () => {
       <Navigation />
       <WhatsAppFloat />
 
-      {/* Hero Section - Medical Professional */}
+      {/* Hero Section - Medical Professional - Fully Responsive */}
       <section className="relative bg-gradient-hero overflow-hidden">
         <div className="absolute inset-0 bg-[url('/placeholder.svg')] opacity-5 bg-cover bg-center" />
-        <div className="container mx-auto px-4 py-16 md:py-24 relative">
-          <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
-            <div className="space-y-6 text-white">
-              <div className="flex flex-wrap gap-3">
-                <Badge className="bg-health-green text-white border-0 px-4 py-2 text-sm font-semibold shadow-lg">
-                  <Truck className="w-4 h-4 mr-2" />
+        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 lg:py-24 relative">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-7xl mx-auto">
+            {/* Content Column - Always on top in mobile */}
+            <div className="space-y-4 sm:space-y-6 text-white order-1">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
+                <Badge className="bg-health-green text-white border-0 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold shadow-lg">
+                  <Truck className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                   Entrega en menos de 48h en todo Perú
                 </Badge>
-                <Badge className="bg-white/20 backdrop-blur-sm text-white border-0 px-4 py-2 text-sm font-semibold">
-                  <CreditCard className="w-4 h-4 mr-2" />
+                <Badge className="bg-white/20 backdrop-blur-sm text-white border-0 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold">
+                  <CreditCard className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                   Paga al recibir
                 </Badge>
               </div>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 Alivio de piernas cansadas y varices en 24 horas
               </h1>
               
-              <p className="text-xl md:text-2xl text-blue-50 leading-relaxed">
+              <p className="text-lg sm:text-xl md:text-2xl text-blue-50 leading-relaxed">
                 Te recomendaremos la media perfecta por WhatsApp en solo 2 minutos
               </p>
 
               {/* Guarantee Box Hero */}
-              <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 space-y-2 border border-white/20">
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-health-green" />
+              <div className="bg-white/10 backdrop-blur-md rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-1.5 sm:space-y-2 border border-white/20">
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-health-green flex-shrink-0" />
                   <span>Garantía de 7 días</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-health-green" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-health-green flex-shrink-0" />
                   <span>Cambio de talla sin costo</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-health-green" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-health-green flex-shrink-0" />
                   <span>Alivio desde las primeras 24 horas</span>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
                 <Button
                   size="lg"
-                  className="bg-health-green hover:bg-health-green/90 text-white text-lg px-8 py-6 h-auto shadow-hover transition-all hover:scale-105 font-semibold"
+                  className="bg-health-green hover:bg-health-green/90 text-white text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto shadow-hover transition-all hover:scale-105 font-semibold w-full sm:w-auto"
                   onClick={() => window.open(getWhatsAppLink("", "Hola, necesito asesoría sobre medias de compresión. Quiero aliviar mis piernas cansadas."), "_blank")}
                 >
-                  <MessageCircle className="w-6 h-6 mr-3" />
-                  Consulta Gratis por WhatsApp
-                  <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded">2 min</span>
+                  <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 flex-shrink-0" />
+                  <span className="flex-1">Consulta Gratis por WhatsApp</span>
+                  <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded flex-shrink-0">2 min</span>
                 </Button>
                 
                 <Button
                   size="lg"
                   variant="outline"
-                  className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 h-auto backdrop-blur-sm"
+                  className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-primary text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 h-auto backdrop-blur-sm w-full sm:w-auto"
                   onClick={() => setTestOpen(true)}
                 >
-                  <Activity className="w-5 h-5 mr-2" />
+                  <Activity className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
                   Hacer el Test
                 </Button>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 pt-4 text-blue-50">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span className="text-sm">+5,000 clientes satisfechos</span>
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-3 sm:pt-4 text-blue-50 text-xs sm:text-sm">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                  <span>+5,000 clientes satisfechos</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Award className="w-5 h-5" />
-                  <span className="text-sm">Certificación médica</span>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Award className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                  <span>Certificación médica</span>
                 </div>
               </div>
             </div>
 
-            <div className="relative hidden md:block">
+            {/* Image Column - Hidden on mobile, shown on lg+ */}
+            <div className="relative hidden lg:block order-2">
               <div className="absolute -inset-4 bg-health-green/20 rounded-3xl blur-2xl" />
               <img
                 src="/placeholder.svg"
@@ -125,33 +126,33 @@ const Home = () => {
       <TestDialog open={testOpen} onOpenChange={setTestOpen} />
 
       {/* Benefits Section - Enhanced with Delivery & Payment */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
+      <section className="py-12 sm:py-16 bg-background">
+        <div className="container mx-auto px-4 sm:px-6">
           {/* Main highlight boxes */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto mb-8 sm:mb-12">
             <Card className="border-2 border-health-green bg-health-green/5 hover:shadow-hover transition-all">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-health-green rounded-full flex items-center justify-center flex-shrink-0">
-                    <Truck className="w-6 h-6 text-white" />
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-health-green rounded-full flex items-center justify-center flex-shrink-0">
+                    <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <div className="space-y-1">
-                    <h3 className="font-bold text-lg text-foreground">Entrega en menos de 48 horas</h3>
-                    <p className="text-sm text-muted-foreground">Envíos rápidos a todo el Perú. Tu alivio no puede esperar.</p>
+                  <div className="space-y-1 min-w-0">
+                    <h3 className="font-bold text-base sm:text-lg text-foreground">Entrega en menos de 48 horas</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Envíos rápidos a todo el Perú. Tu alivio no puede esperar.</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-2 border-primary bg-primary/5 hover:shadow-hover transition-all">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                    <CreditCard className="w-6 h-6 text-white" />
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                    <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <div className="space-y-1">
-                    <h3 className="font-bold text-lg text-foreground">Pago Contraentrega</h3>
-                    <p className="text-sm text-muted-foreground">Paga cuando recibas tu producto. Sin riesgos, 100% seguro.</p>
+                  <div className="space-y-1 min-w-0">
+                    <h3 className="font-bold text-base sm:text-lg text-foreground">Pago Contraentrega</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Paga cuando recibas tu producto. Sin riesgos, 100% seguro.</p>
                   </div>
                 </div>
               </CardContent>
@@ -159,44 +160,44 @@ const Home = () => {
           </div>
 
           {/* Secondary benefits */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
             <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
-              <CardContent className="pt-6 text-center space-y-3">
-                <div className="w-14 h-14 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                  <Users className="w-7 h-7 text-primary" />
+              <CardContent className="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3 px-2 sm:px-4 pb-4 sm:pb-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                  <Users className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
                 </div>
-                <h3 className="font-semibold text-foreground">Asesoría Personalizada</h3>
-                <p className="text-sm text-muted-foreground">Te ayudamos a elegir</p>
+                <h3 className="font-semibold text-sm sm:text-base text-foreground leading-tight">Asesoría Personalizada</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Te ayudamos a elegir</p>
               </CardContent>
             </Card>
 
             <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
-              <CardContent className="pt-6 text-center space-y-3">
-                <div className="w-14 h-14 mx-auto bg-health-green/10 rounded-full flex items-center justify-center">
-                  <ShieldCheck className="w-7 h-7 text-health-green" />
+              <CardContent className="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3 px-2 sm:px-4 pb-4 sm:pb-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-health-green/10 rounded-full flex items-center justify-center">
+                  <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-health-green" />
                 </div>
-                <h3 className="font-semibold text-foreground">Garantía 7 Días</h3>
-                <p className="text-sm text-muted-foreground">Devolución sin costo</p>
+                <h3 className="font-semibold text-sm sm:text-base text-foreground leading-tight">Garantía 7 Días</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Devolución sin costo</p>
               </CardContent>
             </Card>
 
             <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
-              <CardContent className="pt-6 text-center space-y-3">
-                <div className="w-14 h-14 mx-auto bg-secondary/10 rounded-full flex items-center justify-center">
-                  <Activity className="w-7 h-7 text-secondary" />
+              <CardContent className="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3 px-2 sm:px-4 pb-4 sm:pb-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-secondary/10 rounded-full flex items-center justify-center">
+                  <Activity className="w-6 h-6 sm:w-7 sm:h-7 text-secondary" />
                 </div>
-                <h3 className="font-semibold text-foreground">Alivio Inmediato</h3>
-                <p className="text-sm text-muted-foreground">Desde el primer día</p>
+                <h3 className="font-semibold text-sm sm:text-base text-foreground leading-tight">Alivio Inmediato</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Desde el primer día</p>
               </CardContent>
             </Card>
 
             <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
-              <CardContent className="pt-6 text-center space-y-3">
-                <div className="w-14 h-14 mx-auto bg-clinical-alert/10 rounded-full flex items-center justify-center">
-                  <Award className="w-7 h-7 text-clinical-alert" />
+              <CardContent className="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3 px-2 sm:px-4 pb-4 sm:pb-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-clinical-alert/10 rounded-full flex items-center justify-center">
+                  <Award className="w-6 h-6 sm:w-7 sm:h-7 text-clinical-alert" />
                 </div>
-                <h3 className="font-semibold text-foreground">Cambio de Talla</h3>
-                <p className="text-sm text-muted-foreground">Sin costo adicional</p>
+                <h3 className="font-semibold text-sm sm:text-base text-foreground leading-tight">Cambio de Talla</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Sin costo adicional</p>
               </CardContent>
             </Card>
           </div>
@@ -204,88 +205,88 @@ const Home = () => {
       </section>
 
       {/* Educational Section - Enhanced with Visual Content */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center space-y-6 mb-12">
-            <Badge className="bg-primary text-white text-sm px-4 py-2">Educación Rápida</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+      <section className="py-12 sm:py-16 bg-muted/30">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12">
+            <Badge className="bg-primary text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2">Educación Rápida</Badge>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground px-4">
               ¿Qué compresión necesito?
             </h2>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-base sm:text-lg text-muted-foreground px-4">
               Aprende en 30 segundos a elegir la compresión ideal para ti
             </p>
           </div>
 
           {/* Quick Education Cards */}
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto mb-8 sm:mb-12">
             <Card className="border-2 hover:border-primary transition-all">
-              <CardContent className="p-6 text-center space-y-3">
-                <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                  <HeartPulse className="w-8 h-8 text-primary" />
+              <CardContent className="p-4 sm:p-6 text-center space-y-2 sm:space-y-3">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                  <HeartPulse className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
                 </div>
-                <h3 className="font-bold text-foreground">¿Qué es mmHg?</h3>
-                <p className="text-sm text-muted-foreground">Es la medida de presión que ejercen las medias sobre tus piernas. A mayor mmHg, mayor compresión y alivio.</p>
+                <h3 className="font-bold text-sm sm:text-base text-foreground">¿Qué es mmHg?</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Es la medida de presión que ejercen las medias sobre tus piernas. A mayor mmHg, mayor compresión y alivio.</p>
               </CardContent>
             </Card>
 
             <Card className="border-2 hover:border-health-green transition-all">
-              <CardContent className="p-6 text-center space-y-3">
-                <div className="w-16 h-16 mx-auto bg-health-green/10 rounded-full flex items-center justify-center">
-                  <Activity className="w-8 h-8 text-health-green" />
+              <CardContent className="p-4 sm:p-6 text-center space-y-2 sm:space-y-3">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-health-green/10 rounded-full flex items-center justify-center">
+                  <Activity className="w-7 h-7 sm:w-8 sm:h-8 text-health-green" />
                 </div>
-                <h3 className="font-bold text-foreground">15-20 vs 20-30 mmHg</h3>
-                <p className="text-sm text-muted-foreground">15-20 para prevención, 20-30 para várices visibles. ¿Dudas? Te asesoramos gratis.</p>
+                <h3 className="font-bold text-sm sm:text-base text-foreground">15-20 vs 20-30 mmHg</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">15-20 para prevención, 20-30 para várices visibles. ¿Dudas? Te asesoramos gratis.</p>
               </CardContent>
             </Card>
 
-            <Card className="border-2 hover:border-secondary transition-all">
-              <CardContent className="p-6 text-center space-y-3">
-                <div className="w-16 h-16 mx-auto bg-secondary/10 rounded-full flex items-center justify-center">
-                  <CheckCircle2 className="w-8 h-8 text-secondary" />
+            <Card className="border-2 hover:border-secondary transition-all sm:col-span-2 lg:col-span-1">
+              <CardContent className="p-4 sm:p-6 text-center space-y-2 sm:space-y-3">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-secondary/10 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8 text-secondary" />
                 </div>
-                <h3 className="font-bold text-foreground">Elegir tu talla</h3>
-                <p className="text-sm text-muted-foreground">Mide tu pantorrilla y tobillo. Te ayudamos por WhatsApp en 2 minutos.</p>
+                <h3 className="font-bold text-sm sm:text-base text-foreground">Elegir tu talla</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">Mide tu pantorrilla y tobillo. Te ayudamos por WhatsApp en 2 minutos.</p>
               </CardContent>
             </Card>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
             <Card className="border-2 hover:border-primary transition-all overflow-hidden group">
-              <div className="h-3 bg-gradient-to-r from-primary to-health-green" />
-              <CardContent className="p-8 space-y-4">
-                <div className="flex items-start justify-between">
+              <div className="h-2 sm:h-3 bg-gradient-to-r from-primary to-health-green" />
+              <CardContent className="p-4 sm:p-6 lg:p-8 space-y-3 sm:space-y-4">
+                <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-2xl font-bold text-foreground mb-2">15-20 mmHg</h3>
-                    <Badge variant="outline" className="text-sm">Compresión Suave</Badge>
+                    <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">15-20 mmHg</h3>
+                    <Badge variant="outline" className="text-xs sm:text-sm">Compresión Suave</Badge>
                   </div>
-                  <Activity className="w-10 h-10 text-primary" />
+                  <Activity className="w-8 h-8 sm:w-10 sm:h-10 text-primary flex-shrink-0" />
                 </div>
 
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                   Ideal para prevención y molestias leves
                 </p>
 
-                <ul className="space-y-3">
+                <ul className="space-y-2 sm:space-y-3">
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Piernas cansadas al final del día</span>
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm">Piernas cansadas al final del día</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Hinchazón leve en tobillos</span>
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm">Hinchazón leve en tobillos</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Trabajos de pie o sentado prolongado</span>
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm">Trabajos de pie o sentado prolongado</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Prevención durante embarazo</span>
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm">Prevención durante embarazo</span>
                   </li>
                 </ul>
 
                 <Button 
-                  className="w-full mt-4 bg-primary hover:bg-primary/90"
+                  className="w-full mt-4 bg-primary hover:bg-primary/90 text-sm sm:text-base py-5 sm:py-6"
                   onClick={() => window.open(getWhatsAppLink("", "Hola, necesito medias de compresión 15-20 mmHg"), "_blank")}
                 >
                   Consultar por WhatsApp
@@ -294,41 +295,41 @@ const Home = () => {
             </Card>
 
             <Card className="border-2 hover:border-secondary transition-all overflow-hidden group">
-              <div className="h-3 bg-gradient-to-r from-secondary to-health-green" />
-              <CardContent className="p-8 space-y-4">
-                <div className="flex items-start justify-between">
+              <div className="h-2 sm:h-3 bg-gradient-to-r from-secondary to-health-green" />
+              <CardContent className="p-4 sm:p-6 lg:p-8 space-y-3 sm:space-y-4">
+                <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-2xl font-bold text-foreground mb-2">20-30 mmHg</h3>
-                    <Badge variant="outline" className="text-sm border-secondary text-secondary">Compresión Moderada</Badge>
+                    <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">20-30 mmHg</h3>
+                    <Badge variant="outline" className="text-xs sm:text-sm border-secondary text-secondary">Compresión Moderada</Badge>
                   </div>
-                  <HeartPulse className="w-10 h-10 text-secondary" />
+                  <HeartPulse className="w-8 h-8 sm:w-10 sm:h-10 text-secondary flex-shrink-0" />
                 </div>
 
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                   Recomendado para problemas circulatorios moderados
                 </p>
 
-                <ul className="space-y-3">
+                <ul className="space-y-2 sm:space-y-3">
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Varices visibles y arañitas</span>
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm">Varices visibles y arañitas</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Hinchazón moderada persistente</span>
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm">Hinchazón moderada persistente</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Post-cirugía de varices</span>
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm">Post-cirugía de varices</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-health-green mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Recomendación médica específica</span>
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-health-green mt-0.5 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm">Recomendación médica específica</span>
                   </li>
                 </ul>
 
                 <Button 
-                  className="w-full mt-4 bg-secondary hover:bg-secondary/90"
+                  className="w-full mt-4 bg-secondary hover:bg-secondary/90 text-sm sm:text-base py-5 sm:py-6"
                   onClick={() => window.open(getWhatsAppLink("", "Hola, necesito medias de compresión 20-30 mmHg"), "_blank")}
                 >
                   Consultar por WhatsApp
@@ -337,15 +338,15 @@ const Home = () => {
             </Card>
           </div>
 
-          <div className="text-center mt-10">
-            <p className="text-muted-foreground mb-4">¿Aún tienes dudas sobre qué compresión elegir?</p>
+          <div className="text-center mt-8 sm:mt-10 px-4">
+            <p className="text-sm sm:text-base text-muted-foreground mb-4">¿Aún tienes dudas sobre qué compresión elegir?</p>
             <Button
               variant="outline"
               size="lg"
-              className="border-2 border-primary text-primary hover:bg-primary hover:text-white"
+              className="border-2 border-primary text-primary hover:bg-primary hover:text-white text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6"
               onClick={() => window.open(getWhatsAppLink("", "Hola, no estoy seguro qué nivel de compresión necesito"), "_blank")}
             >
-              <MessageCircle className="w-5 h-5 mr-2" />
+              <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Habla con un asesor
             </Button>
           </div>
@@ -353,27 +354,29 @@ const Home = () => {
       </section>
 
       {/* Featured Products with Delivery Badge */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-8">
-            <Badge className="bg-health-green text-white text-sm px-4 py-2">Más Vendidas</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+      <section className="py-12 sm:py-16 bg-background">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+            <Badge className="bg-health-green text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2">Más Vendidas</Badge>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground px-4">
               Productos Destacados
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
               Las medias de compresión más recomendadas por nuestros clientes
             </p>
           </div>
 
           {/* Delivery reminder before products */}
-          <div className="max-w-3xl mx-auto mb-8">
-            <div className="bg-health-green/10 border-2 border-health-green rounded-xl p-4 flex items-center justify-center gap-3">
-              <Truck className="w-5 h-5 text-health-green" />
-              <span className="text-sm font-semibold text-foreground">
-                Entrega en menos de 48 horas en todo Perú
-              </span>
+          <div className="max-w-3xl mx-auto mb-6 sm:mb-8">
+            <div className="bg-health-green/10 border-2 border-health-green rounded-lg sm:rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Truck className="w-4 h-4 sm:w-5 sm:h-5 text-health-green flex-shrink-0" />
+                <span className="text-xs sm:text-sm font-semibold text-foreground text-center sm:text-left">
+                  Entrega en menos de 48 horas en todo Perú
+                </span>
+              </div>
               <span className="hidden sm:inline text-sm text-muted-foreground">•</span>
-              <span className="hidden sm:inline text-sm font-semibold text-foreground">
+              <span className="text-xs sm:text-sm font-semibold text-foreground text-center sm:text-left">
                 Pago contraentrega disponible
               </span>
             </div>
@@ -381,26 +384,26 @@ const Home = () => {
 
           {loading ? (
             <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+              <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-primary" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-7xl mx-auto">
               {featuredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} featured />
               ))}
             </div>
           )}
 
-          <div className="text-center mt-10">
+          <div className="text-center mt-8 sm:mt-10">
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-primary text-primary hover:bg-primary hover:text-white"
+              className="border-2 border-primary text-primary hover:bg-primary hover:text-white text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6"
               asChild
             >
               <Link to="/catalogo">
                 Ver todos los productos
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
               </Link>
             </Button>
           </div>
@@ -408,77 +411,77 @@ const Home = () => {
       </section>
 
       {/* Testimonials Section - Real UGC Style */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-12">
-            <Badge className="bg-health-green text-white text-sm px-4 py-2">Testimonios Reales</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+      <section className="py-12 sm:py-16 bg-background">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
+            <Badge className="bg-health-green text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2">Testimonios Reales</Badge>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground px-4">
               Lo que dicen nuestros clientes
             </h2>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground px-4">
               Experiencias reales de personas que aliviaron sus piernas
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
             <Card className="border-2 hover:shadow-hover transition-all">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Users className="w-6 h-6 text-primary" />
+              <CardContent className="pt-4 sm:pt-6 space-y-3 sm:space-y-4 px-4 sm:px-6 pb-4 sm:pb-6">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-foreground">Rosa M.</p>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm sm:text-base text-foreground">Rosa M.</p>
                     <p className="text-xs text-muted-foreground">Enfermera - Lima</p>
                   </div>
                 </div>
-                <p className="text-muted-foreground italic">
+                <p className="text-xs sm:text-sm text-muted-foreground italic leading-relaxed">
                   "Me alivió el dolor en horas. Trabajo 12 horas de pie y estas medias me cambiaron la vida. Ya no llego con las piernas hinchadas."
                 </p>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-health-green" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-health-green flex-shrink-0" />
                   <span className="text-health-green font-medium">Compra verificada</span>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-2 hover:shadow-hover transition-all">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
-                    <Users className="w-6 h-6 text-secondary" />
+              <CardContent className="pt-4 sm:pt-6 space-y-3 sm:space-y-4 px-4 sm:px-6 pb-4 sm:pb-6">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-secondary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Users className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-foreground">Carmen L.</p>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm sm:text-base text-foreground">Carmen L.</p>
                     <p className="text-xs text-muted-foreground">Vendedora - Arequipa</p>
                   </div>
                 </div>
-                <p className="text-muted-foreground italic">
+                <p className="text-xs sm:text-sm text-muted-foreground italic leading-relaxed">
                   "Pude trabajar todo el día sin hinchazón. Llegó rápido y me ayudaron a escoger la talla por WhatsApp. Excelente servicio."
                 </p>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-health-green" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-health-green flex-shrink-0" />
                   <span className="text-health-green font-medium">Compra verificada</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-2 hover:shadow-hover transition-all">
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-health-green/10 rounded-full flex items-center justify-center">
-                    <Users className="w-6 h-6 text-health-green" />
+            <Card className="border-2 hover:shadow-hover transition-all sm:col-span-2 lg:col-span-1">
+              <CardContent className="pt-4 sm:pt-6 space-y-3 sm:space-y-4 px-4 sm:px-6 pb-4 sm:pb-6">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-health-green/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Users className="w-5 h-5 sm:w-6 sm:h-6 text-health-green" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-foreground">Patricia S.</p>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm sm:text-base text-foreground">Patricia S.</p>
                     <p className="text-xs text-muted-foreground">Docente - Cusco</p>
                   </div>
                 </div>
-                <p className="text-muted-foreground italic">
+                <p className="text-xs sm:text-sm text-muted-foreground italic leading-relaxed">
                   "Mis várices mejoraron notablemente. El pago contraentrega me dio mucha confianza. Las recomiendo 100%."
                 </p>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-health-green" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-health-green flex-shrink-0" />
                   <span className="text-health-green font-medium">Compra verificada</span>
                 </div>
               </CardContent>
@@ -488,61 +491,61 @@ const Home = () => {
       </section>
 
       {/* Trust & Guarantees Section - Enhanced */}
-      <section className="py-16 bg-gradient-trust text-white">
-        <div className="container mx-auto px-4">
+      <section className="py-12 sm:py-16 bg-gradient-trust text-white">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center space-y-4 mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold">
+            <div className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold px-4">
                 Compra con Total Confianza
               </h2>
-              <p className="text-xl text-green-50">
+              <p className="text-base sm:text-xl text-green-50 px-4">
                 Tu satisfacción y seguridad son nuestra prioridad
               </p>
             </div>
 
             {/* Main guarantees - larger */}
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-8 space-y-4 hover:bg-white/25 transition-all">
-                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
-                  <ShieldCheck className="w-10 h-10" />
+            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-6 sm:p-8 space-y-3 sm:space-y-4 hover:bg-white/25 transition-all">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto sm:mx-0">
+                  <ShieldCheck className="w-8 h-8 sm:w-10 sm:h-10" />
                 </div>
-                <h3 className="font-bold text-2xl">Garantía Real de 7 Días</h3>
-                <p className="text-green-50">Si no sientes alivio o no te queda bien, te devolvemos tu dinero. Sin letra pequeña.</p>
+                <h3 className="font-bold text-xl sm:text-2xl text-center sm:text-left">Garantía Real de 7 Días</h3>
+                <p className="text-sm sm:text-base text-green-50 text-center sm:text-left">Si no sientes alivio o no te queda bien, te devolvemos tu dinero. Sin letra pequeña.</p>
               </div>
 
-              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-8 space-y-4 hover:bg-white/25 transition-all">
-                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
-                  <CreditCard className="w-10 h-10" />
+              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-6 sm:p-8 space-y-3 sm:space-y-4 hover:bg-white/25 transition-all">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto sm:mx-0">
+                  <CreditCard className="w-8 h-8 sm:w-10 sm:h-10" />
                 </div>
-                <h3 className="font-bold text-2xl">Pago Contraentrega</h3>
-                <p className="text-green-50">Paga cuando recibas tu producto en mano. Cero riesgos, 100% seguro y confiable.</p>
+                <h3 className="font-bold text-xl sm:text-2xl text-center sm:text-left">Pago Contraentrega</h3>
+                <p className="text-sm sm:text-base text-green-50 text-center sm:text-left">Paga cuando recibas tu producto en mano. Cero riesgos, 100% seguro y confiable.</p>
               </div>
             </div>
 
             {/* Secondary benefits */}
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center space-y-3 hover:bg-white/20 transition-all">
-                <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
-                  <Activity className="w-8 h-8" />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-center space-y-2 sm:space-y-3 hover:bg-white/20 transition-all">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
+                  <Activity className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
-                <h3 className="font-semibold text-lg">Cambio de Talla Gratis</h3>
-                <p className="text-sm text-green-50">Si no te queda bien, lo cambiamos sin costo adicional</p>
+                <h3 className="font-semibold text-base sm:text-lg">Cambio de Talla Gratis</h3>
+                <p className="text-xs sm:text-sm text-green-50">Si no te queda bien, lo cambiamos sin costo adicional</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center space-y-3 hover:bg-white/20 transition-all">
-                <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
-                  <Award className="w-8 h-8" />
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-center space-y-2 sm:space-y-3 hover:bg-white/20 transition-all">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
+                  <Award className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
-                <h3 className="font-semibold text-lg">Certificación Médica</h3>
-                <p className="text-sm text-green-50">Productos con certificación terapéutica oficial</p>
+                <h3 className="font-semibold text-base sm:text-lg">Certificación Médica</h3>
+                <p className="text-xs sm:text-sm text-green-50">Productos con certificación terapéutica oficial</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center space-y-3 hover:bg-white/20 transition-all">
-                <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
-                  <Truck className="w-8 h-8" />
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-center space-y-2 sm:space-y-3 hover:bg-white/20 transition-all sm:col-span-2 lg:col-span-1">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
+                  <Truck className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
-                <h3 className="font-semibold text-lg">Envío en 48h Perú</h3>
-                <p className="text-sm text-green-50">Entrega rápida garantizada en todo el territorio</p>
+                <h3 className="font-semibold text-base sm:text-lg">Envío en 48h Perú</h3>
+                <p className="text-xs sm:text-sm text-green-50">Entrega rápida garantizada en todo el territorio</p>
               </div>
             </div>
           </div>
@@ -550,45 +553,45 @@ const Home = () => {
       </section>
 
       {/* Final CTA Section - Enhanced with Benefits */}
-      <section className="py-20 bg-primary text-white">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto space-y-6">
-            <Zap className="w-16 h-16 mx-auto" />
-            <h2 className="text-3xl md:text-5xl font-bold">
+      <section className="py-16 sm:py-20 bg-primary text-white mb-16 sm:mb-0">
+        <div className="container mx-auto px-4 sm:px-6 text-center">
+          <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
+            <Zap className="w-12 h-12 sm:w-16 sm:h-16 mx-auto" />
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold px-4">
               ¿Listo para sentir el alivio?
             </h2>
-            <p className="text-xl text-blue-50">
+            <p className="text-base sm:text-xl text-blue-50 px-4">
               Recibe asesoría personalizada en 2 minutos y encuentra la media perfecta para ti
             </p>
 
             {/* Quick benefits reminder */}
-            <div className="grid md:grid-cols-3 gap-4 py-6 max-w-2xl mx-auto">
-              <div className="flex items-center justify-center gap-2 text-sm">
-                <Truck className="w-5 h-5" />
-                <span>Envío en 48h</span>
+            <div className="grid grid-cols-3 gap-3 sm:gap-4 py-4 sm:py-6 max-w-2xl mx-auto">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                <Truck className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <span className="text-center sm:text-left">Envío en 48h</span>
               </div>
-              <div className="flex items-center justify-center gap-2 text-sm">
-                <CreditCard className="w-5 h-5" />
-                <span>Pago al recibir</span>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <span className="text-center sm:text-left">Pago al recibir</span>
               </div>
-              <div className="flex items-center justify-center gap-2 text-sm">
-                <ShieldCheck className="w-5 h-5" />
-                <span>Garantía 7 días</span>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <span className="text-center sm:text-left">Garantía 7 días</span>
               </div>
             </div>
 
             <Button
               size="lg"
-              className="bg-health-green hover:bg-health-green/90 text-white text-lg px-10 py-7 h-auto shadow-2xl hover:scale-105 transition-all font-bold"
+              className="bg-health-green hover:bg-health-green/90 text-white text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 h-auto shadow-2xl hover:scale-105 transition-all font-bold w-full sm:w-auto"
               onClick={() => window.open(getWhatsAppLink("", "Hola, quiero consultar sobre medias de compresión"), "_blank")}
             >
-              <MessageCircle className="w-6 h-6 mr-3" />
-              Consulta Gratis por WhatsApp
-              <span className="ml-3 bg-white/20 px-3 py-1 rounded text-sm font-normal">2 min</span>
+              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 flex-shrink-0" />
+              <span>Consulta Gratis por WhatsApp</span>
+              <span className="ml-2 sm:ml-3 bg-white/20 px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-normal">2 min</span>
             </Button>
             
-            <p className="text-sm text-blue-100 mt-4">
-              <CheckCircle2 className="w-4 h-4 inline mr-1" />
+            <p className="text-xs sm:text-sm text-blue-100 mt-3 sm:mt-4 px-4">
+              <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1" />
               Respuesta en menos de 5 minutos · Lunes a Sábado 9am - 7pm
             </p>
           </div>
@@ -596,14 +599,14 @@ const Home = () => {
       </section>
 
       {/* Mobile Sticky CTA - WhatsApp */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-health-green to-health-green/90 p-4 shadow-2xl">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-health-green to-health-green/90 p-3 shadow-2xl border-t border-white/10">
         <Button
-          className="w-full bg-white text-health-green hover:bg-white/90 font-bold text-lg py-6 h-auto"
+          className="w-full bg-white text-health-green hover:bg-white/90 font-bold text-base py-5 h-auto"
           onClick={() => window.open(getWhatsAppLink("", "Hola, quiero consultar sobre medias de compresión"), "_blank")}
         >
-          <MessageCircle className="w-5 h-5 mr-2" />
-          Consulta Gratis
-          <span className="ml-2 text-xs bg-health-green/20 px-2 py-1 rounded">2 min</span>
+          <MessageCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+          <span className="flex-1">Consulta Gratis</span>
+          <span className="ml-2 text-xs bg-health-green/20 px-2 py-1 rounded flex-shrink-0">2 min</span>
         </Button>
       </div>
 
