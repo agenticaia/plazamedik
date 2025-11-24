@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { TestDialog } from "@/components/TestDialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { CategoryCarousel } from "@/components/CategoryCarousel";
 import { getWhatsAppLink } from "@/lib/productUtils";
 import { useProducts } from "@/hooks/useProducts";
 import { Filter, ClipboardCheck, MessageCircle, Loader2 } from "lucide-react";
@@ -24,6 +24,24 @@ const Catalog = () => {
     const zoneMatch = selectedZone === "all" || (product as any).zona_pierna === selectedZone;
     return categoryMatch && zoneMatch;
   });
+
+  // Category definitions
+  const problemCategories = [
+    { id: "all", label: "Todos" },
+    { id: "varices", label: "Várices" },
+    { id: "trabajo-pie", label: "Trabajo de pie" },
+    { id: "piel-sensible", label: "Piel sensible" },
+  ];
+
+  const zoneCategories = [
+    { id: "all", label: "Todas" },
+    { id: "pies", label: "Pies" },
+    { id: "pantorrilla", label: "Pantorrilla" },
+    { id: "pierna_media", label: "Pierna media" },
+    { id: "rodilla", label: "Rodilla" },
+    { id: "muslo", label: "Muslo" },
+    { id: "panty", label: "Pierna completa / Panty" },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -76,96 +94,21 @@ const Catalog = () => {
         </div>
 
         <div className="space-y-6">
-          {/* Category Filter */}
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-3">Problema:</h3>
-            <div className="flex flex-wrap gap-2">
-              <Badge
-                variant={selectedCategory === "all" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedCategory("all")}
-              >
-                Todos
-              </Badge>
-              <Badge
-                variant={selectedCategory === "varices" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedCategory("varices")}
-              >
-                Várices
-              </Badge>
-              <Badge
-                variant={selectedCategory === "trabajo-pie" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedCategory("trabajo-pie")}
-              >
-                Trabajo de pie
-              </Badge>
-              <Badge
-                variant={selectedCategory === "piel-sensible" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedCategory("piel-sensible")}
-              >
-                Piel sensible
-              </Badge>
-            </div>
-          </div>
+          {/* Problem Category Filter */}
+          <CategoryCarousel
+            categories={problemCategories}
+            selected={selectedCategory}
+            onSelect={setSelectedCategory}
+            title="Problema:"
+          />
 
-          {/* Zone Filter */}
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-3">Zona de la pierna:</h3>
-            <div className="flex flex-wrap gap-2">
-              <Badge
-                variant={selectedZone === "all" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedZone("all")}
-              >
-                Todas
-              </Badge>
-              <Badge
-                variant={selectedZone === "pies" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedZone("pies")}
-              >
-                Pies
-              </Badge>
-              <Badge
-                variant={selectedZone === "pantorrilla" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedZone("pantorrilla")}
-              >
-                Pantorrilla
-              </Badge>
-              <Badge
-                variant={selectedZone === "pierna_media" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedZone("pierna_media")}
-              >
-                Pierna media
-              </Badge>
-              <Badge
-                variant={selectedZone === "rodilla" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedZone("rodilla")}
-              >
-                Rodilla
-              </Badge>
-              <Badge
-                variant={selectedZone === "muslo" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedZone("muslo")}
-              >
-                Muslo
-              </Badge>
-              <Badge
-                variant={selectedZone === "panty" ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => setSelectedZone("panty")}
-              >
-                Pierna completa / Panty
-              </Badge>
-            </div>
-          </div>
+          {/* Zone Category Filter */}
+          <CategoryCarousel
+            categories={zoneCategories}
+            selected={selectedZone}
+            onSelect={setSelectedZone}
+            title="Zona de la pierna:"
+          />
         </div>
       </section>
 
