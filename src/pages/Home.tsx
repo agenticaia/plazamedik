@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
@@ -21,7 +22,10 @@ import {
   Users,
   HeartPulse,
   Activity,
-  Zap
+  Zap,
+  Shield,
+  BadgeCheck,
+  Heart
 } from "lucide-react";
 
 const Home = () => {
@@ -126,88 +130,105 @@ const Home = () => {
       <TestDialog open={testOpen} onOpenChange={setTestOpen} />
 
       {/* Benefits Section - Enhanced with Delivery & Payment */}
-      <section className="py-12 sm:py-16 bg-background">
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-12 sm:py-16 bg-background"
+      >
         <div className="container mx-auto px-4 sm:px-6">
           {/* Main highlight boxes */}
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto mb-8 sm:mb-12">
-            <Card className="border-2 border-health-green bg-health-green/5 hover:shadow-hover transition-all">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-health-green rounded-full flex items-center justify-center flex-shrink-0">
-                    <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <Card className="border-2 border-health-green bg-health-green/5 hover:shadow-hover transition-all hover:scale-[1.02]">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-health-green rounded-full flex items-center justify-center flex-shrink-0">
+                      <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <div className="space-y-1 min-w-0">
+                      <h3 className="font-bold text-base sm:text-lg text-foreground">Entrega en menos de 48 horas</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Envíos rápidos a todo el Perú. Tu alivio no puede esperar.</p>
+                    </div>
                   </div>
-                  <div className="space-y-1 min-w-0">
-                    <h3 className="font-bold text-base sm:text-lg text-foreground">Entrega en menos de 48 horas</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Envíos rápidos a todo el Perú. Tu alivio no puede esperar.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card className="border-2 border-primary bg-primary/5 hover:shadow-hover transition-all">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                    <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card className="border-2 border-primary bg-primary/5 hover:shadow-hover transition-all hover:scale-[1.02]">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                      <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <div className="space-y-1 min-w-0">
+                      <h3 className="font-bold text-base sm:text-lg text-foreground">Pago Contraentrega</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Paga cuando recibas tu producto. Sin riesgos, 100% seguro.</p>
+                    </div>
                   </div>
-                  <div className="space-y-1 min-w-0">
-                    <h3 className="font-bold text-base sm:text-lg text-foreground">Pago Contraentrega</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Paga cuando recibas tu producto. Sin riesgos, 100% seguro.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
 
           {/* Secondary benefits */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
-            <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
-              <CardContent className="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3 px-2 sm:px-4 pb-4 sm:pb-6">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-                  <Users className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
-                </div>
-                <h3 className="font-semibold text-sm sm:text-base text-foreground leading-tight">Asesoría Personalizada</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">Te ayudamos a elegir</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
-              <CardContent className="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3 px-2 sm:px-4 pb-4 sm:pb-6">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-health-green/10 rounded-full flex items-center justify-center">
-                  <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-health-green" />
-                </div>
-                <h3 className="font-semibold text-sm sm:text-base text-foreground leading-tight">Garantía 7 Días</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">Devolución sin costo</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
-              <CardContent className="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3 px-2 sm:px-4 pb-4 sm:pb-6">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-secondary/10 rounded-full flex items-center justify-center">
-                  <Activity className="w-6 h-6 sm:w-7 sm:h-7 text-secondary" />
-                </div>
-                <h3 className="font-semibold text-sm sm:text-base text-foreground leading-tight">Alivio Inmediato</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">Desde el primer día</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 hover:border-primary transition-all hover:shadow-hover">
-              <CardContent className="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3 px-2 sm:px-4 pb-4 sm:pb-6">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-clinical-alert/10 rounded-full flex items-center justify-center">
-                  <Award className="w-6 h-6 sm:w-7 sm:h-7 text-clinical-alert" />
-                </div>
-                <h3 className="font-semibold text-sm sm:text-base text-foreground leading-tight">Cambio de Talla</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground">Sin costo adicional</p>
-              </CardContent>
-            </Card>
+            {[
+              { icon: Users, title: "Asesoría Personalizada", desc: "Te ayudamos a elegir", color: "primary" },
+              { icon: ShieldCheck, title: "Garantía 7 Días", desc: "Devolución sin costo", color: "health-green" },
+              { icon: Activity, title: "Alivio Inmediato", desc: "Desde el primer día", color: "secondary" },
+              { icon: Award, title: "Cambio de Talla", desc: "Sin costo adicional", color: "clinical-alert" }
+            ].map((benefit, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.1 * index }}
+              >
+                <Card className="border-2 hover:border-primary transition-all hover:shadow-hover hover:-translate-y-1">
+                  <CardContent className="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3 px-2 sm:px-4 pb-4 sm:pb-6">
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-${benefit.color}/10 rounded-full flex items-center justify-center`}>
+                      <benefit.icon className={`w-6 h-6 sm:w-7 sm:h-7 text-${benefit.color}`} />
+                    </div>
+                    <h3 className="font-semibold text-sm sm:text-base text-foreground leading-tight">{benefit.title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{benefit.desc}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Educational Section - Enhanced with Visual Content */}
-      <section className="py-12 sm:py-16 bg-muted/30">
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-12 sm:py-16 bg-muted/30"
+      >
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12"
+          >
             <Badge className="bg-primary text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2">Educación Rápida</Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground px-4">
               ¿Qué compresión necesito?
@@ -215,7 +236,7 @@ const Home = () => {
             <p className="text-base sm:text-lg text-muted-foreground px-4">
               Aprende en 30 segundos a elegir la compresión ideal para ti
             </p>
-          </div>
+          </motion.div>
 
           {/* Quick Education Cards */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto mb-8 sm:mb-12">
@@ -351,12 +372,24 @@ const Home = () => {
             </Button>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Featured Products with Delivery Badge */}
-      <section className="py-12 sm:py-16 bg-background">
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-12 sm:py-16 bg-background"
+      >
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-3 sm:space-y-4 mb-6 sm:mb-8"
+          >
             <Badge className="bg-health-green text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2">Más Vendidas</Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground px-4">
               Productos Destacados
@@ -490,67 +523,153 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Trust & Guarantees Section - Enhanced */}
-      <section className="py-12 sm:py-16 bg-gradient-trust text-white">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold px-4">
-                Compra con Total Confianza
-              </h2>
-              <p className="text-base sm:text-xl text-green-50 px-4">
-                Tu satisfacción y seguridad son nuestra prioridad
-              </p>
+      {/* Trust Section - Enhanced Visual Design */}
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-muted/20 via-background to-muted/30 relative overflow-hidden"
+      >
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-5 pointer-events-none">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-primary rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          {/* Header */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-center mb-10 sm:mb-16 max-w-3xl mx-auto"
+          >
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4 sm:mb-6">
+              <Shield className="w-4 h-4" />
+              <span>100% Garantizado</span>
             </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-foreground leading-tight">
+              Compra con total confianza
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
+              Tu satisfacción y seguridad son nuestra prioridad
+            </p>
+          </motion.div>
 
-            {/* Main guarantees - larger */}
-            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
-              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-6 sm:p-8 space-y-3 sm:space-y-4 hover:bg-white/25 transition-all">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto sm:mx-0">
-                  <ShieldCheck className="w-8 h-8 sm:w-10 sm:h-10" />
-                </div>
-                <h3 className="font-bold text-xl sm:text-2xl text-center sm:text-left">Garantía Real de 7 Días</h3>
-                <p className="text-sm sm:text-base text-green-50 text-center sm:text-left">Si no sientes alivio o no te queda bien, te devolvemos tu dinero. Sin letra pequeña.</p>
+          {/* Trust Cards Grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto">
+            {/* Card 1 - Garantía */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-primary/30 relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <motion.div 
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6"
+                >
+                  <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
+                </motion.div>
+                <h3 className="font-bold text-lg sm:text-xl mb-2 sm:mb-3 text-foreground">
+                  Garantía Real 7 Días
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  Cambio o devolución sin complicaciones
+                </p>
               </div>
+            </motion.div>
 
-              <div className="bg-white/15 backdrop-blur-sm rounded-xl p-6 sm:p-8 space-y-3 sm:space-y-4 hover:bg-white/25 transition-all">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto sm:mx-0">
-                  <CreditCard className="w-8 h-8 sm:w-10 sm:h-10" />
-                </div>
-                <h3 className="font-bold text-xl sm:text-2xl text-center sm:text-left">Pago Contraentrega</h3>
-                <p className="text-sm sm:text-base text-green-50 text-center sm:text-left">Paga cuando recibas tu producto en mano. Cero riesgos, 100% seguro y confiable.</p>
+            {/* Card 2 - Envío */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-secondary/30 relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <motion.div 
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="w-14 h-14 sm:w-16 sm:h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6"
+                >
+                  <Truck className="w-7 h-7 sm:w-8 sm:h-8 text-secondary" />
+                </motion.div>
+                <h3 className="font-bold text-lg sm:text-xl mb-2 sm:mb-3 text-foreground">
+                  Envío Rápido
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  Menos de 48 horas en todo Perú
+                </p>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Secondary benefits */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-center space-y-2 sm:space-y-3 hover:bg-white/20 transition-all">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
-                  <Activity className="w-7 h-7 sm:w-8 sm:h-8" />
-                </div>
-                <h3 className="font-semibold text-base sm:text-lg">Cambio de Talla Gratis</h3>
-                <p className="text-xs sm:text-sm text-green-50">Si no te queda bien, lo cambiamos sin costo adicional</p>
+            {/* Card 3 - Cambio de Talla */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-health-green/30 relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-health-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <motion.div 
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="w-14 h-14 sm:w-16 sm:h-16 bg-health-green/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6"
+                >
+                  <BadgeCheck className="w-7 h-7 sm:w-8 sm:h-8 text-health-green" />
+                </motion.div>
+                <h3 className="font-bold text-lg sm:text-xl mb-2 sm:mb-3 text-foreground">
+                  Cambio de Talla Gratis
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  Sin costo adicional si necesitas otra talla
+                </p>
               </div>
+            </motion.div>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-center space-y-2 sm:space-y-3 hover:bg-white/20 transition-all">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
-                  <Award className="w-7 h-7 sm:w-8 sm:h-8" />
-                </div>
-                <h3 className="font-semibold text-base sm:text-lg">Certificación Médica</h3>
-                <p className="text-xs sm:text-sm text-green-50">Productos con certificación terapéutica oficial</p>
+            {/* Card 4 - Mejoras */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-clinical-alert/30 relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-clinical-alert/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <motion.div 
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="w-14 h-14 sm:w-16 sm:h-16 bg-clinical-alert/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6"
+                >
+                  <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-clinical-alert" />
+                </motion.div>
+                <h3 className="font-bold text-lg sm:text-xl mb-2 sm:mb-3 text-foreground">
+                  Mejoras en 24 Horas
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  Sensación de alivio desde el primer uso
+                </p>
               </div>
-
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-center space-y-2 sm:space-y-3 hover:bg-white/20 transition-all sm:col-span-2 lg:col-span-1">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center">
-                  <Truck className="w-7 h-7 sm:w-8 sm:h-8" />
-                </div>
-                <h3 className="font-semibold text-base sm:text-lg">Envío en 48h Perú</h3>
-                <p className="text-xs sm:text-sm text-green-50">Entrega rápida garantizada en todo el territorio</p>
-              </div>
-            </div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Final CTA Section - Enhanced with Benefits */}
       <section className="py-16 sm:py-20 bg-primary text-white mb-16 sm:mb-0">
