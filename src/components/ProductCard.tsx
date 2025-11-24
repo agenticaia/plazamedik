@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -21,14 +21,25 @@ interface ProductCardProps {
   product: Product;
   featured?: boolean;
   showTreatmentButton?: boolean;
+  allImages?: { color: string; image: string }[];
 }
 
-const ProductCard = ({ product, featured = false, showTreatmentButton = false }: ProductCardProps) => {
+const ProductCard = ({ product, featured = false, showTreatmentButton = false, allImages = [] }: ProductCardProps) => {
   const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [recommendationsOpen, setRecommendationsOpen] = useState(false);
+  const [selectedColor, setSelectedColor] = useState(product.colors[0] || "Piel");
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
+
+  // Determinar la imagen actual según el color seleccionado
+  const currentImage = useMemo(() => {
+    if (allImages.length > 0) {
+      const imageForColor = allImages.find(img => img.color === selectedColor);
+      return imageForColor?.image || product.image;
+    }
+    return product.image;
+  }, [selectedColor, allImages, product.image]);
 
   const handleCardClick = () => {
     navigate(`/producto?codigo=${product.code}`);
@@ -59,6 +70,7 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
         open={orderModalOpen}
         onOpenChange={setOrderModalOpen}
         product={product}
+        selectedColor={selectedColor}
       />
     <Card 
       onClick={handleCardClick}
@@ -67,8 +79,8 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
       <CardHeader className="p-0">
         <div className="relative aspect-[3/4] overflow-hidden bg-muted">
           <img
-            src={product.image}
-            alt={product.name}
+            src={currentImage}
+            alt={`${product.name} - ${selectedColor}`}
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
               e.currentTarget.src = "/images/product-750-1.jpg";
@@ -137,12 +149,44 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
           <Badge variant="outline" className="text-xs">
             Tallas {product.sizes[0]}-{product.sizes[product.sizes.length - 1]}
           </Badge>
-          {product.colors.length > 0 && (
-            <Badge variant="outline" className="text-xs">
-              {product.colors.join(", ")}
-            </Badge>
-          )}
         </div>
+
+        {/* Selector de color */}
+        {product.colors.length > 1 && (
+          <div className="pt-2">
+            <p className="text-xs text-muted-foreground mb-2 font-medium">Colores disponibles:</p>
+            <div className="flex gap-2 flex-wrap">
+              {product.colors.map((color) => {
+                const colorMap: Record<string, string> = {
+                  'Piel': 'bg-[#F5D5B8]',
+                  'Negro': 'bg-black',
+                  'Beige': 'bg-[#D4B896]',
+                  'Blanco': 'bg-white',
+                  'Gris': 'bg-gray-400',
+                };
+                
+                return (
+                  <button
+                    key={color}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedColor(color);
+                    }}
+                    className={cn(
+                      "w-8 h-8 rounded-full border-2 transition-all hover:scale-110",
+                      selectedColor === color 
+                        ? "border-primary ring-2 ring-primary ring-offset-2" 
+                        : "border-border hover:border-primary/50",
+                      colorMap[color] || 'bg-gray-300'
+                    )}
+                    title={color}
+                    aria-label={`Seleccionar color ${color}`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
       </CardContent>
 
       <CardFooter className="p-6 pt-0 flex flex-col gap-2">
