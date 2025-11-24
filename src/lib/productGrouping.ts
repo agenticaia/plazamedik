@@ -20,33 +20,49 @@ export function groupProductsByName(products: Product[]): GroupedProduct[] {
     const baseName = product.name;
     
     if (!grouped.has(baseName)) {
-      // First product of this type
+      // First product of this type - use colores_disponibles as source of truth
+      const availableColors = product.colors && product.colors.length > 0 
+        ? product.colors 
+        : [extractColorFromCode(product)];
+      
+      // Create variants for all available colors
+      const variants: ProductVariant[] = availableColors.map(color => ({
+        color,
+        image: product.image, // Use same image for all colors if no specific image exists
+        productCode: product.code,
+      }));
+      
       grouped.set(baseName, {
         ...product,
-        variants: [{
-          color: extractColorFromCode(product),
-          image: product.image,
-          productCode: product.code,
-        }],
-        allColors: [extractColorFromCode(product)],
+        variants,
+        allColors: availableColors,
+        colors: availableColors,
       });
     } else {
-      // Add variant to existing product
+      // Product already exists - merge variants from this instance
       const existing = grouped.get(baseName)!;
-      const color = extractColorFromCode(product);
+      const currentColor = extractColorFromCode(product);
       
-      existing.variants.push({
-        color,
-        image: product.image,
-        productCode: product.code,
-      });
+      // Check if we need to add this variant (if it has a different image)
+      const variantExists = existing.variants.some(v => 
+        v.color === currentColor && v.productCode === product.code
+      );
       
-      if (!existing.allColors.includes(color)) {
-        existing.allColors.push(color);
+      if (!variantExists && product.image !== existing.image) {
+        // Add variant with specific image if it's different
+        existing.variants.push({
+          color: currentColor,
+          image: product.image,
+          productCode: product.code,
+        });
+      } else if (!variantExists) {
+        // Update existing variant with actual image if available
+        const variantIndex = existing.variants.findIndex(v => v.color === currentColor);
+        if (variantIndex >= 0) {
+          existing.variants[variantIndex].image = product.image;
+          existing.variants[variantIndex].productCode = product.code;
+        }
       }
-      
-      // Update colors array to include all variants
-      existing.colors = existing.allColors;
     }
   });
 
