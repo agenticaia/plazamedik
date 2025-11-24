@@ -68,7 +68,7 @@ const Home = () => {
                   className="bg-white/10 border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 h-auto backdrop-blur-sm"
                   asChild
                 >
-                  <Link to="/catalog">
+                  <Link to="/catalogo">
                     Ver Catálogo
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Link>
@@ -294,7 +294,7 @@ const Home = () => {
               className="border-2 border-primary text-primary hover:bg-primary hover:text-white"
               asChild
             >
-              <Link to="/catalog">
+              <Link to="/catalogo">
                 Ver todos los productos
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
