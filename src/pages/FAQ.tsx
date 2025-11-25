@@ -38,8 +38,8 @@ const FAQ = () => {
       answer: "Todo el proceso se hace por WhatsApp para brindarte atención personalizada. Nos escribes, te ayudamos a elegir tu producto y talla, te enviamos el precio y formas de pago, realizas tu pedido y te lo enviamos a tu domicilio. Es rápido, fácil y con asesoría en cada paso."
     },
     {
-      question: "¿Hacen envíos a toda Colombia?",
-      answer: "Sí, hacemos envíos a toda Colombia. El tiempo de entrega varía según la ciudad, pero generalmente es entre 2 y 5 días hábiles. Escríbenos por WhatsApp con tu ciudad y te confirmamos costo y tiempo de envío."
+      question: "¿Hacen envíos a todo el Perú?",
+      answer: "Sí, hacemos envíos a todo el Perú. Entrega en 24 horas en Lima Metropolitana y 48 horas a nivel nacional. Escríbenos por WhatsApp con tu distrito o ciudad y te confirmamos el costo y tiempo exacto de envío."
     },
     {
       question: "¿Qué métodos de pago aceptan?",
