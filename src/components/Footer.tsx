@@ -16,7 +16,7 @@ const Footer = () => {
               <span className="font-semibold text-lg text-foreground">Piernas Ligeras</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Medias de compresión Relaxsan Basic 20-30 mmHg. Alivio profesional para tus piernas.
+              Especialistas en medias de compresión médica 20-30 mmHg. Alivio profesional para várices, trabajo de pie y problemas circulatorios. Enviamos a todo el Perú.
             </p>
           </div>
 
@@ -65,7 +65,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4" />
-                Colombia
+                Lima, Perú
               </li>
             </ul>
           </div>

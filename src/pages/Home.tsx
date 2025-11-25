@@ -83,7 +83,7 @@ const Home = () => {
                   transition={{ duration: 0.8, delay: 0.3 }}
                   className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight"
                 >
-                  Alivio real para piernas cansadas
+                  Alivio Real para Tus Piernas
                 </motion.h1>
                 
                 {/* Strong emotional subheader */}
@@ -93,7 +93,15 @@ const Home = () => {
                   transition={{ duration: 0.8, delay: 0.4 }}
                   className="text-xl sm:text-2xl md:text-3xl text-blue-50 font-medium leading-relaxed"
                 >
-                  La tienda especialista en medias de compresión que <span className="text-white font-bold">sí alivian tu dolor</span>
+                  Medias de compresión médica 20-30 mmHg que <span className="text-white font-bold">sí funcionan</span>
+                </motion.p>
+                <motion.p 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.45 }}
+                  className="text-lg sm:text-xl text-blue-100/90 font-semibold"
+                >
+                  La tienda especialista que recomiendan los profesionales de salud
                 </motion.p>
               </div>
 
@@ -104,7 +112,7 @@ const Home = () => {
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className="text-lg sm:text-xl text-blue-100/90 leading-relaxed max-w-xl"
               >
-                Recomendaciones personalizadas para personas que trabajan largas horas de pie. Te asesoramos gratis por WhatsApp en 2 minutos.
+                ✓ Entrega express: 24h Lima / 48h todo Perú • ✓ Cambio de talla gratis • ✓ Pago contraentrega 100% seguro
               </motion.p>
 
               {/* Delivery Promise - Prominent */}
