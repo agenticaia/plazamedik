@@ -54,13 +54,10 @@ const Catalog = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-4">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-              Catálogo Completo de Medias de Compresión
+              Catálogo de Medias de Compresión
             </h1>
-            <p className="text-lg text-primary-foreground/90 mb-2">
-              Encuentra la solución exacta para tu problema. Todas con compresión médica certificada 20-30 mmHg.
-            </p>
-            <p className="text-base text-primary-foreground/80">
-              ✓ Cambio de talla gratis • ✓ Envío 24h Lima / 48h Perú • ✓ Asesoría sin costo
+            <p className="text-lg text-primary-foreground/90">
+              Encuentra la media perfecta para tus necesidades. Todas con compresión médica 20-30 mmHg
             </p>
           </div>
         </div>
@@ -71,17 +68,17 @@ const Catalog = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">¿No estás segura cuál es para ti?</span> Haz el test gratis (2 minutos) o escríbenos por WhatsApp. Te ayudamos a elegir.
+              <span className="font-semibold text-foreground">¿No sabes qué modelo elegir?</span> Haz el test o escríbenos
             </p>
             <div className="flex flex-col sm:flex-row gap-2">
               <Button size="sm" onClick={() => setTestOpen(true)} className="bg-health-green hover:bg-health-green/90 text-white transition-all">
                 <ClipboardCheck className="w-4 h-4 mr-2" />
-                Test Gratis (2 min)
+                Hacer Test
               </Button>
               <Button asChild size="sm" className="bg-whatsapp-green hover:bg-whatsapp-green/90 text-white transition-all">
-                <a href={getWhatsAppLink("", "Hola, necesito ayuda para elegir mi media ideal")} target="_blank" rel="noopener noreferrer">
+                <a href={getWhatsAppLink("", "Hola, necesito ayuda")} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="w-4 h-4 mr-2" />
-                  Asesoría Gratis
+                  WhatsApp
                 </a>
               </Button>
             </div>

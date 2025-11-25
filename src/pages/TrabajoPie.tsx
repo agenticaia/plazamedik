@@ -28,15 +28,15 @@ const TrabajoPie = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-4">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-              Piernas Ligeras Todo el Turno
+              Medias para Trabajo de Pie
             </h1>
             <p className="text-lg text-primary-foreground/90">
-              Para enfermeras, vendedoras, peluqueras y todas las que trabajan de pie. Di adiós al dolor, hinchazón y fatiga extrema al final del día. Llega a casa con energía.
+              Energía que dura todo el turno. Di adiós a las piernas hinchadas y cansadas al final del día
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" onClick={() => setTestOpen(true)} className="bg-health-green hover:bg-health-green/90 text-white transition-all hover:scale-105">
                 <ClipboardCheck className="w-5 h-5 mr-2" />
-                Encuentra tu media ideal (gratis)
+                Hacer Test Gratis
               </Button>
               <Button asChild size="lg" variant="outline" className="bg-primary-foreground/10 border-primary-foreground/20 hover:bg-primary-foreground/20 transition-all">
                 <a href="/catalogo">Ver catálogo</a>
@@ -90,10 +90,10 @@ const TrabajoPie = () => {
 
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-6">
             <h3 className="font-semibold text-foreground mb-2">
-              La solución: Compresión médica 20-30 mmHg
+              La solución: Compresión 20-30 mmHg
             </h3>
             <p className="text-sm text-muted-foreground">
-              Las medias de compresión ayudan a empujar la sangre hacia arriba constantemente, previniendo la acumulación de líquido. El resultado: llegas a casa con las piernas tan ligeras como cuando empezaste tu turno. Sin dolor. Sin hinchazón. Con energía de sobra.
+              Las medias de compresión ayudan a empujar la sangre hacia arriba constantemente, previniendo la acumulación. Resultado: llegas a casa con las piernas tan ligeras como cuando empezaste tu turno.
             </p>
           </div>
         </div>

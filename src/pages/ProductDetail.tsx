@@ -142,8 +142,7 @@ const ProductDetail = () => {
                 {/* Sizes & Colors */}
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm font-medium text-foreground mb-1">Tallas disponibles:</p>
-                    <p className="text-xs text-muted-foreground mb-2">Te ayudamos a elegir la correcta por WhatsApp</p>
+                    <p className="text-sm font-medium text-foreground mb-2">Tallas disponibles:</p>
                     <div className="flex flex-wrap gap-2">
                       {product.sizes.map((size) => (
                         <Badge key={size} variant="outline">{size}</Badge>
@@ -180,19 +179,14 @@ const ProductDetail = () => {
                 </div>
 
                 {/* CTA */}
-                <div className="space-y-2">
-                  <Button
-                    onClick={() => setWhatsappTransitionOpen(true)}
-                    size="lg"
-                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-                  >
-                    <MessageCircle className="w-5 h-5 mr-2" />
-                    Pedir por WhatsApp
-                  </Button>
-                  <p className="text-xs text-center text-muted-foreground">
-                    ✓ Respuesta en menos de 2 minutos • ✓ Te ayudamos a elegir talla y color
-                  </p>
-                </div>
+                <Button
+                  onClick={() => setWhatsappTransitionOpen(true)}
+                  size="lg"
+                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  Pedir por WhatsApp
+                </Button>
 
                 {/* Ideal For */}
                 <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">

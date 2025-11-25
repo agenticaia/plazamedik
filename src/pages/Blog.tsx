@@ -49,9 +49,9 @@ const Blog = () => {
       <section className="bg-gradient-hero text-primary-foreground py-12 md:py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-4">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">Guías y Consejos Sobre Medias de Compresión</h1>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">Blog: Todo sobre medias de compresión</h1>
             <p className="text-lg text-primary-foreground/90">
-              Todo lo que necesitas saber para elegir correctamente, cuidar tus medias y mejorar tu salud circulatoria. Guías escritas por especialistas.
+              Guías, consejos y información para que tomes la mejor decisión para tu salud
             </p>
           </div>
         </div>

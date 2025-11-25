@@ -28,15 +28,15 @@ const PielSensible = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-4">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-              Medias para Piel Sensible y Clima Cálido
+              Medias para Piel Sensible
             </h1>
             <p className="text-lg text-primary-foreground/90">
-              Máxima transpirabilidad y confort. Alivio terapéutico sin irritación, sin calor, sin incomodidad. Mismo efecto médico, mucho más cómodas.
+              Máxima transpirabilidad y confort. Alivio terapéutico sin irritación ni incomodidad
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" onClick={() => setTestOpen(true)} className="bg-health-green hover:bg-health-green/90 text-white transition-all hover:scale-105">
                 <ClipboardCheck className="w-5 h-5 mr-2" />
-                Encuentra tu media ideal (gratis)
+                Hacer Test Gratis
               </Button>
               <Button asChild size="lg" variant="outline" className="bg-primary-foreground/10 border-primary-foreground/20 hover:bg-primary-foreground/20 transition-all">
                 <a href="/catalogo">Ver catálogo</a>
@@ -86,7 +86,7 @@ const PielSensible = () => {
               Nuestras soluciones especiales
             </h3>
             <p className="text-sm text-muted-foreground">
-              Ofrecemos medias con punta abierta (dedos libres = máxima ventilación) y materiales hipoalergénicos ultra-transpirables. Mismo efecto terapéutico certificado, pero sin calor, sin irritación, sin incomodidad. Perfectas para clima tropical o piel sensible.
+              Ofrecemos medias con punta abierta (dedos libres para máxima ventilación) y opciones en materiales hipoalergénicos ultra-transpirables. Mismo efecto terapéutico, máximo confort.
             </p>
           </div>
         </div>
