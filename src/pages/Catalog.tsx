@@ -20,7 +20,7 @@ const Catalog = () => {
 
   const filteredProducts = products.filter((product) => {
     const categoryMatch =
-      selectedCategory === "all" || product.category.includes(selectedCategory);
+      selectedCategory === "all" || product.category === selectedCategory;
     const zoneMatch = selectedZone === "all" || (product as any).zona_pierna === selectedZone;
     return categoryMatch && zoneMatch;
   });
@@ -37,7 +37,7 @@ const Catalog = () => {
     { id: "all", label: "Todas" },
     { id: "pies", label: "Pies" },
     { id: "pantorrilla", label: "Pantorrilla" },
-    { id: "pierna_media", label: "Pierna media" },
+    { id: "pierna-media", label: "Pierna media" },
     { id: "rodilla", label: "Rodilla" },
     { id: "muslo", label: "Muslo" },
     { id: "panty", label: "Pierna completa / Panty" },

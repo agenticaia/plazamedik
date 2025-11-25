@@ -14,11 +14,18 @@ import { DynamicListInput } from './DynamicListInput';
 import { MultiSelectChips } from './MultiSelectChips';
 
 const CATEGORIAS = [
-  { value: 'dolor-pies', label: '🦶 Dolor de Pies' },
-  { value: 'dolor-piernas', label: '🦵 Dolor de Piernas' },
-  { value: 'dolor-lumbar', label: '🪑 Dolor Lumbar' },
-  { value: 'medias-compresion', label: '🧦 Medias de Compresión' },
-  { value: 'accesorios', label: '✨ Accesorios' },
+  { value: 'varices', label: 'Várices' },
+  { value: 'trabajo-pie', label: 'Trabajo de pie' },
+  { value: 'piel-sensible', label: 'Piel sensible' },
+];
+
+const ZONAS_PIERNA = [
+  { value: 'pies', label: 'Pies' },
+  { value: 'pantorrilla', label: 'Pantorrilla' },
+  { value: 'pierna-media', label: 'Pierna media' },
+  { value: 'rodilla', label: 'Rodilla' },
+  { value: 'muslo', label: 'Muslo' },
+  { value: 'panty', label: 'Pierna completa / Panty' },
 ];
 
 const TALLAS_SUGERENCIAS = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
@@ -50,7 +57,8 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
   const [formData, setFormData] = useState({
     product_code: product?.product_code || product?.code || '',
     nombre_producto: product?.nombre_producto || product?.name || '',
-    categoria: product?.categoria || 'medias-compresion',
+    categoria: product?.categoria || 'varices',
+    zona_pierna: product?.zona_pierna || '',
     precio: product?.precio || product?.priceSale || 0,
     cantidad_stock: product?.cantidad_stock || 0,
     imagen_url: product?.imagen_url || '',
@@ -73,7 +81,8 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
       setFormData({
         product_code: product?.product_code || product?.code || '',
         nombre_producto: product?.nombre_producto || product?.name || '',
-        categoria: product?.categoria || 'medias-compresion',
+        categoria: product?.categoria || 'varices',
+        zona_pierna: product?.zona_pierna || '',
         precio: product?.precio || product?.priceSale || 0,
         cantidad_stock: product?.cantidad_stock || 0,
         imagen_url: product?.imagen_url || '',
@@ -159,6 +168,7 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
         .update({
           nombre_producto: validatedData.nombre_producto,
           categoria: validatedData.categoria,
+          zona_pierna: formData.zona_pierna || null,
           precio: validatedData.precio,
           cantidad_stock: validatedData.cantidad_stock,
           imagen_url: validatedData.imagen_url || null,
@@ -263,7 +273,7 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="categoria">Categoría *</Label>
+              <Label htmlFor="categoria">Categoría (Problema) *</Label>
               <Select
                 value={formData.categoria}
                 onValueChange={(value) => setFormData({ ...formData, categoria: value })}
@@ -283,6 +293,25 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
                 <p className="text-sm text-destructive">{errors.categoria}</p>
               )}
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="zona_pierna">Sub-Categoría (Zona de la pierna)</Label>
+            <Select
+              value={formData.zona_pierna}
+              onValueChange={(value) => setFormData({ ...formData, zona_pierna: value })}
+            >
+              <SelectTrigger id="zona_pierna">
+                <SelectValue placeholder="Seleccionar zona" />
+              </SelectTrigger>
+              <SelectContent>
+                {ZONAS_PIERNA.map((zona) => (
+                  <SelectItem key={zona.value} value={zona.value}>
+                    {zona.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
