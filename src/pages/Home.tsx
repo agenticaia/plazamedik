@@ -51,13 +51,13 @@ const Home = () => {
         </div>
         
         <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-24 lg:py-28 relative">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 xl:gap-16 items-center max-w-7xl mx-auto">
             {/* Content Column */}
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="space-y-6 sm:space-y-8 text-white order-1"
+              className="space-y-6 sm:space-y-8 text-white order-1 lg:flex-1"
             >
               {/* Trust badges */}
               <motion.div 
@@ -158,15 +158,17 @@ const Home = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="relative hidden lg:block order-2"
+              className="relative hidden lg:block order-2 lg:w-[45%] xl:w-[42%]"
             >
-              <div className="absolute -inset-8 bg-gradient-to-br from-health-green/30 to-transparent rounded-3xl blur-3xl" />
-              <div className="relative">
-                <img
-                  src={heroBanner}
-                  alt="Medias de compresión profesionales para alivio de piernas"
-                  className="relative rounded-3xl shadow-2xl w-full h-auto object-cover border-4 border-white/10"
-                />
+              <div className="absolute -inset-4 bg-gradient-to-br from-health-green/20 to-transparent rounded-2xl blur-2xl" />
+              <div className="relative h-full max-h-[520px] xl:max-h-[580px] flex items-center">
+                <div className="w-full h-full">
+                  <img
+                    src={heroBanner}
+                    alt="Medias de compresión profesionales para alivio de piernas"
+                    className="relative rounded-2xl shadow-xl w-full h-full object-cover border-2 border-white/20"
+                  />
+                </div>
               </div>
             </motion.div>
           </div>
