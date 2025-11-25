@@ -107,6 +107,22 @@ const Home = () => {
                 Recomendaciones personalizadas para personas que trabajan largas horas de pie. Te asesoramos gratis por WhatsApp en 2 minutos.
               </motion.p>
 
+              {/* Delivery Promise - Prominent */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.55 }}
+                className="bg-white/15 backdrop-blur-md rounded-xl px-6 py-4 border border-white/20"
+              >
+                <div className="flex items-center gap-3">
+                  <Truck className="w-6 h-6 text-white" />
+                  <div>
+                    <p className="text-white font-bold text-lg">Entrega Express</p>
+                    <p className="text-blue-100 text-sm">24 horas en Lima • 48 horas a nivel nacional</p>
+                  </div>
+                </div>
+              </motion.div>
+
               {/* CTAs with better spacing */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -179,8 +195,8 @@ const Home = () => {
                   <Truck className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-lg">24-48h</div>
-                  <div className="text-xs text-blue-100/80">Entrega rápida</div>
+                  <div className="font-bold text-lg">24h Lima</div>
+                  <div className="text-xs text-blue-100/80">48h todo Perú</div>
                 </div>
               </div>
               
@@ -234,8 +250,8 @@ const Home = () => {
                       <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div className="space-y-1 min-w-0">
-                      <h3 className="font-bold text-base sm:text-lg text-foreground">Entrega en menos de 48 horas</h3>
-                      <p className="text-xs sm:text-sm text-muted-foreground">Envíos rápidos a todo el Perú. Tu alivio no puede esperar.</p>
+                      <h3 className="font-bold text-base sm:text-lg text-foreground">Entrega Express en Perú</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground">24 horas en Lima • 48 horas a todo el Perú. Tu alivio no puede esperar.</p>
                     </div>
                   </div>
                 </CardContent>

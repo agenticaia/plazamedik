@@ -112,9 +112,16 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
         </div>
 
         {/* Precio con descuento */}
-        <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-primary">S/ {product.priceSale.toFixed(2)}</span>
-          <span className="text-sm text-muted-foreground line-through">S/ {product.priceOriginal.toFixed(2)}</span>
+        <div className="space-y-2">
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-primary">S/ {product.priceSale.toFixed(2)}</span>
+            <span className="text-sm text-muted-foreground line-through">S/ {product.priceOriginal.toFixed(2)}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 px-2 py-0.5">
+              🚚 24h Lima • 48h Perú
+            </Badge>
+          </div>
         </div>
 
         <div className="space-y-2">

@@ -119,16 +119,24 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Price */}
-                <div className="flex items-baseline gap-3 border-y border-border py-4">
-                  <span className="text-4xl font-bold text-primary">
-                    S/ {product.priceSale.toFixed(2)}
-                  </span>
-                  <span className="text-xl text-muted-foreground line-through">
-                    S/ {product.priceOriginal.toFixed(2)}
-                  </span>
-                  <Badge variant="secondary" className="ml-2">
-                    {Math.round(((product.priceOriginal - product.priceSale) / product.priceOriginal) * 100)}% OFF
-                  </Badge>
+                <div className="space-y-3 border-y border-border py-4">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-4xl font-bold text-primary">
+                      S/ {product.priceSale.toFixed(2)}
+                    </span>
+                    <span className="text-xl text-muted-foreground line-through">
+                      S/ {product.priceOriginal.toFixed(2)}
+                    </span>
+                    <Badge variant="secondary" className="ml-2">
+                      {Math.round(((product.priceOriginal - product.priceSale) / product.priceOriginal) * 100)}% OFF
+                    </Badge>
+                  </div>
+                  <div className="bg-primary/10 border border-primary/20 rounded-lg px-4 py-2.5">
+                    <p className="text-sm font-semibold text-primary flex items-center gap-2">
+                      <span className="text-lg">🚚</span>
+                      Envío en 24h a Lima • 48h a todo Perú
+                    </p>
+                  </div>
                 </div>
 
                 {/* Sizes & Colors */}
