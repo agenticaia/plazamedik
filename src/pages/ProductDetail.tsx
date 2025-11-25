@@ -4,7 +4,7 @@ import Navigation from "@/components/Navigation";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import RecommendationPanel from "@/components/RecommendationPanel";
-import OrderModal from "@/components/OrderModal";
+import WhatsAppTransition from "@/components/WhatsAppTransition";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, MessageCircle, ArrowLeft, Loader2 } from "lucide-react";
@@ -16,7 +16,7 @@ const ProductDetail = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const codigo = searchParams.get("codigo");
-  const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [whatsappTransitionOpen, setWhatsappTransitionOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string>("");
 
   const { product, loading, error } = useProduct(codigo);
@@ -69,11 +69,10 @@ const ProductDetail = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <WhatsAppFloat />
-      <OrderModal 
-        open={orderModalOpen}
-        onOpenChange={setOrderModalOpen}
-        product={product}
-        selectedColor={selectedColor}
+      <WhatsAppTransition 
+        open={whatsappTransitionOpen}
+        onOpenChange={setWhatsappTransitionOpen}
+        productName={product.name}
       />
 
       {/* Breadcrumb */}
@@ -173,7 +172,7 @@ const ProductDetail = () => {
 
                 {/* CTA */}
                 <Button
-                  onClick={() => setOrderModalOpen(true)}
+                  onClick={() => setWhatsappTransitionOpen(true)}
                   size="lg"
                   className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
                 >

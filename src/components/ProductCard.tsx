@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Check, MessageCircle, Sparkles, Heart } from "lucide-react";
 import type { GroupedProduct } from "@/hooks/useProducts";
-import OrderModal from "@/components/OrderModal";
+import WhatsAppTransition from "@/components/WhatsAppTransition";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +24,7 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, featured = false, showTreatmentButton = false }: ProductCardProps) => {
-  const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [whatsappTransitionOpen, setWhatsappTransitionOpen] = useState(false);
   const [recommendationsOpen, setRecommendationsOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState(product.variants?.[0]?.color || product.colors[0] || "Piel");
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
 
   const handleOrderClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setOrderModalOpen(true);
+    setWhatsappTransitionOpen(true);
   };
 
   const handleRecommendationsClick = (e: React.MouseEvent) => {
@@ -60,11 +60,10 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
 
   return (
     <>
-      <OrderModal 
-        open={orderModalOpen}
-        onOpenChange={setOrderModalOpen}
-        product={product}
-        selectedColor={selectedColor}
+      <WhatsAppTransition 
+        open={whatsappTransitionOpen}
+        onOpenChange={setWhatsappTransitionOpen}
+        productName={product.name}
       />
     <Card 
       onClick={handleCardClick}
