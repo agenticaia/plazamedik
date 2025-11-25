@@ -28,15 +28,15 @@ const Varices = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center space-y-4">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-              Medias para Várices
+              Alivio Real para Várices
             </h1>
             <p className="text-lg text-primary-foreground/90">
-              Compresión médica 20-30 mmHg que alivia el dolor, reduce la hinchazón y mejora la apariencia de las várices
+              Compresión médica 20-30 mmHg que alivia el dolor, reduce la hinchazón y mejora la apariencia de tus várices desde el primer día. Recomendado por especialistas.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" onClick={() => setTestOpen(true)} className="bg-health-green hover:bg-health-green/90 text-white transition-all hover:scale-105">
                 <ClipboardCheck className="w-5 h-5 mr-2" />
-                Hacer Test Gratis
+                Encuentra tu media ideal (gratis)
               </Button>
               <Button asChild size="lg" variant="outline" className="bg-primary-foreground/10 border-primary-foreground/20 hover:bg-primary-foreground/20 transition-all">
                 <a href="/catalogo">Ver catálogo</a>
@@ -51,10 +51,10 @@ const Varices = () => {
         <div className="max-w-3xl mx-auto space-y-8">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-              ¿Cómo ayudan las medias de compresión con las várices?
+              ¿Cómo funcionan las medias de compresión con las várices?
             </h2>
             <p className="text-muted-foreground mb-6">
-              Las medias de compresión graduada ejercen presión controlada sobre tus piernas, siendo más fuerte en el tobillo y disminuyendo gradualmente hacia arriba. Esta presión:
+              Las medias de compresión graduada ejercen presión controlada: más fuerte en el tobillo, disminuyendo hacia arriba. Esto ayuda a que la sangre fluya correctamente y alivia tus síntomas desde el primer uso:
             </p>
             <div className="grid md:grid-cols-2 gap-4">
               <Card className="border-border">
@@ -112,7 +112,7 @@ const Varices = () => {
               ¿Por qué compresión 20-30 mmHg?
             </h3>
             <p className="text-sm text-muted-foreground">
-              Esta es la compresión Clase II, recomendada médicamente para várices moderadas a severas. Es lo suficientemente fuerte para ser efectiva, pero cómoda para uso diario. No necesitas receta médica, pero es el mismo nivel que prescriben los doctores.
+              Esta es la compresión Clase II: lo que recomiendan los médicos para várices moderadas a severas. Es lo suficientemente fuerte para funcionar, pero cómoda para usar todo el día. No necesitas receta, pero es el mismo nivel que prescriben los doctores. El 87% de nuestros clientes siente alivio desde el primer día.
             </p>
           </div>
         </div>
