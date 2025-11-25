@@ -61,6 +61,9 @@ const WhatsAppTransition = ({ open, onOpenChange, productName }: WhatsAppTransit
               <span className="block mt-2 font-medium text-foreground">
                 Respuesta en menos de 2 minutos.
               </span>
+              <span className="block mt-3 text-primary font-semibold">
+                📦 Envío en 24h (Lima) • 48h (todo Perú)
+              </span>
             </p>
           </div>
 

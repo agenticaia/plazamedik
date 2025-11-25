@@ -21,6 +21,14 @@ const Navigation = () => {
 
   return (
     <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-soft">
+      {/* Top Banner - Delivery Promise */}
+      <div className="bg-primary text-primary-foreground py-2">
+        <div className="container mx-auto px-4">
+          <p className="text-center text-sm font-medium">
+            🚚 Envíos rápidos: <span className="font-bold">24h en Lima</span> / <span className="font-bold">48h a todo Perú</span>
+          </p>
+        </div>
+      </div>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
