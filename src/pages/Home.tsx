@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useProducts } from "@/hooks/useProducts";
 import { getWhatsAppLink } from "@/lib/productUtils";
+import heroBanner from "@/assets/hero-banner-new.png";
 import { 
   MessageCircle, 
   ShieldCheck, 
@@ -162,7 +163,7 @@ const Home = () => {
               <div className="absolute -inset-8 bg-gradient-to-br from-health-green/30 to-transparent rounded-3xl blur-3xl" />
               <div className="relative">
                 <img
-                  src="/images/product-750-1.jpg"
+                  src={heroBanner}
                   alt="Medias de compresión profesionales para alivio de piernas"
                   className="relative rounded-3xl shadow-2xl w-full h-auto object-cover border-4 border-white/10"
                 />
