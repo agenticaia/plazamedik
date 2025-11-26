@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import ProductCard from "@/components/ProductCard";
 import { TestDialog } from "@/components/TestDialog";
+import { CertificationsSection } from "@/components/CertificationsSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -543,8 +544,11 @@ const Home = () => {
         </div>
       </motion.section>
 
+      {/* Certifications Section */}
+      <CertificationsSection />
+
       {/* Testimonials Section - Real UGC Style */}
-      <motion.section 
+      <motion.section
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: "-100px" }}
