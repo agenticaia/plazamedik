@@ -4,6 +4,7 @@ import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { TestDialog } from "@/components/TestDialog";
+import { SizeGuide } from "@/components/SizeGuide";
 import { Button } from "@/components/ui/button";
 import { CategoryCarousel } from "@/components/CategoryCarousel";
 import { getWhatsAppLink } from "@/lib/productUtils";
@@ -85,6 +86,9 @@ const Catalog = () => {
           </div>
         </div>
       </section>
+
+      {/* Size Guide Section */}
+      <SizeGuide />
 
       {/* Filters */}
       <section className="container mx-auto px-4 py-8">
