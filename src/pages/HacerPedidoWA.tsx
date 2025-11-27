@@ -1,54 +1,47 @@
-import { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import type { Product } from "@/hooks/useProducts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight } from "lucide-react";
+import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
 
-interface OrderModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  product: Product;
-  selectedColor?: string;
-}
-
-const WHATSAPP_NUMBER = "51941941083"; // Número correcto de WhatsApp
-
-const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalProps) => {
+const HacerPedidoWA = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [orderCode, setOrderCode] = useState("");
-  const { toast } = useToast();
 
-  // Datos del formulario
+  // Extraer parámetros de URL
   const [formData, setFormData] = useState({
-    name: "",
-    lastname: "",
-    phone: "",
-    district: "",
-    color: selectedColor || product.colors[0] || "Piel",
+    name: searchParams.get('nombre') || "",
+    lastname: searchParams.get('apellido') || "",
+    phone: searchParams.get('telefono') || "",
+    district: searchParams.get('distrito') || "",
+    productCode: searchParams.get('producto') || "",
+    productName: searchParams.get('nombre_producto') || "",
+    productPrice: parseFloat(searchParams.get('precio') || '0'),
+    color: searchParams.get('color') || "Piel",
   });
 
-  const resetModal = () => {
-    setStep(1);
-    setFormData({
-      name: "",
-      lastname: "",
-      phone: "",
-      district: "",
-      color: selectedColor || product.colors[0] || "Piel",
-    });
-    setOrderCode("");
-  };
-
-  const handleClose = () => {
-    resetModal();
-    onOpenChange(false);
-  };
+  useEffect(() => {
+    // Si no hay producto, redirigir al catálogo
+    if (!formData.productCode || !formData.productName) {
+      toast({
+        title: "Error",
+        description: "No se encontró información del producto",
+        variant: "destructive",
+      });
+      navigate('/catalogo');
+    }
+  }, [formData.productCode, formData.productName, navigate, toast]);
 
   const handleSubmit = async () => {
     if (!formData.name || !formData.lastname || !formData.phone || !formData.district) {
@@ -69,12 +62,12 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
           customer_lastname: formData.lastname,
           customer_phone: formData.phone,
           customer_district: formData.district,
-          product_code: product.code,
-          product_name: product.name,
+          product_code: formData.productCode,
+          product_name: formData.productName,
           product_color: formData.color,
-          product_price: product.priceSale,
+          product_price: formData.productPrice,
           quantity: 1,
-          source: 'web',
+          source: 'whatsapp',
         },
       });
 
@@ -99,9 +92,9 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
 
 *Nuevo Pedido - ${orderCode}*
 
-📦 *Producto:* ${product.name}
+📦 *Producto:* ${formData.productName}
 🎨 *Color:* ${formData.color}
-💰 *Precio:* S/ ${product.priceSale.toFixed(2)}
+💰 *Precio:* S/ ${formData.productPrice.toFixed(2)}
 
 👤 *Cliente:*
 Nombre: ${formData.name} ${formData.lastname}
@@ -112,9 +105,9 @@ Nombre: ${formData.name} ${formData.lastname}
 
 ¡Gracias por tu compra! Pronto nos pondremos en contacto contigo. 😊`;
 
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/51941941083?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
-    handleClose();
+    navigate('/');
   };
 
   const renderStep = () => {
@@ -128,15 +121,10 @@ Nombre: ${formData.name} ${formData.lastname}
               </div>
               <h3 className="text-2xl font-bold text-foreground">¡Excelente Elección! 🎉</h3>
               <p className="text-muted-foreground text-lg">
-                Las medias <span className="font-semibold text-foreground">{product.name}</span> son perfectas para{" "}
-                {product.idealFor.toLowerCase()}
+                Has seleccionado: <span className="font-semibold text-foreground">{formData.productName}</span>
               </p>
-
-              <div className="bg-accent/20 border border-accent rounded-lg p-6 mt-6">
-                <p className="text-sm text-muted-foreground mb-3">
-                  "Uso estas medias diariamente y me han ayudado muchísimo con la circulación. ¡Son súper cómodas!"
-                </p>
-                <p className="text-xs font-semibold text-foreground">— María T., Cliente satisfecha</p>
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <p className="text-lg font-bold text-primary">S/ {formData.productPrice.toFixed(2)}</p>
               </div>
             </div>
 
@@ -179,14 +167,6 @@ Nombre: ${formData.name} ${formData.lastname}
                   </p>
                 </div>
               </div>
-
-              <div className="bg-accent/20 border border-accent rounded-lg p-4 mt-4">
-                <Phone className="w-6 h-6 text-accent mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  Te enviaremos un mensaje de confirmación por WhatsApp al número:
-                  <span className="font-semibold text-foreground block mt-1">+{WHATSAPP_NUMBER}</span>
-                </p>
-              </div>
             </div>
 
             <Button onClick={() => setStep(3)} className="w-full" size="lg">
@@ -207,8 +187,8 @@ Nombre: ${formData.name} ${formData.lastname}
             <div className="space-y-4">
               <div className="bg-muted/50 p-4 rounded-lg">
                 <p className="text-sm font-semibold text-foreground mb-2">Producto seleccionado:</p>
-                <p className="text-sm text-muted-foreground">{product.name}</p>
-                <p className="text-lg font-bold text-primary mt-1">S/ {product.priceSale.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground">{formData.productName}</p>
+                <p className="text-lg font-bold text-primary mt-1">S/ {formData.productPrice.toFixed(2)}</p>
               </div>
 
               <div className="grid gap-4">
@@ -256,23 +236,34 @@ Nombre: ${formData.name} ${formData.lastname}
                 <div>
                   <Label htmlFor="color">Color *</Label>
                   <div className="flex gap-2 mt-2">
-                    {product.colors.map((color) => (
-                      <Badge
-                        key={color}
-                        variant={formData.color === color ? "default" : "outline"}
-                        className="cursor-pointer"
-                        onClick={() => setFormData({ ...formData, color })}
-                      >
-                        {color}
-                      </Badge>
-                    ))}
+                    <Badge
+                      variant={formData.color === "Piel" ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() => setFormData({ ...formData, color: "Piel" })}
+                    >
+                      Piel
+                    </Badge>
+                    <Badge
+                      variant={formData.color === "Negro" ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() => setFormData({ ...formData, color: "Negro" })}
+                    >
+                      Negro
+                    </Badge>
                   </div>
                 </div>
               </div>
             </div>
 
             <Button onClick={handleSubmit} className="w-full" size="lg" disabled={isLoading}>
-              {isLoading ? "Procesando..." : "Confirmar Pedido"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Procesando...
+                </>
+              ) : (
+                "Confirmar Pedido"
+              )}
             </Button>
           </div>
         );
@@ -288,7 +279,7 @@ Nombre: ${formData.name} ${formData.lastname}
 
               <div className="bg-primary/10 border border-primary rounded-lg p-6">
                 <p className="text-sm text-muted-foreground mb-2">Tu código de seguimiento es:</p>
-                <p className="text-3xl font-bold text-primary">{orderCode}</p>
+                <p className="text-2xl font-bold text-primary break-all">{orderCode}</p>
               </div>
 
               <div className="space-y-3 text-left bg-muted/50 p-4 rounded-lg">
@@ -307,7 +298,7 @@ Nombre: ${formData.name} ${formData.lastname}
               <div className="bg-accent/20 border border-accent rounded-lg p-4">
                 <Phone className="w-6 h-6 text-accent mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">Te enviaremos la confirmación por WhatsApp</p>
-                <p className="text-sm font-semibold text-foreground mt-1">+{WHATSAPP_NUMBER}</p>
+                <p className="text-sm font-semibold text-foreground mt-1">+51941941083</p>
               </div>
             </div>
 
@@ -324,10 +315,54 @@ Nombre: ${formData.name} ${formData.lastname}
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">{renderStep()}</DialogContent>
-    </Dialog>
+    <>
+      <Navigation />
+      <main className="min-h-screen bg-background pt-24 pb-12">
+        <div className="container max-w-2xl mx-auto px-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-center">Hacer Pedido desde WhatsApp</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {renderStep()}
+            </CardContent>
+          </Card>
+
+          {/* Instrucciones para WhatsApp */}
+          <Card className="mt-8 bg-muted/50">
+            <CardHeader>
+              <CardTitle className="text-lg">📱 Cómo usar esta función desde WhatsApp</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              <p className="text-muted-foreground">
+                Para hacer un pedido directamente desde WhatsApp, envía un enlace con el siguiente formato:
+              </p>
+              <div className="bg-background p-4 rounded-lg font-mono text-xs overflow-x-auto">
+                {`https://tudominio.com/hacer-pedido-wa?producto=750&nombre_producto=Media%20Compresiva&precio=200&nombre=Juan&apellido=Perez&telefono=987654321&distrito=Miraflores&color=Piel`}
+              </div>
+              <div className="space-y-2">
+                <p className="font-semibold">Parámetros requeridos:</p>
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                  <li><strong>producto:</strong> Código del producto</li>
+                  <li><strong>nombre_producto:</strong> Nombre del producto</li>
+                  <li><strong>precio:</strong> Precio del producto</li>
+                  <li><strong>nombre:</strong> Nombre del cliente (opcional, se puede llenar después)</li>
+                  <li><strong>apellido:</strong> Apellido del cliente (opcional)</li>
+                  <li><strong>telefono:</strong> Teléfono del cliente (opcional)</li>
+                  <li><strong>distrito:</strong> Distrito de entrega (opcional)</li>
+                  <li><strong>color:</strong> Color del producto (opcional, por defecto: Piel)</li>
+                </ul>
+              </div>
+              <p className="text-muted-foreground">
+                Los parámetros opcionales pueden omitirse y el cliente los llenará en el formulario.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 };
 
-export default OrderModal;
+export default HacerPedidoWA;

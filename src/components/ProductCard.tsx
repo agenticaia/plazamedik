@@ -3,16 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, MessageCircle, Sparkles, Heart } from "lucide-react";
+import { Check, Heart, Eye } from "lucide-react";
 import type { GroupedProduct } from "@/hooks/useProducts";
-import WhatsAppTransition from "@/components/WhatsAppTransition";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import RecommendationPanel from "@/components/RecommendationPanel";
+import OrderModal from "@/components/OrderModal";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -24,8 +17,7 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, featured = false, showTreatmentButton = false }: ProductCardProps) => {
-  const [whatsappTransitionOpen, setWhatsappTransitionOpen] = useState(false);
-  const [recommendationsOpen, setRecommendationsOpen] = useState(false);
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState(product.variants?.[0]?.color || product.colors[0] || "Piel");
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -41,12 +33,7 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
 
   const handleOrderClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setWhatsappTransitionOpen(true);
-  };
-
-  const handleRecommendationsClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setRecommendationsOpen(true);
+    setOrderModalOpen(true);
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -60,12 +47,13 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
 
   return (
     <>
-      <WhatsAppTransition 
-        open={whatsappTransitionOpen}
-        onOpenChange={setWhatsappTransitionOpen}
-        productName={product.name}
+      <OrderModal 
+        open={orderModalOpen}
+        onOpenChange={setOrderModalOpen}
+        product={product}
+        selectedColor={selectedColor}
       />
-    <Card 
+    <Card
       onClick={handleCardClick}
       className="group overflow-hidden bg-gradient-card border-border hover:shadow-hover transition-all duration-300 hover:scale-[1.02] cursor-pointer"
     >
@@ -180,44 +168,22 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
       </CardContent>
 
       <CardFooter className="p-6 pt-0 flex flex-col gap-2">
-        {showTreatmentButton ? (
-          <Button
-            onClick={handleCardClick}
-            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground group-hover:scale-105 transition-transform"
-          >
-            Ver Tratamiento
-          </Button>
-        ) : (
-          <Button
-            onClick={handleOrderClick}
-            className="w-full bg-whatsapp-green hover:bg-whatsapp-green/90 text-white group-hover:scale-105 transition-all"
-          >
-            <MessageCircle className="w-4 h-4 mr-2" />
-            Pedir por WhatsApp
-          </Button>
-        )}
         <Button
-          onClick={handleRecommendationsClick}
+          onClick={handleCardClick}
           variant="outline"
           className="w-full"
         >
-          <Sparkles className="w-4 h-4 mr-2" />
-          Te puede interesar
+          <Eye className="w-4 h-4 mr-2" />
+          Ver Producto
+        </Button>
+        <Button
+          onClick={handleOrderClick}
+          className="w-full bg-primary hover:bg-primary/90"
+        >
+          Lo quiero
         </Button>
       </CardFooter>
     </Card>
-
-    <Dialog open={recommendationsOpen} onOpenChange={setRecommendationsOpen}>
-      <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            Recomendaciones para ti
-          </DialogTitle>
-        </DialogHeader>
-        <RecommendationPanel currentProductCode={product.code} />
-      </DialogContent>
-    </Dialog>
     </>
   );
 };
