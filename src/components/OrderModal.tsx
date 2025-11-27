@@ -67,6 +67,15 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
       return;
     }
 
+    if (!formData.lat || !formData.lng) {
+      toast({
+        title: "Dirección incompleta",
+        description: "Por favor selecciona tu dirección del menú desplegable para obtener coordenadas GPS precisas",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -295,9 +304,19 @@ ${coordsText}
               </div>
             </div>
 
-            <Button onClick={handleSubmit} className="w-full" size="lg" disabled={isLoading}>
+            <Button 
+              onClick={handleSubmit} 
+              className="w-full" 
+              size="lg" 
+              disabled={isLoading || !formData.lat || !formData.lng}
+            >
               {isLoading ? "Procesando..." : "Confirmar Pedido"}
             </Button>
+            {!formData.lat || !formData.lng ? (
+              <p className="text-xs text-destructive text-center">
+                ⚠️ Debes seleccionar tu dirección del menú desplegable para continuar
+              </p>
+            ) : null}
           </div>
         );
 
