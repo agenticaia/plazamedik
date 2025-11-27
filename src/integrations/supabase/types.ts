@@ -611,8 +611,11 @@ export type Database = {
         Row: {
           courier: string | null
           created_at: string | null
+          customer_address: string | null
           customer_district: string | null
           customer_lastname: string | null
+          customer_lat: number | null
+          customer_lng: number | null
           customer_name: string
           customer_phone: string | null
           customer_type: string | null
@@ -636,8 +639,11 @@ export type Database = {
         Insert: {
           courier?: string | null
           created_at?: string | null
+          customer_address?: string | null
           customer_district?: string | null
           customer_lastname?: string | null
+          customer_lat?: number | null
+          customer_lng?: number | null
           customer_name: string
           customer_phone?: string | null
           customer_type?: string | null
@@ -661,8 +667,11 @@ export type Database = {
         Update: {
           courier?: string | null
           created_at?: string | null
+          customer_address?: string | null
           customer_district?: string | null
           customer_lastname?: string | null
+          customer_lat?: number | null
+          customer_lng?: number | null
           customer_name?: string
           customer_phone?: string | null
           customer_type?: string | null
