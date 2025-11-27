@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { ImageUpload } from './ImageUpload';
 import { DynamicListInput } from './DynamicListInput';
 import { MultiSelectChips } from './MultiSelectChips';
+import { ColorImageUpload } from './ColorImageUpload';
 
 const CATEGORIAS = [
   { value: 'varices', label: 'Várices' },
@@ -70,6 +71,7 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
     ideal_para: '',
     beneficios: [] as string[],
     especificaciones: [] as string[],
+    imagenes_por_color: {} as Record<string, string>,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -194,6 +196,7 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
           ideal_para: formData.ideal_para || null,
           beneficios: formData.beneficios,
           especificaciones: formData.especificaciones,
+          imagenes_por_color: formData.imagenes_por_color,
           total_vendido: 0,
           total_views: 0,
           total_recommendations: 0,
@@ -222,6 +225,7 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
         ideal_para: '',
         beneficios: [],
         especificaciones: [],
+        imagenes_por_color: {},
       });
 
       onSuccess();
@@ -462,6 +466,13 @@ export function CreateProductDialog({ open, onOpenChange, onSuccess }: CreatePro
           <ImageUpload
             currentImageUrl={formData.imagen_url}
             onImageUrlChange={(url) => setFormData({ ...formData, imagen_url: url })}
+            productCode={formData.product_code}
+          />
+
+          <ColorImageUpload
+            colors={formData.colores_disponibles}
+            imagesByColor={formData.imagenes_por_color}
+            onImagesChange={(images) => setFormData({ ...formData, imagenes_por_color: images })}
             productCode={formData.product_code}
           />
 

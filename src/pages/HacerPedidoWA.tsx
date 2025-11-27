@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
 import AddressSearch from "@/components/AddressSearch";
+import { cn } from "@/lib/utils";
 
 const HacerPedidoWA = () => {
   const [searchParams] = useSearchParams();
@@ -33,6 +34,7 @@ const HacerPedidoWA = () => {
     productName: searchParams.get('nombre_producto') || "",
     productPrice: parseFloat(searchParams.get('precio') || '0'),
     color: searchParams.get('color') || "Piel",
+    availableColors: (searchParams.get('colores') || "Piel,Negro").split(','),
   });
 
   useEffect(() => {
@@ -266,21 +268,30 @@ ${coordsText}
                 <div>
                   <Label htmlFor="color">Color *</Label>
                   <div className="flex gap-2 mt-2">
-                    <Badge
-                      variant={formData.color === "Piel" ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => setFormData({ ...formData, color: "Piel" })}
-                    >
-                      Piel
-                    </Badge>
-                    <Badge
-                      variant={formData.color === "Negro" ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => setFormData({ ...formData, color: "Negro" })}
-                    >
-                      Negro
-                    </Badge>
+                    {formData.availableColors.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, color })}
+                        className={cn(
+                          "w-10 h-10 rounded-full border-2 transition-all",
+                          formData.color === color 
+                            ? "border-primary scale-110 shadow-lg" 
+                            : "border-border hover:border-primary/50",
+                          color.toLowerCase() === "piel" && "bg-[#f5d7c4]",
+                          color.toLowerCase() === "negro" && "bg-[#1a1a1a]",
+                          color.toLowerCase() === "blanco" && "bg-white",
+                          color.toLowerCase() === "beige" && "bg-[#f5f5dc]"
+                        )}
+                        title={color}
+                      >
+                        <span className="sr-only">{color}</span>
+                      </button>
+                    ))}
                   </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Seleccionado: <span className="font-semibold text-foreground">{formData.color}</span>
+                  </p>
                 </div>
               </div>
             </div>

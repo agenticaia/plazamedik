@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { ImageUpload } from './ImageUpload';
 import { DynamicListInput } from './DynamicListInput';
 import { MultiSelectChips } from './MultiSelectChips';
+import { ColorImageUpload } from './ColorImageUpload';
 
 const CATEGORIAS = [
   { value: 'varices', label: 'Várices' },
@@ -69,6 +70,7 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
     ideal_para: product?.ideal_para || '',
     beneficios: product?.beneficios || [],
     especificaciones: product?.especificaciones || [],
+    imagenes_por_color: product?.imagenes_por_color || {},
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -93,6 +95,7 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
         ideal_para: product?.ideal_para || '',
         beneficios: product?.beneficios || [],
         especificaciones: product?.especificaciones || [],
+        imagenes_por_color: product?.imagenes_por_color || {},
       });
     }
   }, [product]);
@@ -179,6 +182,7 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
           ideal_para: formData.ideal_para || null,
           beneficios: formData.beneficios,
           especificaciones: formData.especificaciones,
+          imagenes_por_color: formData.imagenes_por_color,
           updated_at: new Date().toISOString(),
         })
         .eq('product_code', validatedData.product_code)
@@ -434,6 +438,13 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
           <ImageUpload
             currentImageUrl={formData.imagen_url}
             onImageUrlChange={(url) => setFormData({ ...formData, imagen_url: url })}
+            productCode={formData.product_code}
+          />
+
+          <ColorImageUpload
+            colors={formData.colores_disponibles}
+            imagesByColor={formData.imagenes_por_color}
+            onImagesChange={(images) => setFormData({ ...formData, imagenes_por_color: images })}
             productCode={formData.product_code}
           />
 

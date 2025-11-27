@@ -29,6 +29,21 @@ const ProductDetail = () => {
     }
   }, [product, selectedColor]);
 
+  // Get current image based on selected color
+  const getCurrentImage = () => {
+    if (!product) return "";
+    
+    // Si el producto tiene imagenes_por_color y hay una imagen para el color seleccionado
+    if (product.imagesByColor && selectedColor && product.imagesByColor[selectedColor]) {
+      return product.imagesByColor[selectedColor];
+    }
+    
+    // Fallback a la imagen principal
+    return product.image;
+  };
+
+  const currentImage = getCurrentImage();
+
   // Incrementar vistas del producto
   useEffect(() => {
     if (product && codigo) {
@@ -99,7 +114,7 @@ const ProductDetail = () => {
               {/* Image */}
               <div className="aspect-[3/4] overflow-hidden rounded-lg bg-muted">
                 <img
-                  src={product.image}
+                  src={currentImage}
                   alt={product.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {

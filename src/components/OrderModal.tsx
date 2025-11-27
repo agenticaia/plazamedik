@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight } from "lucide-react";
 import AddressSearch from "./AddressSearch";
+import { cn } from "@/lib/utils";
 
 interface OrderModalProps {
   open: boolean;
@@ -230,10 +231,41 @@ ${coordsText}
             </div>
 
             <div className="space-y-4">
-              <div className="bg-muted/50 p-4 rounded-lg">
+              <div className="bg-muted/50 p-4 rounded-lg space-y-3">
                 <p className="text-sm font-semibold text-foreground mb-2">Producto seleccionado:</p>
                 <p className="text-sm text-muted-foreground">{product.name}</p>
                 <p className="text-lg font-bold text-primary mt-1">S/ {product.priceSale.toFixed(2)}</p>
+                
+                {product.colors && product.colors.length > 1 && (
+                  <div className="pt-2 border-t">
+                    <Label className="text-sm font-semibold text-foreground">Color seleccionado:</Label>
+                    <div className="flex gap-2 mt-2">
+                      {product.colors.map((color) => (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, color })}
+                          className={cn(
+                            "w-10 h-10 rounded-full border-2 transition-all",
+                            formData.color === color 
+                              ? "border-primary scale-110 shadow-lg" 
+                              : "border-border hover:border-primary/50",
+                            color.toLowerCase() === "piel" && "bg-[#f5d7c4]",
+                            color.toLowerCase() === "negro" && "bg-[#1a1a1a]",
+                            color.toLowerCase() === "blanco" && "bg-white",
+                            color.toLowerCase() === "beige" && "bg-[#f5f5dc]"
+                          )}
+                          title={color}
+                        >
+                          <span className="sr-only">{color}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Seleccionado: <span className="font-semibold text-foreground">{formData.color}</span>
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="grid gap-4">

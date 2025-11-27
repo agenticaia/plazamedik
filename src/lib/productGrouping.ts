@@ -25,10 +25,10 @@ export function groupProductsByName(products: Product[]): GroupedProduct[] {
         ? product.colors 
         : [extractColorFromCode(product)];
       
-      // Create variants for all available colors
+      // Create variants for all available colors using imagesByColor if available
       const variants: ProductVariant[] = availableColors.map(color => ({
         color,
-        image: product.image, // Use same image for all colors if no specific image exists
+        image: product.imagesByColor?.[color] || product.image,
         productCode: product.code,
       }));
       
@@ -52,16 +52,21 @@ export function groupProductsByName(products: Product[]): GroupedProduct[] {
         // Add variant with specific image if it's different
         existing.variants.push({
           color: currentColor,
-          image: product.image,
+          image: product.imagesByColor?.[currentColor] || product.image,
           productCode: product.code,
         });
       } else if (!variantExists) {
         // Update existing variant with actual image if available
         const variantIndex = existing.variants.findIndex(v => v.color === currentColor);
         if (variantIndex >= 0) {
-          existing.variants[variantIndex].image = product.image;
+          existing.variants[variantIndex].image = product.imagesByColor?.[currentColor] || product.image;
           existing.variants[variantIndex].productCode = product.code;
         }
+      }
+      
+      // Update imagesByColor if product has it
+      if (product.imagesByColor && Object.keys(product.imagesByColor).length > 0) {
+        existing.imagesByColor = { ...existing.imagesByColor, ...product.imagesByColor };
       }
     }
   });
