@@ -14,7 +14,7 @@ const PielSensible = () => {
   const { products, loading } = useProducts();
   
   const pielSensibleProducts = products.filter(p => 
-    p.category.includes("piel-sensible") && p.stock > 0
+    p.category && p.category.includes("piel-sensible") && p.stock > 0
   );
 
   return (

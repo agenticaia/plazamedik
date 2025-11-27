@@ -14,7 +14,7 @@ const TrabajoPie = () => {
   const { products, loading } = useProducts();
   
   const trabajoPieProducts = products.filter(p => 
-    p.category.includes("trabajo-pie") && p.stock > 0
+    (p.category.includes("medias-compresion") || p.category.includes("prevencion")) && p.stock > 0
   );
 
   return (
