@@ -8,6 +8,7 @@ import type { Product } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight } from "lucide-react";
+import AddressSearch from "./AddressSearch";
 
 interface OrderModalProps {
   open: boolean;
@@ -30,6 +31,9 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
     lastname: "",
     phone: "",
     district: "",
+    address: "",
+    lat: null as number | null,
+    lng: null as number | null,
     color: selectedColor || product.colors[0] || "Piel",
   });
 
@@ -40,6 +44,9 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
       lastname: "",
       phone: "",
       district: "",
+      address: "",
+      lat: null,
+      lng: null,
       color: selectedColor || product.colors[0] || "Piel",
     });
     setOrderCode("");
@@ -51,7 +58,7 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
   };
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.lastname || !formData.phone || !formData.district) {
+    if (!formData.name || !formData.lastname || !formData.phone || !formData.district || !formData.address) {
       toast({
         title: "Error",
         description: "Por favor completa todos los campos",
@@ -69,6 +76,9 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
           customer_lastname: formData.lastname,
           customer_phone: formData.phone,
           customer_district: formData.district,
+          customer_address: formData.address,
+          customer_lat: formData.lat,
+          customer_lng: formData.lng,
           product_code: product.code,
           product_name: product.name,
           product_color: formData.color,
@@ -95,6 +105,10 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
   };
 
   const sendToWhatsApp = () => {
+    const coordsText = formData.lat && formData.lng 
+      ? `📍 Coordenadas: ${formData.lat.toFixed(6)}, ${formData.lng.toFixed(6)}\n🗺️ Ver mapa: https://www.google.com/maps?q=${formData.lat},${formData.lng}`
+      : '';
+
     const message = `¡Hola! 👋
 
 *Nuevo Pedido - ${orderCode}*
@@ -107,6 +121,8 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
 Nombre: ${formData.name} ${formData.lastname}
 📱 Teléfono: ${formData.phone}
 📍 Distrito: ${formData.district}
+🏠 Dirección: ${formData.address}
+${coordsText}
 
 🔍 *Código de Seguimiento:* ${orderCode}
 
@@ -252,6 +268,14 @@ Nombre: ${formData.name} ${formData.lastname}
                     placeholder="Ej: Miraflores, San Isidro..."
                   />
                 </div>
+
+                <AddressSearch
+                  value={formData.address}
+                  onChange={(address, lat, lng) => 
+                    setFormData({ ...formData, address, lat, lng })
+                  }
+                  placeholder="Busca tu dirección exacta..."
+                />
 
                 <div>
                   <Label htmlFor="color">Color *</Label>

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
+import AddressSearch from "@/components/AddressSearch";
 
 const HacerPedidoWA = () => {
   const [searchParams] = useSearchParams();
@@ -25,6 +26,9 @@ const HacerPedidoWA = () => {
     lastname: searchParams.get('apellido') || "",
     phone: searchParams.get('telefono') || "",
     district: searchParams.get('distrito') || "",
+    address: searchParams.get('direccion') || "",
+    lat: null as number | null,
+    lng: null as number | null,
     productCode: searchParams.get('producto') || "",
     productName: searchParams.get('nombre_producto') || "",
     productPrice: parseFloat(searchParams.get('precio') || '0'),
@@ -44,7 +48,7 @@ const HacerPedidoWA = () => {
   }, [formData.productCode, formData.productName, navigate, toast]);
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.lastname || !formData.phone || !formData.district) {
+    if (!formData.name || !formData.lastname || !formData.phone || !formData.district || !formData.address) {
       toast({
         title: "Error",
         description: "Por favor completa todos los campos",
@@ -62,6 +66,9 @@ const HacerPedidoWA = () => {
           customer_lastname: formData.lastname,
           customer_phone: formData.phone,
           customer_district: formData.district,
+          customer_address: formData.address,
+          customer_lat: formData.lat,
+          customer_lng: formData.lng,
           product_code: formData.productCode,
           product_name: formData.productName,
           product_color: formData.color,
@@ -88,6 +95,10 @@ const HacerPedidoWA = () => {
   };
 
   const sendToWhatsApp = () => {
+    const coordsText = formData.lat && formData.lng 
+      ? `📍 Coordenadas: ${formData.lat.toFixed(6)}, ${formData.lng.toFixed(6)}\n🗺️ Ver mapa: https://www.google.com/maps?q=${formData.lat},${formData.lng}`
+      : '';
+
     const message = `¡Hola! 👋
 
 *Nuevo Pedido - ${orderCode}*
@@ -100,6 +111,8 @@ const HacerPedidoWA = () => {
 Nombre: ${formData.name} ${formData.lastname}
 📱 Teléfono: ${formData.phone}
 📍 Distrito: ${formData.district}
+🏠 Dirección: ${formData.address}
+${coordsText}
 
 🔍 *Código de Seguimiento:* ${orderCode}
 
@@ -233,6 +246,14 @@ Nombre: ${formData.name} ${formData.lastname}
                   />
                 </div>
 
+                <AddressSearch
+                  value={formData.address}
+                  onChange={(address, lat, lng) => 
+                    setFormData({ ...formData, address, lat, lng })
+                  }
+                  placeholder="Busca tu dirección exacta..."
+                />
+
                 <div>
                   <Label htmlFor="color">Color *</Label>
                   <div className="flex gap-2 mt-2">
@@ -350,6 +371,7 @@ Nombre: ${formData.name} ${formData.lastname}
                   <li><strong>apellido:</strong> Apellido del cliente (opcional)</li>
                   <li><strong>telefono:</strong> Teléfono del cliente (opcional)</li>
                   <li><strong>distrito:</strong> Distrito de entrega (opcional)</li>
+                  <li><strong>direccion:</strong> Dirección del cliente (opcional)</li>
                   <li><strong>color:</strong> Color del producto (opcional, por defecto: Piel)</li>
                 </ul>
               </div>
