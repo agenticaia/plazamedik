@@ -971,6 +971,14 @@ export type Database = {
         Returns: undefined
       }
       predict_restock_date: { Args: { p_product_code: string }; Returns: Json }
+      process_po_reception: {
+        Args: {
+          p_is_complete?: boolean
+          p_po_id: string
+          p_qty_received?: number
+        }
+        Returns: Json
+      }
       process_purchase_order_received: {
         Args: { p_order_id: string }
         Returns: Json
