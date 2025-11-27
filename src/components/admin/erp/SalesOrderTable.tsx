@@ -73,11 +73,14 @@ export const SalesOrderTable = () => {
 
   const getFulfillmentBadge = (status: SalesOrder["fulfillment_status"]) => {
     const variants = {
-      FULFILLED: { variant: "default" as const, label: "Completado" },
-      PARTIAL: { variant: "secondary" as const, label: "Parcial" },
       UNFULFILLED: { variant: "outline" as const, label: "Sin cumplir" },
+      PICKING: { variant: "secondary" as const, label: "🔍 Picking" },
+      PACKED: { variant: "secondary" as const, label: "📦 Empacado" },
+      SHIPPED: { variant: "default" as const, label: "🚚 Enviado" },
+      DELIVERED: { variant: "default" as const, label: "✅ Entregado" },
+      PARTIAL: { variant: "secondary" as const, label: "Parcial" },
       WAITING_STOCK: { variant: "destructive" as const, label: "⚠️ Esperando Stock" },
-      CANCELLED: { variant: "destructive" as const, label: "Cancelado" },
+      CANCELLED: { variant: "destructive" as const, label: "❌ Cancelado" },
     };
     const config = variants[status];
     return <Badge variant={config.variant}>{config.label}</Badge>;
