@@ -43,7 +43,7 @@ const Navigation = () => {
       </div>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2">Pk
+          <Link to="/" className="flex items-center gap-2">PL
 Plazamedik<div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">PL</span>
             </div>
