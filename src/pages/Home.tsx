@@ -13,31 +13,16 @@ import { Badge } from "@/components/ui/badge";
 import { useProducts } from "@/hooks/useProducts";
 import { getWhatsAppLink } from "@/lib/productUtils";
 import heroBanner from "@/assets/hero-banner-new.png";
-import { 
-  MessageCircle, 
-  ShieldCheck, 
-  Truck, 
-  CreditCard, 
-  ArrowRight,
-  CheckCircle2,
-  Award,
-  Users,
-  HeartPulse,
-  Activity,
-  Zap,
-  Shield,
-  BadgeCheck,
-  Heart
-} from "lucide-react";
-
+import { MessageCircle, ShieldCheck, Truck, CreditCard, ArrowRight, CheckCircle2, Award, Users, HeartPulse, Activity, Zap, Shield, BadgeCheck, Heart } from "lucide-react";
 const Home = () => {
   const [testOpen, setTestOpen] = useState(false);
   // Use grouped products to avoid showing duplicates
-  const { products, loading } = useProducts(false, true);
+  const {
+    products,
+    loading
+  } = useProducts(false, true);
   const featuredProducts = products.slice(0, 4);
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navigation />
       <WhatsAppFloat />
 
@@ -46,76 +31,95 @@ const Home = () => {
         {/* Subtle background pattern */}
         <div className="absolute inset-0 opacity-[0.03]">
           <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.15) 1px, transparent 0)`,
-            backgroundSize: '40px 40px'
-          }} />
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.15) 1px, transparent 0)`,
+          backgroundSize: '40px 40px'
+        }} />
         </div>
         
         <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-24 lg:py-28 relative">
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 xl:gap-16 items-center max-w-7xl mx-auto">
             {/* Content Column */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="space-y-6 sm:space-y-8 text-white order-1 lg:flex-1"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 30
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            duration: 0.8,
+            ease: "easeOut"
+          }} className="space-y-6 sm:space-y-8 text-white order-1 lg:flex-1">
               {/* Trust badges */}
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="flex flex-wrap gap-3"
-              >
+              <motion.div initial={{
+              opacity: 0
+            }} animate={{
+              opacity: 1
+            }} transition={{
+              duration: 0.6,
+              delay: 0.2
+            }} className="flex flex-wrap gap-3">
                 <Badge className="bg-white/15 backdrop-blur-md text-white border-0 px-4 py-2 text-sm font-medium hover:bg-white/20 transition-colors">
                   <BadgeCheck className="w-4 h-4 mr-2" />
                   Certificado Médico
                 </Badge>
-                <Badge className="bg-white/15 backdrop-blur-md text-white border-0 px-4 py-2 text-sm font-medium hover:bg-white/20 transition-colors">
-                  <Heart className="w-4 h-4 mr-2" />
+                <Badge className="bg-white/15 backdrop-blur-md text-white border-0 px-4 py-2 text-sm font-medium hover:bg-white/20 transition-colors">+100 Clientes<Heart className="w-4 h-4 mr-2" />
                   +5,000 Clientes
                 </Badge>
               </motion.div>
               
               {/* Main headline with better hierarchy */}
               <div className="space-y-4">
-                <motion.h1 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
-                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight"
-                >
+                <motion.h1 initial={{
+                opacity: 0,
+                y: 20
+              }} animate={{
+                opacity: 1,
+                y: 0
+              }} transition={{
+                duration: 0.8,
+                delay: 0.3
+              }} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight">
                   Alivio real para piernas cansadas
                 </motion.h1>
                 
                 {/* Strong emotional subheader */}
-                <motion.p 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  className="text-xl sm:text-2xl md:text-3xl text-blue-50 font-medium leading-relaxed"
-                >
+                <motion.p initial={{
+                opacity: 0,
+                y: 20
+              }} animate={{
+                opacity: 1,
+                y: 0
+              }} transition={{
+                duration: 0.8,
+                delay: 0.4
+              }} className="text-xl sm:text-2xl md:text-3xl text-blue-50 font-medium leading-relaxed">
                   La tienda especialista en medias de compresión que <span className="text-white font-bold">sí alivian tu dolor</span>
                 </motion.p>
               </div>
 
               {/* Value proposition */}
-              <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="text-lg sm:text-xl text-blue-100/90 leading-relaxed max-w-xl"
-              >
+              <motion.p initial={{
+              opacity: 0
+            }} animate={{
+              opacity: 1
+            }} transition={{
+              duration: 0.6,
+              delay: 0.5
+            }} className="text-lg sm:text-xl text-blue-100/90 leading-relaxed max-w-xl">
                 Recomendaciones personalizadas para personas que trabajan largas horas de pie. Te asesoramos gratis por WhatsApp en 2 minutos.
               </motion.p>
 
               {/* Delivery Promise - Prominent */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.55 }}
-                className="bg-white/15 backdrop-blur-md rounded-xl px-6 py-4 border border-white/20"
-              >
+              <motion.div initial={{
+              opacity: 0,
+              y: 20
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              duration: 0.6,
+              delay: 0.55
+            }} className="bg-white/15 backdrop-blur-md rounded-xl px-6 py-4 border border-white/20">
                 <div className="flex items-center gap-3">
                   <Truck className="w-6 h-6 text-white" />
                   <div>
@@ -126,28 +130,23 @@ const Home = () => {
               </motion.div>
 
               {/* CTAs with better spacing */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="flex flex-col sm:flex-row gap-4 pt-2"
-              >
-                <Button
-                  size="lg"
-                  className="group bg-whatsapp-green hover:bg-whatsapp-green/90 text-white text-lg px-8 py-7 h-auto shadow-2xl transition-all hover:scale-105 hover:shadow-whatsapp-green/50 font-semibold w-full sm:w-auto"
-                  onClick={() => window.open(getWhatsAppLink("", "Hola, necesito asesoría especializada sobre medias de compresión. Trabajo muchas horas de pie."), "_blank")}
-                >
+              <motion.div initial={{
+              opacity: 0,
+              y: 20
+            }} animate={{
+              opacity: 1,
+              y: 0
+            }} transition={{
+              duration: 0.6,
+              delay: 0.6
+            }} className="flex flex-col sm:flex-row gap-4 pt-2">
+                <Button size="lg" className="group bg-whatsapp-green hover:bg-whatsapp-green/90 text-white text-lg px-8 py-7 h-auto shadow-2xl transition-all hover:scale-105 hover:shadow-whatsapp-green/50 font-semibold w-full sm:w-auto" onClick={() => window.open(getWhatsAppLink("", "Hola, necesito asesoría especializada sobre medias de compresión. Trabajo muchas horas de pie."), "_blank")}>
                   <MessageCircle className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
                   <span>Consulta Gratis por WhatsApp</span>
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-white/10 border-2 border-white/40 text-white hover:bg-white hover:text-primary text-lg px-8 py-7 h-auto backdrop-blur-md w-full sm:w-auto transition-all hover:scale-105 font-medium"
-                  onClick={() => setTestOpen(true)}
-                >
+                <Button size="lg" variant="outline" className="bg-white/10 border-2 border-white/40 text-white hover:bg-white hover:text-primary text-lg px-8 py-7 h-auto backdrop-blur-md w-full sm:w-auto transition-all hover:scale-105 font-medium" onClick={() => setTestOpen(true)}>
                   <Activity className="w-5 h-5 mr-2" />
                   Hacer el Test
                 </Button>
@@ -155,20 +154,20 @@ const Home = () => {
             </motion.div>
 
             {/* Image Column - Premium visual */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="relative hidden lg:block order-2 lg:w-[45%] xl:w-[42%]"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            scale: 0.95
+          }} animate={{
+            opacity: 1,
+            scale: 1
+          }} transition={{
+            duration: 0.8,
+            delay: 0.4
+          }} className="relative hidden lg:block order-2 lg:w-[45%] xl:w-[42%]">
               <div className="absolute -inset-4 bg-gradient-to-br from-health-green/20 to-transparent rounded-2xl blur-2xl" />
               <div className="relative h-full max-h-[520px] xl:max-h-[580px] flex items-center">
                 <div className="w-full h-full">
-                  <img
-                    src={heroBanner}
-                    alt="Medias de compresión profesionales para alivio de piernas"
-                    className="relative rounded-2xl shadow-xl w-full h-full object-cover border-2 border-white/20"
-                  />
+                  <img src={heroBanner} alt="Medias de compresión profesionales para alivio de piernas" className="relative rounded-2xl shadow-xl w-full h-full object-cover border-2 border-white/20" />
                 </div>
               </div>
             </motion.div>
@@ -176,12 +175,16 @@ const Home = () => {
         </div>
 
         {/* Credibility block - Compact and elegant */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="bg-white/10 backdrop-blur-lg border-t border-white/20"
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 30
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        duration: 0.8,
+        delay: 0.8
+      }} className="bg-white/10 backdrop-blur-lg border-t border-white/20">
           <div className="container mx-auto px-4 sm:px-6 py-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto text-white">
               <div className="flex items-center gap-3 justify-center md:justify-start">
@@ -231,22 +234,31 @@ const Home = () => {
       <TestDialog open={testOpen} onOpenChange={setTestOpen} />
 
       {/* Benefits Section - Enhanced with Delivery & Payment */}
-      <motion.section 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6 }}
-        className="py-12 sm:py-16 bg-background"
-      >
+      <motion.section initial={{
+      opacity: 0
+    }} whileInView={{
+      opacity: 1
+    }} viewport={{
+      once: true,
+      margin: "-100px"
+    }} transition={{
+      duration: 0.6
+    }} className="py-12 sm:py-16 bg-background">
         <div className="container mx-auto px-4 sm:px-6">
           {/* Main highlight boxes */}
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto mb-8 sm:mb-12">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
+            <motion.div initial={{
+            opacity: 0,
+            x: -30
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.1
+          }}>
               <Card className="border-2 border-health-green bg-health-green/5 hover:shadow-hover transition-all hover:scale-[1.02]">
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-start gap-3 sm:gap-4">
@@ -262,12 +274,18 @@ const Home = () => {
               </Card>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            <motion.div initial={{
+            opacity: 0,
+            x: 30
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.2
+          }}>
               <Card className="border-2 border-primary bg-primary/5 hover:shadow-hover transition-all hover:scale-[1.02]">
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-start gap-3 sm:gap-4">
@@ -286,19 +304,38 @@ const Home = () => {
 
           {/* Secondary benefits */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
-            {[
-              { icon: Users, title: "Asesoría Personalizada", desc: "Te ayudamos a elegir", color: "primary" },
-              { icon: ShieldCheck, title: "Garantía 7 Días", desc: "Devolución sin costo", color: "health-green" },
-              { icon: Activity, title: "Alivio Inmediato", desc: "Desde el primer día", color: "secondary" },
-              { icon: Award, title: "Cambio de Talla", desc: "Sin costo adicional", color: "clinical-alert" }
-            ].map((benefit, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.1 * index }}
-              >
+            {[{
+            icon: Users,
+            title: "Asesoría Personalizada",
+            desc: "Te ayudamos a elegir",
+            color: "primary"
+          }, {
+            icon: ShieldCheck,
+            title: "Garantía 7 Días",
+            desc: "Devolución sin costo",
+            color: "health-green"
+          }, {
+            icon: Activity,
+            title: "Alivio Inmediato",
+            desc: "Desde el primer día",
+            color: "secondary"
+          }, {
+            icon: Award,
+            title: "Cambio de Talla",
+            desc: "Sin costo adicional",
+            color: "clinical-alert"
+          }].map((benefit, index) => <motion.div key={index} initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.4,
+            delay: 0.1 * index
+          }}>
                 <Card className="border-2 hover:border-primary transition-all hover:shadow-hover hover:-translate-y-1">
                   <CardContent className="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3 px-2 sm:px-4 pb-4 sm:pb-6">
                     <div className={`w-12 h-12 sm:w-14 sm:h-14 mx-auto bg-${benefit.color}/10 rounded-full flex items-center justify-center`}>
@@ -308,28 +345,34 @@ const Home = () => {
                     <p className="text-xs sm:text-sm text-muted-foreground">{benefit.desc}</p>
                   </CardContent>
                 </Card>
-              </motion.div>
-            ))}
+              </motion.div>)}
           </div>
         </div>
       </motion.section>
 
       {/* Educational Section - Enhanced with Visual Content */}
-      <motion.section 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6 }}
-        className="py-12 sm:py-16 bg-muted/30"
-      >
+      <motion.section initial={{
+      opacity: 0
+    }} whileInView={{
+      opacity: 1
+    }} viewport={{
+      once: true,
+      margin: "-100px"
+    }} transition={{
+      duration: 0.6
+    }} className="py-12 sm:py-16 bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5
+        }} className="max-w-4xl mx-auto text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12">
             <Badge className="bg-primary text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2">Educación Rápida</Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground px-4">
               ¿Qué compresión necesito?
@@ -407,10 +450,7 @@ const Home = () => {
                   </li>
                 </ul>
 
-                <Button 
-                  className="w-full mt-4 bg-primary hover:bg-primary/90 text-sm sm:text-base py-5 sm:py-6"
-                  onClick={() => window.open(getWhatsAppLink("", "Hola, necesito medias de compresión 15-20 mmHg"), "_blank")}
-                >
+                <Button className="w-full mt-4 bg-primary hover:bg-primary/90 text-sm sm:text-base py-5 sm:py-6" onClick={() => window.open(getWhatsAppLink("", "Hola, necesito medias de compresión 15-20 mmHg"), "_blank")}>
                   Consultar por WhatsApp
                 </Button>
               </CardContent>
@@ -450,10 +490,7 @@ const Home = () => {
                   </li>
                 </ul>
 
-                <Button 
-                  className="w-full mt-4 bg-secondary hover:bg-secondary/90 text-sm sm:text-base py-5 sm:py-6"
-                  onClick={() => window.open(getWhatsAppLink("", "Hola, necesito medias de compresión 20-30 mmHg"), "_blank")}
-                >
+                <Button className="w-full mt-4 bg-secondary hover:bg-secondary/90 text-sm sm:text-base py-5 sm:py-6" onClick={() => window.open(getWhatsAppLink("", "Hola, necesito medias de compresión 20-30 mmHg"), "_blank")}>
                   Consultar por WhatsApp
                 </Button>
               </CardContent>
@@ -462,12 +499,7 @@ const Home = () => {
 
           <div className="text-center mt-8 sm:mt-10 px-4">
             <p className="text-sm sm:text-base text-muted-foreground mb-4">¿Aún tienes dudas sobre qué compresión elegir?</p>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-2 border-primary text-primary hover:bg-primary hover:text-white text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6"
-              onClick={() => window.open(getWhatsAppLink("", "Hola, no estoy seguro qué nivel de compresión necesito"), "_blank")}
-            >
+            <Button variant="outline" size="lg" className="border-2 border-primary text-primary hover:bg-primary hover:text-white text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6" onClick={() => window.open(getWhatsAppLink("", "Hola, no estoy seguro qué nivel de compresión necesito"), "_blank")}>
               <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Habla con un asesor
             </Button>
@@ -476,21 +508,28 @@ const Home = () => {
       </motion.section>
 
       {/* Featured Products with Delivery Badge */}
-      <motion.section 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6 }}
-        className="py-12 sm:py-16 bg-background"
-      >
+      <motion.section initial={{
+      opacity: 0
+    }} whileInView={{
+      opacity: 1
+    }} viewport={{
+      once: true,
+      margin: "-100px"
+    }} transition={{
+      duration: 0.6
+    }} className="py-12 sm:py-16 bg-background">
         <div className="container mx-auto px-4 sm:px-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center space-y-3 sm:space-y-4 mb-6 sm:mb-8"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5
+        }} className="text-center space-y-3 sm:space-y-4 mb-6 sm:mb-8">
             <Badge className="bg-health-green text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2">Más Vendidas</Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground px-4">
               Productos Destacados
@@ -516,25 +555,14 @@ const Home = () => {
             </div>
           </div>
 
-          {loading ? (
-            <div className="flex justify-center items-center py-12">
+          {loading ? <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-primary" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-7xl mx-auto">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} featured />
-              ))}
-            </div>
-          )}
+            </div> : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-7xl mx-auto">
+              {featuredProducts.map(product => <ProductCard key={product.id} product={product} featured />)}
+            </div>}
 
           <div className="text-center mt-8 sm:mt-10">
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 border-primary text-primary hover:bg-primary hover:text-white text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6"
-              asChild
-            >
+            <Button size="lg" variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-white text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6" asChild>
               <Link to="/catalogo">
                 Ver todos los productos
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
@@ -548,21 +576,28 @@ const Home = () => {
       <CertificationsSection />
 
       {/* Testimonials Section - Real UGC Style */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6 }}
-        className="py-12 sm:py-16 bg-background"
-      >
+      <motion.section initial={{
+      opacity: 0
+    }} whileInView={{
+      opacity: 1
+    }} viewport={{
+      once: true,
+      margin: "-100px"
+    }} transition={{
+      duration: 0.6
+    }} className="py-12 sm:py-16 bg-background">
         <div className="container mx-auto px-4 sm:px-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5
+        }} className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
             <Badge className="bg-health-green text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2">Testimonios Reales</Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground px-4">
               Lo que dicen nuestros clientes
@@ -640,13 +675,16 @@ const Home = () => {
       </motion.section>
 
       {/* Trust Section - Enhanced Visual Design */}
-      <motion.section 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6 }}
-        className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-muted/20 via-background to-muted/30 relative overflow-hidden"
-      >
+      <motion.section initial={{
+      opacity: 0
+    }} whileInView={{
+      opacity: 1
+    }} viewport={{
+      once: true,
+      margin: "-100px"
+    }} transition={{
+      duration: 0.6
+    }} className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-muted/20 via-background to-muted/30 relative overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute inset-0 opacity-5 pointer-events-none">
           <div className="absolute top-0 left-0 w-72 h-72 bg-primary rounded-full blur-3xl"></div>
@@ -655,13 +693,18 @@ const Home = () => {
         
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           {/* Header */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-center mb-10 sm:mb-16 max-w-3xl mx-auto"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.2
+        }} className="text-center mb-10 sm:mb-16 max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4 sm:mb-6">
               <Shield className="w-4 h-4" />
               <span>100% Garantizado</span>
@@ -677,21 +720,32 @@ const Home = () => {
           {/* Trust Cards Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto">
             {/* Card 1 - Garantía */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-primary/30 relative overflow-hidden"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 30
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.1
+          }} whileHover={{
+            y: -8,
+            transition: {
+              duration: 0.3
+            }
+          }} className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-primary/30 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
-                <motion.div 
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  className="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6"
-                >
+                <motion.div whileHover={{
+                scale: 1.1,
+                rotate: 5
+              }} transition={{
+                type: "spring",
+                stiffness: 300
+              }} className="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6">
                   <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
                 </motion.div>
                 <h3 className="font-bold text-lg sm:text-xl mb-2 sm:mb-3 text-foreground">
@@ -704,21 +758,32 @@ const Home = () => {
             </motion.div>
 
             {/* Card 2 - Envío */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-secondary/30 relative overflow-hidden"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 30
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.2
+          }} whileHover={{
+            y: -8,
+            transition: {
+              duration: 0.3
+            }
+          }} className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-secondary/30 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
-                <motion.div 
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  className="w-14 h-14 sm:w-16 sm:h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6"
-                >
+                <motion.div whileHover={{
+                scale: 1.1,
+                rotate: 5
+              }} transition={{
+                type: "spring",
+                stiffness: 300
+              }} className="w-14 h-14 sm:w-16 sm:h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6">
                   <Truck className="w-7 h-7 sm:w-8 sm:h-8 text-secondary" />
                 </motion.div>
                 <h3 className="font-bold text-lg sm:text-xl mb-2 sm:mb-3 text-foreground">
@@ -731,21 +796,32 @@ const Home = () => {
             </motion.div>
 
             {/* Card 3 - Cambio de Talla */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-health-green/30 relative overflow-hidden"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 30
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.3
+          }} whileHover={{
+            y: -8,
+            transition: {
+              duration: 0.3
+            }
+          }} className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-health-green/30 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-health-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
-                <motion.div 
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  className="w-14 h-14 sm:w-16 sm:h-16 bg-health-green/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6"
-                >
+                <motion.div whileHover={{
+                scale: 1.1,
+                rotate: 5
+              }} transition={{
+                type: "spring",
+                stiffness: 300
+              }} className="w-14 h-14 sm:w-16 sm:h-16 bg-health-green/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6">
                   <BadgeCheck className="w-7 h-7 sm:w-8 sm:h-8 text-health-green" />
                 </motion.div>
                 <h3 className="font-bold text-lg sm:text-xl mb-2 sm:mb-3 text-foreground">
@@ -758,21 +834,32 @@ const Home = () => {
             </motion.div>
 
             {/* Card 4 - Mejoras */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-clinical-alert/30 relative overflow-hidden"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            y: 30
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            duration: 0.5,
+            delay: 0.4
+          }} whileHover={{
+            y: -8,
+            transition: {
+              duration: 0.3
+            }
+          }} className="group bg-card p-6 sm:p-8 rounded-3xl shadow-soft hover:shadow-hover transition-all duration-500 border border-border/50 hover:border-clinical-alert/30 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-clinical-alert/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
-                <motion.div 
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  className="w-14 h-14 sm:w-16 sm:h-16 bg-clinical-alert/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6"
-                >
+                <motion.div whileHover={{
+                scale: 1.1,
+                rotate: 5
+              }} transition={{
+                type: "spring",
+                stiffness: 300
+              }} className="w-14 h-14 sm:w-16 sm:h-16 bg-clinical-alert/10 rounded-2xl flex items-center justify-center mb-5 sm:mb-6">
                   <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-clinical-alert" />
                 </motion.div>
                 <h3 className="font-bold text-lg sm:text-xl mb-2 sm:mb-3 text-foreground">
@@ -788,13 +875,16 @@ const Home = () => {
       </motion.section>
 
       {/* Final CTA Section - Enhanced with Benefits */}
-      <motion.section 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6 }}
-        className="py-16 sm:py-20 bg-primary text-white mb-16 sm:mb-0"
-      >
+      <motion.section initial={{
+      opacity: 0
+    }} whileInView={{
+      opacity: 1
+    }} viewport={{
+      once: true,
+      margin: "-100px"
+    }} transition={{
+      duration: 0.6
+    }} className="py-16 sm:py-20 bg-primary text-white mb-16 sm:mb-0">
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
             <Zap className="w-12 h-12 sm:w-16 sm:h-16 mx-auto" />
@@ -821,11 +911,7 @@ const Home = () => {
               </div>
             </div>
 
-            <Button
-              size="lg"
-              className="bg-health-green hover:bg-health-green/90 text-white text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 h-auto shadow-2xl hover:scale-105 transition-all font-bold w-full sm:w-auto"
-              onClick={() => window.open(getWhatsAppLink("", "Hola, quiero consultar sobre medias de compresión"), "_blank")}
-            >
+            <Button size="lg" className="bg-health-green hover:bg-health-green/90 text-white text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 h-auto shadow-2xl hover:scale-105 transition-all font-bold w-full sm:w-auto" onClick={() => window.open(getWhatsAppLink("", "Hola, quiero consultar sobre medias de compresión"), "_blank")}>
               <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 flex-shrink-0" />
               <span>Consulta Gratis por WhatsApp</span>
               <span className="ml-2 sm:ml-3 bg-white/20 px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-normal">2 min</span>
@@ -841,10 +927,7 @@ const Home = () => {
 
       {/* Mobile Sticky CTA - WhatsApp */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-health-green to-health-green/90 p-3 shadow-2xl border-t border-white/10">
-        <Button
-          className="w-full bg-white text-health-green hover:bg-white/90 font-bold text-base py-5 h-auto"
-          onClick={() => window.open(getWhatsAppLink("", "Hola, quiero consultar sobre medias de compresión"), "_blank")}
-        >
+        <Button className="w-full bg-white text-health-green hover:bg-white/90 font-bold text-base py-5 h-auto" onClick={() => window.open(getWhatsAppLink("", "Hola, quiero consultar sobre medias de compresión"), "_blank")}>
           <MessageCircle className="w-5 h-5 mr-2 flex-shrink-0" />
           <span className="flex-1">Consulta Gratis</span>
           <span className="ml-2 text-xs bg-health-green/20 px-2 py-1 rounded flex-shrink-0">2 min</span>
@@ -852,8 +935,6 @@ const Home = () => {
       </div>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Home;
