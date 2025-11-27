@@ -17,6 +17,9 @@ serve(async (req) => {
       customer_lastname,
       customer_phone,
       customer_district,
+      customer_address,
+      customer_lat,
+      customer_lng,
       product_code,
       product_name,
       product_color,
@@ -26,7 +29,7 @@ serve(async (req) => {
     } = await req.json();
 
     // Validar campos requeridos
-    if (!customer_name || !customer_lastname || !customer_phone || !customer_district ||
+    if (!customer_name || !customer_lastname || !customer_phone || !customer_district || !customer_address ||
         !product_code || !product_name || !product_color || product_price === undefined) {
       return new Response(
         JSON.stringify({ error: 'Todos los campos son requeridos' }),
@@ -65,6 +68,9 @@ serve(async (req) => {
         customer_lastname: String(customer_lastname).slice(0, 100),
         customer_phone: String(customer_phone).slice(0, 20),
         customer_district: String(customer_district).slice(0, 100),
+        customer_address: customer_address ? String(customer_address).slice(0, 500) : null,
+        customer_lat: customer_lat ? Number(customer_lat) : null,
+        customer_lng: customer_lng ? Number(customer_lng) : null,
         total: total,
         fulfillment_status: 'UNFULFILLED',
         payment_status: 'PENDING',
