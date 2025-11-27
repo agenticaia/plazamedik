@@ -14,7 +14,7 @@ const Varices = () => {
   const { products, loading } = useProducts();
   
   const varicesProducts = products.filter(p => 
-    p.category.includes("varices") && p.stock > 0
+    p.category && p.category.includes("varices") && p.stock > 0
   );
 
   return (
