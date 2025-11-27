@@ -19,6 +19,7 @@ import TiposMediasCompresion from "@/pages/blog/TiposMediasCompresion";
 import MediasAntiembolicas from "@/pages/blog/MediasAntiembolicas";
 import ComoElegirTallaCorrecta from "@/pages/blog/ComoElegirTallaCorrecta";
 import Seguimiento from "./pages/Seguimiento";
+import HacerPedidoWA from "./pages/HacerPedidoWA";
 import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
 import Pedidos from "./pages/admin/Pedidos";
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/blog/como-elegir-talla-correcta" element={<ComoElegirTallaCorrecta />} />
             <Route path="/preguntas-frecuentes" element={<FAQ />} />
             <Route path="/seguimiento" element={<Seguimiento />} />
+            <Route path="/hacer-pedido-wa" element={<HacerPedidoWA />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLogin />} />
