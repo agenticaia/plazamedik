@@ -31,22 +31,22 @@ async function getBusinessMetrics(supabase: any) {
   const pos = posRes.data || [];
   const customers = customersRes.data || [];
 
-  const lowStockCount = products.filter(p => 
+  const lowStockCount = products.filter((p: any) => 
     !p.is_discontinued && p.cantidad_stock < (p.ai_reorder_point || 10)
   ).length;
 
-  const outOfStockCount = products.filter(p => 
+  const outOfStockCount = products.filter((p: any) => 
     !p.is_discontinued && p.cantidad_stock === 0
   ).length;
 
-  const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-  const pendingOrders = orders.filter(o => o.fulfillment_status !== 'DELIVERED').length;
-  const draftPOs = pos.filter(p => p.status === 'DRAFT').length;
-  const urgentPOs = pos.filter(p => p.priority === 'URGENT').length;
+  const totalRevenue = orders.reduce((sum: number, o: any) => sum + (o.total || 0), 0);
+  const pendingOrders = orders.filter((o: any) => o.fulfillment_status !== 'DELIVERED').length;
+  const draftPOs = pos.filter((p: any) => p.status === 'DRAFT').length;
+  const urgentPOs = pos.filter((p: any) => p.priority === 'URGENT').length;
 
   const totalCustomers = customers.length;
   const avgOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
-  const totalReferralCredits = customers.reduce((sum, c) => sum + (c.referral_credits || 0), 0);
+  const totalReferralCredits = customers.reduce((sum: number, c: any) => sum + (c.referral_credits || 0), 0);
 
   return {
     inventory: {
