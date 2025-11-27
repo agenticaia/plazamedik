@@ -20,6 +20,7 @@ export interface BaseProduct {
   compression: string;
   brand: string;
   model: string;
+  imagesByColor?: Record<string, string>; // Nuevo: Mapeo de color a URL de imagen
 }
 
 // Mapea una fila de BD (tabla products) al modelo de producto que usa el frontend
@@ -72,5 +73,6 @@ export function mapDbProductToBase(dbProduct: Tables<"products">): BaseProduct {
     compression,
     brand,
     model: type === "panty" ? "Panty" : "Básico",
+    imagesByColor: (dbProduct as any).imagenes_por_color || {},
   };
 }

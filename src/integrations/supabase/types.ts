@@ -304,6 +304,7 @@ export type Database = {
           id: string
           ideal_para: string | null
           imagen_url: string | null
+          imagenes_por_color: Json | null
           is_discontinued: boolean | null
           lead_time_days_override: number | null
           max_stock_level: number | null
@@ -340,6 +341,7 @@ export type Database = {
           id?: string
           ideal_para?: string | null
           imagen_url?: string | null
+          imagenes_por_color?: Json | null
           is_discontinued?: boolean | null
           lead_time_days_override?: number | null
           max_stock_level?: number | null
@@ -376,6 +378,7 @@ export type Database = {
           id?: string
           ideal_para?: string | null
           imagen_url?: string | null
+          imagenes_por_color?: Json | null
           is_discontinued?: boolean | null
           lead_time_days_override?: number | null
           max_stock_level?: number | null
