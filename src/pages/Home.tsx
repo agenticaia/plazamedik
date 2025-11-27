@@ -192,7 +192,7 @@ const Home = () => {
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-lg">+5,000</div>
+                  <div className="font-bold text-lg">+100</div>
                   <div className="text-xs text-blue-100/80">Peruanos aliviados</div>
                 </div>
               </div>
