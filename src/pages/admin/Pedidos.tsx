@@ -100,12 +100,12 @@ export default function Pedidos() {
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4" />
-                Completados
+                Entregados
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {getStatusCount("FULFILLED")}
+                {getStatusCount("DELIVERED")}
               </div>
             </CardContent>
           </Card>
@@ -128,14 +128,17 @@ export default function Pedidos() {
             <TabsTrigger value="unfulfilled">
               Sin Cumplir <Badge variant="outline" className="ml-2">{getStatusCount("UNFULFILLED")}</Badge>
             </TabsTrigger>
+            <TabsTrigger value="picking">
+              Picking <Badge variant="secondary" className="ml-2">{getStatusCount("PICKING")}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="shipped">
+              Enviados <Badge variant="default" className="ml-2">{getStatusCount("SHIPPED")}</Badge>
+            </TabsTrigger>
             <TabsTrigger value="waiting">
               Esperando Stock <Badge variant="destructive" className="ml-2">{getStatusCount("WAITING_STOCK")}</Badge>
             </TabsTrigger>
-            <TabsTrigger value="partial">
-              Parcial <Badge variant="secondary" className="ml-2">{getStatusCount("PARTIAL")}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="fulfilled">
-              Completados <Badge variant="default" className="ml-2">{getStatusCount("FULFILLED")}</Badge>
+            <TabsTrigger value="delivered">
+              Entregados <Badge variant="default" className="ml-2">{getStatusCount("DELIVERED")}</Badge>
             </TabsTrigger>
           </TabsList>
 
@@ -161,6 +164,28 @@ export default function Pedidos() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="picking">
+            <Card>
+              <CardHeader>
+                <CardTitle>En Proceso de Picking</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SalesOrderTableFiltered orders={filterByStatus("PICKING")} isLoading={isLoading} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="shipped">
+            <Card>
+              <CardHeader>
+                <CardTitle>Pedidos Enviados (En Tránsito)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SalesOrderTableFiltered orders={filterByStatus("SHIPPED")} isLoading={isLoading} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="waiting">
             <Card>
               <CardHeader>
@@ -172,24 +197,13 @@ export default function Pedidos() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="partial">
+          <TabsContent value="delivered">
             <Card>
               <CardHeader>
-                <CardTitle>Envíos Parciales</CardTitle>
+                <CardTitle>Pedidos Entregados</CardTitle>
               </CardHeader>
               <CardContent>
-                <SalesOrderTableFiltered orders={filterByStatus("PARTIAL")} isLoading={isLoading} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="fulfilled">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pedidos Completados</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <SalesOrderTableFiltered orders={filterByStatus("FULFILLED")} isLoading={isLoading} />
+                <SalesOrderTableFiltered orders={filterByStatus("DELIVERED")} isLoading={isLoading} />
               </CardContent>
             </Card>
           </TabsContent>
