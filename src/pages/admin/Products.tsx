@@ -20,8 +20,8 @@ export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.code.toLowerCase().includes(searchTerm.toLowerCase())
+    product.nombre_producto.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.product_code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleEdit = (product: any) => {
@@ -112,29 +112,29 @@ export default function Products() {
                 ) : (
                   filteredProducts.map((product) => (
                     <TableRow key={product.id}>
-                      <TableCell className="font-mono text-sm">{product.code}</TableCell>
+                       <TableCell className="font-mono text-sm">{product.product_code}</TableCell>
                       <TableCell>
                         <img
-                          src={product.image}
-                          alt={product.name}
+                          src={product.imagen_url || '/placeholder.svg'}
+                          alt={product.nombre_producto}
                           className="w-12 h-12 object-cover rounded"
                         />
                       </TableCell>
-                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell className="font-medium">{product.nombre_producto}</TableCell>
                       <TableCell>
-                        <Badge variant="outline">{product.category[0]}</Badge>
+                        <Badge variant="outline">{product.categoria}</Badge>
                       </TableCell>
                       <TableCell className="font-semibold">
-                        S/ {product.priceSale.toFixed(2)}
+                        S/ {Number(product.precio).toFixed(2)}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={product.stock > 10 ? 'default' : product.stock > 0 ? 'secondary' : 'destructive'}>
-                          {product.stock} unidades
+                        <Badge variant={(product.cantidad_stock || 0) > 10 ? 'default' : (product.cantidad_stock || 0) > 0 ? 'secondary' : 'destructive'}>
+                          {product.cantidad_stock || 0} unidades
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={product.stock > 0 ? 'default' : 'destructive'}>
-                          {product.stock > 0 ? 'Disponible' : 'Agotado'}
+                        <Badge variant={(product.cantidad_stock || 0) > 0 ? 'default' : 'destructive'}>
+                          {(product.cantidad_stock || 0) > 0 ? 'Disponible' : 'Agotado'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">

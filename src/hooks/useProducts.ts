@@ -11,7 +11,7 @@ export interface Product extends BaseProduct {
 export type { GroupedProduct };
 
 export function useProducts(adminView: boolean = false, grouped: boolean = false) {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[] | Tables<'products'>[]>([]);
   const [groupedProducts, setGroupedProducts] = useState<GroupedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +36,13 @@ export function useProducts(adminView: boolean = false, grouped: boolean = false
       if (fetchError) throw fetchError;
 
       const rows = (data || []) as Tables<'products'>[];
+
+      // Si es admin view, retornar productos raw sin transformar
+      if (adminView) {
+        setProducts(rows);
+        setError(null);
+        return;
+      }
 
       const transformedProducts: Product[] = rows.map((dbProduct) => {
         const base = mapDbProductToBase(dbProduct);

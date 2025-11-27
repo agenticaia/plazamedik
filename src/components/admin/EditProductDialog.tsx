@@ -55,15 +55,15 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
   const [loading, setLoading] = useState(false);
   const [generatingAI, setGeneratingAI] = useState(false);
   const [formData, setFormData] = useState({
-    product_code: product?.product_code || product?.code || '',
-    nombre_producto: product?.nombre_producto || product?.name || '',
+    product_code: product?.product_code || '',
+    nombre_producto: product?.nombre_producto || '',
     categoria: product?.categoria || 'varices',
     zona_pierna: product?.zona_pierna || '',
-    precio: product?.precio || product?.priceSale || 0,
-    cantidad_stock: product?.cantidad_stock || 0,
+    precio: Number(product?.precio) || 0,
+    cantidad_stock: Number(product?.cantidad_stock) || 0,
     imagen_url: product?.imagen_url || '',
     descripcion_corta: product?.descripcion_corta || '',
-    precio_anterior: product?.precio_anterior || 0,
+    precio_anterior: Number(product?.precio_anterior) || 0,
     tallas_disponibles: product?.tallas_disponibles || [],
     colores_disponibles: product?.colores_disponibles || [],
     ideal_para: product?.ideal_para || '',
@@ -79,15 +79,15 @@ export function EditProductDialog({ open, onOpenChange, product, onSuccess }: Ed
       console.log('🔍 Producto recibido en EditDialog:', product);
       
       setFormData({
-        product_code: product?.product_code || product?.code || '',
-        nombre_producto: product?.nombre_producto || product?.name || '',
+        product_code: product?.product_code || '',
+        nombre_producto: product?.nombre_producto || '',
         categoria: product?.categoria || 'varices',
         zona_pierna: product?.zona_pierna || '',
-        precio: product?.precio || product?.priceSale || 0,
-        cantidad_stock: product?.cantidad_stock || 0,
+        precio: Number(product?.precio) || 0,
+        cantidad_stock: Number(product?.cantidad_stock) || 0,
         imagen_url: product?.imagen_url || '',
         descripcion_corta: product?.descripcion_corta || '',
-        precio_anterior: product?.precio_anterior || 0,
+        precio_anterior: Number(product?.precio_anterior) || 0,
         tallas_disponibles: product?.tallas_disponibles || [],
         colores_disponibles: product?.colores_disponibles || [],
         ideal_para: product?.ideal_para || '',
