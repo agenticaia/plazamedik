@@ -14,7 +14,7 @@ import {
 import { SalesOrder } from "@/hooks/useSalesOrders";
 import { OrderTimeline } from "./OrderTimeline";
 import { ShippingLabelPrint } from "../ShippingLabelPrint";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -33,6 +33,7 @@ export const OrderDetailDrawer = ({
   onUpdateStatus 
 }: OrderDetailDrawerProps) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isEditingStatus, setIsEditingStatus] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<string>(order?.payment_status || 'PENDING');
   const [fulfillmentStatus, setFulfillmentStatus] = useState<string>(order?.fulfillment_status || 'UNFULFILLED');
@@ -57,27 +58,50 @@ export const OrderDetailDrawer = ({
   const handleSaveStatus = async () => {
     setIsSaving(true);
     try {
-      const { error } = await supabase
+      const updates: any = {
+        payment_status: paymentStatus,
+        fulfillment_status: fulfillmentStatus,
+      };
+
+      // Add timestamps based on status transitions
+      if (fulfillmentStatus === 'PICKING' && !order.picking_started_at) {
+        updates.picking_started_at = new Date().toISOString();
+      } else if (fulfillmentStatus === 'PACKED' && !order.packed_at) {
+        updates.packed_at = new Date().toISOString();
+      } else if (fulfillmentStatus === 'SHIPPED' && !order.shipped_at) {
+        updates.shipped_at = new Date().toISOString();
+      } else if (fulfillmentStatus === 'DELIVERED' && !order.delivered_at) {
+        updates.delivered_at = new Date().toISOString();
+      }
+
+      const { data, error } = await supabase
         .from('sales_orders')
-        .update({
-          payment_status: paymentStatus,
-          fulfillment_status: fulfillmentStatus,
-        })
-        .eq('id', order.id);
+        .update(updates)
+        .eq('id', order.id)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Invalidate queries to refresh the UI
+      await queryClient.invalidateQueries({ queryKey: ["sales-orders"] });
+      await queryClient.invalidateQueries({ queryKey: ["order-state-log", order.id] });
 
       toast({
         title: "✅ Estados actualizados",
         description: "Los estados del pedido se han actualizado correctamente",
       });
       setIsEditingStatus(false);
-      onUpdateStatus(order.id, fulfillmentStatus);
-    } catch (error) {
+      
+      // Update local state with returned data
+      if (data) {
+        onUpdateStatus(order.id, data.fulfillment_status);
+      }
+    } catch (error: any) {
       console.error('Error updating status:', error);
       toast({
-        title: "Error",
-        description: "No se pudo actualizar los estados",
+        title: "❌ Error al actualizar",
+        description: error.message || "No se pudo actualizar los estados. Verifica los permisos.",
         variant: "destructive",
       });
     } finally {
