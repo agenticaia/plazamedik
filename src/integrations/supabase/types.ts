@@ -47,6 +47,63 @@ export type Database = {
         }
         Relationships: []
       }
+      customers: {
+        Row: {
+          address: string | null
+          ai_notes: string | null
+          created_at: string | null
+          customer_type: string | null
+          district: string | null
+          email: string | null
+          id: string
+          lastname: string | null
+          name: string
+          phone: string
+          referral_code: string
+          referral_credits: number | null
+          referred_by_code: string | null
+          total_orders: number | null
+          total_spent: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          ai_notes?: string | null
+          created_at?: string | null
+          customer_type?: string | null
+          district?: string | null
+          email?: string | null
+          id?: string
+          lastname?: string | null
+          name: string
+          phone: string
+          referral_code: string
+          referral_credits?: number | null
+          referred_by_code?: string | null
+          total_orders?: number | null
+          total_spent?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          ai_notes?: string | null
+          created_at?: string | null
+          customer_type?: string | null
+          district?: string | null
+          email?: string | null
+          id?: string
+          lastname?: string | null
+          name?: string
+          phone?: string
+          referral_code?: string
+          referral_credits?: number | null
+          referred_by_code?: string | null
+          total_orders?: number | null
+          total_spent?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       inventory_forecast: {
         Row: {
           calculated_at: string | null
@@ -560,6 +617,61 @@ export type Database = {
           },
         ]
       }
+      referrals: {
+        Row: {
+          created_at: string | null
+          credit_amount: number | null
+          id: string
+          order_id: string | null
+          referral_code_used: string
+          referred_customer_id: string | null
+          referrer_customer_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          credit_amount?: number | null
+          id?: string
+          order_id?: string | null
+          referral_code_used: string
+          referred_customer_id?: string | null
+          referrer_customer_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          credit_amount?: number | null
+          id?: string
+          order_id?: string | null
+          referral_code_used?: string
+          referred_customer_id?: string | null
+          referrer_customer_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "sales_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referred_customer_id_fkey"
+            columns: ["referred_customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_customer_id_fkey"
+            columns: ["referrer_customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sales_order_items: {
         Row: {
           created_at: string | null
@@ -613,6 +725,7 @@ export type Database = {
           created_at: string | null
           customer_address: string | null
           customer_district: string | null
+          customer_id: string | null
           customer_lastname: string | null
           customer_lat: number | null
           customer_lng: number | null
@@ -630,6 +743,7 @@ export type Database = {
           picking_started_at: string | null
           priority: string | null
           recommended_by: string | null
+          referral_code_used: string | null
           shipped_at: string | null
           source: string | null
           total: number
@@ -641,6 +755,7 @@ export type Database = {
           created_at?: string | null
           customer_address?: string | null
           customer_district?: string | null
+          customer_id?: string | null
           customer_lastname?: string | null
           customer_lat?: number | null
           customer_lng?: number | null
@@ -658,6 +773,7 @@ export type Database = {
           picking_started_at?: string | null
           priority?: string | null
           recommended_by?: string | null
+          referral_code_used?: string | null
           shipped_at?: string | null
           source?: string | null
           total: number
@@ -669,6 +785,7 @@ export type Database = {
           created_at?: string | null
           customer_address?: string | null
           customer_district?: string | null
+          customer_id?: string | null
           customer_lastname?: string | null
           customer_lat?: number | null
           customer_lng?: number | null
@@ -686,13 +803,22 @@ export type Database = {
           picking_started_at?: string | null
           priority?: string | null
           recommended_by?: string | null
+          referral_code_used?: string | null
           shipped_at?: string | null
           source?: string | null
           total?: number
           tracking_number?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sales_orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       suppliers: {
         Row: {
@@ -917,6 +1043,7 @@ export type Database = {
       generate_order_code: { Args: never; Returns: string }
       generate_po_number_sequential: { Args: never; Returns: string }
       generate_purchase_order_number: { Args: never; Returns: string }
+      generate_referral_code: { Args: never; Returns: string }
       generate_sales_order_number: { Args: never; Returns: string }
       get_dashboard_metrics: { Args: never; Returns: Json }
       get_low_stock_products: {

@@ -23,6 +23,7 @@ import HacerPedidoWA from "./pages/HacerPedidoWA";
 import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
 import Pedidos from "./pages/admin/Pedidos";
+import Clientes from "./pages/admin/Clientes";
 import InventoryIA from "./pages/admin/InventoryIA";
 import SyncProducts from "./pages/admin/SyncProducts";
 import SuppliersManagement from "./pages/admin/SuppliersManagement";
@@ -33,6 +34,7 @@ import ExecutiveDashboard from "./pages/admin/ExecutiveDashboard";
 import PaymentDashboard from "./pages/admin/PaymentDashboard";
 import SalesStatistics from "./pages/admin/SalesStatistics";
 import Wiki from "./pages/admin/Wiki";
+import Invite from "./pages/Invite";
 import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
 
 const queryClient = new QueryClient();
@@ -60,6 +62,7 @@ const App = () => (
             <Route path="/preguntas-frecuentes" element={<FAQ />} />
             <Route path="/seguimiento" element={<Seguimiento />} />
             <Route path="/hacer-pedido-wa" element={<HacerPedidoWA />} />
+            <Route path="/invite/:code" element={<Invite />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLogin />} />
@@ -92,6 +95,14 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <Pedidos />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/clientes"
+              element={
+                <ProtectedAdminRoute>
+                  <Clientes />
                 </ProtectedAdminRoute>
               }
             />

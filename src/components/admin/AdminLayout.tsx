@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart, Target, BarChart3, CreditCard, TrendingUp, Menu, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart, Target, BarChart3, CreditCard, TrendingUp, Menu, BookOpen, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -25,6 +25,7 @@ const navigation = [
   { name: 'Pagos & Finanzas', href: '/admin/pagos', icon: CreditCard },
   { name: 'Productos', href: '/admin/productos', icon: Package },
   { name: 'Pedidos', href: '/admin/pedidos', icon: ShoppingBag },
+  { name: 'Clientes', href: '/admin/clientes', icon: Users },
   { name: 'Proveedores', href: '/admin/proveedores', icon: Building2 },
   { name: 'Órdenes de Compra', href: '/admin/ordenes-compra', icon: ShoppingCart },
   { name: 'Punto Reorden IA', href: '/admin/punto-reorden-ia', icon: Target },
