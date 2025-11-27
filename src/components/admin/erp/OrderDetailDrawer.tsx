@@ -16,7 +16,7 @@ import { OrderTimeline } from "./OrderTimeline";
 import { ShippingLabelPrint } from "../ShippingLabelPrint";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 interface OrderDetailDrawerProps {
@@ -52,6 +52,14 @@ export const OrderDetailDrawer = ({
     },
     enabled: !!order?.id && open,
   });
+
+  // Sincronizar estados locales cuando cambien los datos del pedido
+  useEffect(() => {
+    if (order) {
+      setPaymentStatus(order.payment_status || 'PENDING');
+      setFulfillmentStatus(order.fulfillment_status || 'UNFULFILLED');
+    }
+  }, [order?.payment_status, order?.fulfillment_status, order?.id]);
 
   if (!order) return null;
 
