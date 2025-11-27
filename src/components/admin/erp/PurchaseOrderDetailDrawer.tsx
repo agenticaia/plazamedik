@@ -64,11 +64,15 @@ export function PurchaseOrderDetailDrawer({
 
   const getStatusConfig = (status: string) => {
     const configs: Record<string, { icon: any; color: string; label: string }> = {
-      DRAFT: { icon: Clock, color: 'text-muted-foreground', label: 'Borrador' },
-      SENT: { icon: Truck, color: 'text-blue-600', label: 'Enviada' },
-      PARTIAL_RECEIPT: { icon: Package, color: 'text-orange-600', label: 'Recepción Parcial' },
-      CLOSED: { icon: CheckCircle, color: 'text-green-600', label: 'Cerrada' },
-      CANCELLED: { icon: XCircle, color: 'text-red-600', label: 'Cancelada' },
+      DRAFT: { icon: Clock, color: 'text-muted-foreground', label: '📝 Borrador' },
+      APPROVED: { icon: CheckCircle, color: 'text-green-600', label: '✅ Aprobada' },
+      SENT: { icon: Truck, color: 'text-blue-600', label: '📤 Enviada' },
+      CONFIRMED: { icon: CheckCircle, color: 'text-green-600', label: '✔️ Confirmada' },
+      IN_TRANSIT: { icon: Truck, color: 'text-blue-600', label: '🚚 En Tránsito' },
+      PARTIAL_RECEIVED: { icon: Package, color: 'text-orange-600', label: '📦 Recepción Parcial' },
+      RECEIVED: { icon: CheckCircle, color: 'text-green-600', label: '✅ Recibida' },
+      CLOSED: { icon: CheckCircle, color: 'text-green-600', label: '🔒 Cerrada' },
+      CANCELLED: { icon: XCircle, color: 'text-red-600', label: '❌ Cancelada' },
     };
     return configs[status] || configs.DRAFT;
   };

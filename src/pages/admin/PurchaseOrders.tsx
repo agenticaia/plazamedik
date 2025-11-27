@@ -96,11 +96,15 @@ const PurchaseOrders = () => {
 
   const getStatusBadge = (status: PurchaseOrder["status"]) => {
     const variants: Record<string, { label: string }> = {
-      DRAFT: { label: "Borrador" },
-      SENT: { label: "Enviada" },
-      PARTIAL_RECEIPT: { label: "Recepción Parcial" },
-      CLOSED: { label: "Cerrada" },
-      CANCELLED: { label: "Cancelada" },
+      DRAFT: { label: "📝 Borrador" },
+      APPROVED: { label: "✅ Aprobada" },
+      SENT: { label: "📤 Enviada" },
+      CONFIRMED: { label: "✔️ Confirmada" },
+      IN_TRANSIT: { label: "🚚 En Tránsito" },
+      PARTIAL_RECEIVED: { label: "📦 Recepción Parcial" },
+      RECEIVED: { label: "✅ Recibida" },
+      CLOSED: { label: "🔒 Cerrada" },
+      CANCELLED: { label: "❌ Cancelada" },
     };
 
     const config = variants[status || ""] || { label: status };
@@ -374,11 +378,15 @@ const PurchaseOrders = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">Todos los estados</SelectItem>
-                <SelectItem value="DRAFT">Borrador</SelectItem>
-                <SelectItem value="SENT">Enviada</SelectItem>
-                <SelectItem value="PARTIAL_RECEIPT">Recepción Parcial</SelectItem>
-                <SelectItem value="CLOSED">Cerrada</SelectItem>
-                <SelectItem value="CANCELLED">Cancelada</SelectItem>
+                <SelectItem value="DRAFT">📝 Borrador</SelectItem>
+                <SelectItem value="APPROVED">✅ Aprobada</SelectItem>
+                <SelectItem value="SENT">📤 Enviada</SelectItem>
+                <SelectItem value="CONFIRMED">✔️ Confirmada</SelectItem>
+                <SelectItem value="IN_TRANSIT">🚚 En Tránsito</SelectItem>
+                <SelectItem value="PARTIAL_RECEIVED">📦 Recepción Parcial</SelectItem>
+                <SelectItem value="RECEIVED">✅ Recibida</SelectItem>
+                <SelectItem value="CLOSED">🔒 Cerrada</SelectItem>
+                <SelectItem value="CANCELLED">❌ Cancelada</SelectItem>
               </SelectContent>
             </Select>
           </Card>

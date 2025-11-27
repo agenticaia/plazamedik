@@ -104,9 +104,12 @@ export const OrderDetailDrawer = ({
 
   const getFulfillmentBadge = () => {
     const variants = {
-      FULFILLED: { variant: "default" as const, label: "✅ Completado", icon: CheckCircle2 },
-      PARTIAL: { variant: "secondary" as const, label: "📦 Parcial", icon: Package },
       UNFULFILLED: { variant: "outline" as const, label: "⏳ Sin cumplir", icon: Clock },
+      PICKING: { variant: "secondary" as const, label: "🔍 Picking", icon: Package },
+      PACKED: { variant: "secondary" as const, label: "📦 Empacado", icon: Package },
+      SHIPPED: { variant: "default" as const, label: "🚚 Enviado", icon: Truck },
+      DELIVERED: { variant: "default" as const, label: "✅ Entregado", icon: CheckCircle2 },
+      PARTIAL: { variant: "secondary" as const, label: "📦 Parcial", icon: Package },
       WAITING_STOCK: { variant: "destructive" as const, label: "⚠️ Esperando Stock", icon: AlertTriangle },
       CANCELLED: { variant: "destructive" as const, label: "❌ Cancelado", icon: AlertTriangle },
     };
@@ -120,9 +123,10 @@ export const OrderDetailDrawer = ({
     );
   };
 
-  const canStartPicking = order.fulfillment_status === 'UNFULFILLED' && order.payment_status === 'PAID';
-  const canShip = order.fulfillment_status === 'UNFULFILLED' || order.fulfillment_status === 'PARTIAL';
-  const canComplete = order.fulfillment_status !== 'FULFILLED' && order.fulfillment_status !== 'CANCELLED';
+  const canStartPicking = order.fulfillment_status === 'UNFULFILLED';
+  const canPack = order.fulfillment_status === 'PICKING';
+  const canShip = order.fulfillment_status === 'PACKED';
+  const canDeliver = order.fulfillment_status === 'SHIPPED';
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
@@ -197,8 +201,11 @@ export const OrderDetailDrawer = ({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="UNFULFILLED">⏳ Sin cumplir</SelectItem>
+                        <SelectItem value="PICKING">🔍 Picking</SelectItem>
+                        <SelectItem value="PACKED">📦 Empacado</SelectItem>
+                        <SelectItem value="SHIPPED">🚚 Enviado</SelectItem>
+                        <SelectItem value="DELIVERED">✅ Entregado</SelectItem>
                         <SelectItem value="PARTIAL">📦 Parcial</SelectItem>
-                        <SelectItem value="FULFILLED">✅ Completado</SelectItem>
                         <SelectItem value="WAITING_STOCK">⚠️ Esperando Stock</SelectItem>
                         <SelectItem value="CANCELLED">❌ Cancelado</SelectItem>
                       </SelectContent>
@@ -362,7 +369,7 @@ export const OrderDetailDrawer = ({
             {/* Actions */}
             <Separator />
             <div className="space-y-2">
-              <h3 className="font-semibold text-sm sm:text-base">Acciones Rápidas</h3>
+              <h3 className="font-semibold text-sm sm:text-base">Acciones Rápidas - Flujo SOP</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {canStartPicking && (
                   <Button
@@ -374,10 +381,21 @@ export const OrderDetailDrawer = ({
                     Iniciar Picking
                   </Button>
                 )}
-                {canShip && (
+                {canPack && (
                   <Button
                     size="sm"
                     variant="secondary"
+                    onClick={() => onUpdateStatus(order.id, 'PACKED')}
+                    className="flex items-center gap-2"
+                  >
+                    <Package className="h-4 w-4" />
+                    Marcar Empacado
+                  </Button>
+                )}
+                {canShip && (
+                  <Button
+                    size="sm"
+                    variant="default"
                     onClick={() => onUpdateStatus(order.id, 'SHIPPED')}
                     className="flex items-center gap-2"
                   >
@@ -385,15 +403,15 @@ export const OrderDetailDrawer = ({
                     Marcar Enviado
                   </Button>
                 )}
-                {canComplete && (
+                {canDeliver && (
                   <Button
                     size="sm"
                     variant="default"
-                    onClick={() => onUpdateStatus(order.id, 'FULFILLED')}
+                    onClick={() => onUpdateStatus(order.id, 'DELIVERED')}
                     className="flex items-center gap-2"
                   >
                     <CheckCircle2 className="h-4 w-4" />
-                    Completar
+                    Marcar Entregado
                   </Button>
                 )}
                 <ShippingLabelPrint 

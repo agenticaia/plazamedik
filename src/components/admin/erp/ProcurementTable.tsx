@@ -61,11 +61,15 @@ export const ProcurementTable = ({ searchTerm = "", filterStatus = "ALL" }: Proc
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { variant: "default" | "secondary" | "outline" | "destructive"; icon: any; label: string }> = {
-      DRAFT: { variant: "outline", icon: Clock, label: "Borrador" },
-      SENT: { variant: "secondary", icon: Truck, label: "Enviada" },
-      PARTIAL_RECEIPT: { variant: "default", icon: Package, label: "Recepción Parcial" },
-      CLOSED: { variant: "default", icon: CheckCircleIcon, label: "Cerrada" },
-      CANCELLED: { variant: "destructive", icon: XCircle, label: "Cancelada" },
+      DRAFT: { variant: "outline", icon: Clock, label: "📝 Borrador" },
+      APPROVED: { variant: "secondary", icon: CheckCircleIcon, label: "✅ Aprobada" },
+      SENT: { variant: "secondary", icon: Truck, label: "📤 Enviada" },
+      CONFIRMED: { variant: "default", icon: CheckCircleIcon, label: "✔️ Confirmada" },
+      IN_TRANSIT: { variant: "default", icon: Truck, label: "🚚 En Tránsito" },
+      PARTIAL_RECEIVED: { variant: "secondary", icon: Package, label: "📦 Recepción Parcial" },
+      RECEIVED: { variant: "default", icon: CheckCircleIcon, label: "✅ Recibida" },
+      CLOSED: { variant: "default", icon: CheckCircleIcon, label: "🔒 Cerrada" },
+      CANCELLED: { variant: "destructive", icon: XCircle, label: "❌ Cancelada" },
     };
     const config = variants[status] || { variant: "outline" as const, icon: Clock, label: status };
     const Icon = config.icon;

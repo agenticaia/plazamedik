@@ -56,7 +56,7 @@ export const SalesOrderTable = () => {
       PAID: { variant: "default" as const, label: "Pagado" },
       PENDING: { 
         variant: "secondary" as const, 
-        label: fulfillmentStatus === "FULFILLED" && paymentMethod === "contra_entrega" 
+        label: fulfillmentStatus === "DELIVERED" && paymentMethod === "contra_entrega" 
           ? "⏳ Pendiente Courier" 
           : "Pendiente" 
       },
@@ -65,7 +65,7 @@ export const SalesOrderTable = () => {
     };
     const config = variants[status];
     return <Badge variant={config.variant} title={
-      status === "PENDING" && fulfillmentStatus === "FULFILLED" && paymentMethod === "contra_entrega"
+      status === "PENDING" && fulfillmentStatus === "DELIVERED" && paymentMethod === "contra_entrega"
         ? "Pedido entregado. Esperando transferencia del courier a Plaza Medik"
         : undefined
     }>{config.label}</Badge>;

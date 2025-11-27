@@ -10,7 +10,7 @@ export interface SalesOrder {
   customer_phone: string | null;
   customer_district: string | null;
   payment_status: "PAID" | "PENDING" | "REFUNDED" | "CANCELLED";
-  fulfillment_status: "UNFULFILLED" | "PARTIAL" | "FULFILLED" | "WAITING_STOCK" | "CANCELLED";
+  fulfillment_status: "UNFULFILLED" | "PICKING" | "PACKED" | "SHIPPED" | "DELIVERED" | "PARTIAL" | "WAITING_STOCK" | "CANCELLED";
   total: number;
   source: string;
   recommended_by: string | null;
