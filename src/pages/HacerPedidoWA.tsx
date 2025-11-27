@@ -57,6 +57,15 @@ const HacerPedidoWA = () => {
       return;
     }
 
+    if (!formData.lat || !formData.lng) {
+      toast({
+        title: "Dirección incompleta",
+        description: "Por favor selecciona tu dirección del menú desplegable para obtener coordenadas GPS precisas",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -276,7 +285,12 @@ ${coordsText}
               </div>
             </div>
 
-            <Button onClick={handleSubmit} className="w-full" size="lg" disabled={isLoading}>
+            <Button 
+              onClick={handleSubmit} 
+              className="w-full" 
+              size="lg" 
+              disabled={isLoading || !formData.lat || !formData.lng}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -286,6 +300,11 @@ ${coordsText}
                 "Confirmar Pedido"
               )}
             </Button>
+            {!formData.lat || !formData.lng ? (
+              <p className="text-xs text-destructive text-center">
+                ⚠️ Debes seleccionar tu dirección del menú desplegable para continuar
+              </p>
+            ) : null}
           </div>
         );
 
