@@ -75,15 +75,18 @@ export const useSalesOrders = () => {
     }) => {
       const updates: any = {};
       
-      // Handle status string shortcuts
+      // Handle SOP status transitions with timestamps
       if (status === 'PICKING') {
-        updates.fulfillment_status = 'UNFULFILLED';
+        updates.fulfillment_status = 'PICKING';
         updates.picking_started_at = new Date().toISOString();
+      } else if (status === 'PACKED') {
+        updates.fulfillment_status = 'PACKED';
+        updates.packed_at = new Date().toISOString();
       } else if (status === 'SHIPPED') {
-        updates.fulfillment_status = 'PARTIAL';
+        updates.fulfillment_status = 'SHIPPED';
         updates.shipped_at = new Date().toISOString();
-      } else if (status === 'FULFILLED') {
-        updates.fulfillment_status = 'FULFILLED';
+      } else if (status === 'DELIVERED') {
+        updates.fulfillment_status = 'DELIVERED';
         updates.delivered_at = new Date().toISOString();
       }
       
@@ -107,6 +110,7 @@ export const useSalesOrders = () => {
       toast.success("Estado actualizado exitosamente");
     },
     onError: (error) => {
+      console.error("Error updating order status:", error);
       toast.error("Error al actualizar: " + error.message);
     },
   });
