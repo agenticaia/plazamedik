@@ -4,6 +4,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Card, CardContent } from '@/components/ui/card';
 import { Sparkles } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getProductUrl } from '@/lib/slugUtils';
 
 
 export default function RecommendationsCarousel() {
@@ -67,7 +68,10 @@ export default function RecommendationsCarousel() {
               <CarouselItem key={product.product_code} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4">
                 <Card 
                   className="overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 group"
-                  onClick={() => navigate(`/catalogo?codigo=${product.product_code}`)}
+                  onClick={() => {
+                    const url = getProductUrl(product.nombre_producto, product.categoria, product.product_code);
+                    navigate(url);
+                  }}
                 >
                   <div className="relative aspect-square overflow-hidden bg-muted">
                     <img

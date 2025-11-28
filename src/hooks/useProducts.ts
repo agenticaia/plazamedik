@@ -108,4 +108,16 @@ export function useProduct(code: string | null) {
   return { product, loading, error };
 }
 
+export function useProductByName(name: string | null) {
+  const { products, loading, error } = useProducts();
+  const product = name ? products.find((p) => {
+    // Normalizar nombre del producto para comparación
+    const productName = p.name.toLowerCase().trim();
+    const searchName = name.toLowerCase().trim();
+    return productName === searchName || productName.includes(searchName);
+  }) : undefined;
+  
+  return { product, loading, error };
+}
+
 export type { Product as CatalogProduct };

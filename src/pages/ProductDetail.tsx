@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
@@ -8,18 +8,36 @@ import WhatsAppTransition from "@/components/WhatsAppTransition";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, MessageCircle, ArrowLeft, Loader2 } from "lucide-react";
-import { useProduct } from "@/hooks/useProducts";
+import { useProduct, useProductByName } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { decodeProductUrlParams, normalizeProductName } from "@/lib/slugUtils";
 
 const ProductDetail = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const params = useParams<{ categorySlug?: string; productSlug?: string }>();
+  
+  // Soportar ambas formas de acceso:
+  // 1. Antigua: /producto?codigo=960
+  // 2. Nueva: /producto/medias-para-varices/Media-Compresiva-Hasta-Muslo-22-27-mmHg
   const codigo = searchParams.get("codigo");
+  const { categorySlug, productSlug } = params;
+  
   const [whatsappTransitionOpen, setWhatsappTransitionOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string>("");
+  const [searchCode, setSearchCode] = useState<string | null>(codigo);
 
-  const { product, loading, error } = useProduct(codigo);
+  // Si viene por slug, necesitamos buscar por nombre
+  let { product, loading, error } = useProduct(codigo);
+  const { product: productByName, loading: loadingByName } = useProductByName(
+    productSlug && !codigo ? normalizeProductName(productSlug.replace(/\-/g, ' ')) : null
+  );
+
+  // Si no tenemos producto por código, intentar por nombre
+  if (!product && productByName && !codigo) {
+    product = productByName;
+  }
 
   // Set initial selected color when product loads
   useEffect(() => {
@@ -46,8 +64,8 @@ const ProductDetail = () => {
 
   // Incrementar vistas del producto
   useEffect(() => {
-    if (product && codigo) {
-      supabase.rpc('increment_product_views', { p_product_code: codigo });
+    if (product && (codigo || product.code)) {
+      supabase.rpc('increment_product_views', { p_product_code: product.code });
     }
   }, [product, codigo]);
 

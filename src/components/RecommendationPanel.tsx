@@ -2,6 +2,7 @@ import React from 'react';
 import { useRecommendations } from '@/hooks/useRecommendations';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, TrendingUp, Eye } from 'lucide-react';
+import { getProductUrl } from '@/lib/slugUtils';
 
 
 interface RecommendationPanelProps {
@@ -12,9 +13,10 @@ export default function RecommendationPanel({ currentProductCode }: Recommendati
   const { recommendations, loading, error, trackRecommendationClick } = useRecommendations(currentProductCode);
   const navigate = useNavigate();
 
-  const handleRecommendationClick = async (productCode: string) => {
+  const handleRecommendationClick = async (productCode: string, productName: string, category: string) => {
     await trackRecommendationClick(productCode);
-    navigate(`/producto?codigo=${productCode}`);
+    const url = getProductUrl(productName, category, productCode);
+    navigate(url);
   };
 
   if (error) {
@@ -41,7 +43,7 @@ export default function RecommendationPanel({ currentProductCode }: Recommendati
           {recommendations.map((rec) => (
             <div
               key={rec.product_code}
-              onClick={() => handleRecommendationClick(rec.product_code)}
+              onClick={() => handleRecommendationClick(rec.product_code, rec.nombre_producto, rec.categoria)}
               className="border border-border rounded-lg p-3 cursor-pointer hover:shadow-lg transition-all duration-200 hover:border-primary relative group"
             >
               {/* Eye Icon */}

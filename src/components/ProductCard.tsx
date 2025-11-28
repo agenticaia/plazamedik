@@ -9,6 +9,7 @@ import OrderModal from "@/components/OrderModal";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { getProductUrl } from "@/lib/slugUtils";
 
 interface ProductCardProps {
   product: GroupedProduct;
@@ -28,7 +29,9 @@ const ProductCard = ({ product, featured = false, showTreatmentButton = false }:
   const currentImage = currentVariant?.image || product.image;
 
   const handleCardClick = () => {
-    navigate(`/producto?codigo=${product.code}`);
+    // Usar nueva URL con slugs amigables para SEO
+    const url = getProductUrl(product.name, product.category[0], product.code);
+    navigate(url);
   };
 
   const handleOrderClick = (e: React.MouseEvent) => {

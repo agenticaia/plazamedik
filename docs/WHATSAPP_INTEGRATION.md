@@ -9,7 +9,7 @@ Este sistema permite que los clientes hagan pedidos directamente desde WhatsApp 
 El enlace debe seguir este formato:
 
 ```
-https://tudominio.com/hacer-pedido-wa?producto=CODIGO&nombre_producto=NOMBRE&precio=PRECIO&nombre=NOMBRE&apellido=APELLIDO&telefono=TELEFONO&distrito=DISTRITO&color=COLOR
+https://plazamedik.net.pe/hacer-pedido-wa?producto=CODIGO&nombre_producto=NOMBRE&precio=PRECIO&nombre=NOMBRE&apellido=APELLIDO&telefono=TELEFONO&distrito=DISTRITO&color=COLOR
 ```
 
 ## 📋 Parámetros
