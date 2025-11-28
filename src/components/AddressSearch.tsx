@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin } from "lucide-react";
+import { MapPin, AlertCircle, Wifi } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AddressSearchProps {
   value: string;
@@ -20,19 +21,23 @@ const AddressSearch = ({ value, onChange, placeholder = "Busca tu dirección..."
   const inputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [gmapsAvailable, setGmapsAvailable] = useState(false);
   const autocompleteRef = useRef<any>(null);
 
   useEffect(() => {
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     
     if (!apiKey) {
-      setError("API key de Google Maps no configurada");
+      setError("API de Google Maps no disponible. Ingresa tu dirección manualmente.");
+      setGmapsAvailable(false);
       setIsLoading(false);
       return;
     }
 
     const initAutocomplete = () => {
-      if (!inputRef.current || !window.google) return;
+      if (!inputRef.current || !window.google) {
+        return;
+      }
 
       try {
         autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
@@ -57,10 +62,12 @@ const AddressSearch = ({ value, onChange, placeholder = "Busca tu dirección..."
           setError(null);
         });
 
+        setGmapsAvailable(true);
         setIsLoading(false);
       } catch (err) {
-        console.error("Error initializing autocomplete:", err);
-        setError("Error al inicializar el buscador");
+        console.warn("Error initializing Google Maps autocomplete:", err);
+        setError(null); // No mostrar error, solo usar entrada manual
+        setGmapsAvailable(false);
         setIsLoading(false);
       }
     };
@@ -80,20 +87,44 @@ const AddressSearch = ({ value, onChange, placeholder = "Busca tu dirección..."
       };
 
       script.onerror = () => {
-        setError("Error al cargar Google Maps");
+        console.warn("Error loading Google Maps, allowing manual entry");
+        setGmapsAvailable(false);
         setIsLoading(false);
       };
 
       document.head.appendChild(script);
 
+      // Set timeout para evitar espera infinita
+      const timeout = setTimeout(() => {
+        setIsLoading(false);
+        if (!gmapsAvailable) {
+          setGmapsAvailable(false);
+        }
+      }, 5000);
+
       return () => {
-        // Cleanup
+        clearTimeout(timeout);
         if (window.initGoogleMaps) {
           delete window.initGoogleMaps;
         }
       };
     }
-  }, [onChange]);
+  }, [onChange, gmapsAvailable]);
+
+  const handleManualAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const address = e.target.value;
+    // Cuando el usuario ingresa manualmente, usar coordenadas genéricas de Lima
+    // Esto permite que el formulario continúe, aunque sin GPS exacto
+    if (gmapsAvailable) {
+      // Si Google Maps está disponible, no permitir cambios manuales
+      onChange(address, null, null);
+    } else {
+      // Si Google Maps no disponible, usar coordenadas de Lima como fallback
+      const limaLat = -12.0462;
+      const limaLng = -77.0371;
+      onChange(address, limaLat, limaLng);
+    }
+  };
 
   return (
     <div className="space-y-2">
@@ -106,16 +137,32 @@ const AddressSearch = ({ value, onChange, placeholder = "Busca tu dirección..."
         id="address"
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value, null, null)}
-        placeholder={isLoading ? "Cargando mapa..." : placeholder}
+        onChange={handleManualAddressChange}
+        placeholder={isLoading ? "Cargando..." : placeholder}
         disabled={isLoading}
+        className={!gmapsAvailable ? "text-amber-900" : ""}
       />
       {error && (
-        <p className="text-xs text-destructive">{error}</p>
+        <Alert className="bg-amber-50 border-amber-200">
+          <AlertCircle className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-800 text-xs">
+            {error}
+          </AlertDescription>
+        </Alert>
       )}
-      <p className="text-xs text-muted-foreground">
-        Escribe y selecciona tu dirección del menú desplegable
-      </p>
+      {!gmapsAvailable && !isLoading && (
+        <Alert className="bg-blue-50 border-blue-200">
+          <Wifi className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-800 text-xs">
+            Ingresa tu dirección completa (calle, número, piso). Se usarán coordenadas de Lima.
+          </AlertDescription>
+        </Alert>
+      )}
+      {gmapsAvailable && (
+        <p className="text-xs text-muted-foreground">
+          Escribe y selecciona tu dirección del menú desplegable
+        </p>
+      )}
     </div>
   );
 };

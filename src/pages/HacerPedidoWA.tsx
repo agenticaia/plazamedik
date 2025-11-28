@@ -59,10 +59,12 @@ const HacerPedidoWA = () => {
       return;
     }
 
+    // Las coordenadas ya tienen valores por defecto (fallback a Lima)
+    // si Google Maps no estuvo disponible, así que siempre tendrán valores
     if (!formData.lat || !formData.lng) {
       toast({
-        title: "Dirección incompleta",
-        description: "Por favor selecciona tu dirección del menú desplegable para obtener coordenadas GPS precisas",
+        title: "Error",
+        description: "No se pudo procesar la dirección. Intenta de nuevo.",
         variant: "destructive",
       });
       return;
@@ -300,7 +302,7 @@ ${coordsText}
               onClick={handleSubmit} 
               className="w-full" 
               size="lg" 
-              disabled={isLoading || !formData.lat || !formData.lng}
+              disabled={isLoading}
             >
               {isLoading ? (
                 <>
@@ -311,11 +313,6 @@ ${coordsText}
                 "Confirmar Pedido"
               )}
             </Button>
-            {!formData.lat || !formData.lng ? (
-              <p className="text-xs text-destructive text-center">
-                ⚠️ Debes seleccionar tu dirección del menú desplegable para continuar
-              </p>
-            ) : null}
           </div>
         );
 

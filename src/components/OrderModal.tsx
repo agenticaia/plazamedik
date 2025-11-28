@@ -68,10 +68,13 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
       return;
     }
 
+    // Las coordenadas ya tienen valores por defecto (fallback a Lima) 
+    // si Google Maps no estuvo disponible, así que siempre tendrán valores
     if (!formData.lat || !formData.lng) {
+      // Esto no debería ocurrir con la nueva lógica, pero lo dejamos como seguridad
       toast({
-        title: "Dirección incompleta",
-        description: "Por favor selecciona tu dirección del menú desplegable para obtener coordenadas GPS precisas",
+        title: "Error",
+        description: "No se pudo procesar la dirección. Intenta de nuevo.",
         variant: "destructive",
       });
       return;
