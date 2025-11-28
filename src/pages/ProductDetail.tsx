@@ -17,6 +17,8 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const params = useParams<{ categorySlug?: string; productSlug?: string }>();
   
+  console.log('🎯 ProductDetail renderizado con params:', params);
+  
   // Soportar ambas formas de acceso:
   // 1. Antigua: /producto?codigo=960
   // 2. Nueva: /producto/medias-para-varices/Media-Compresiva-Hasta-Muslo-22-27-mmHg
@@ -33,6 +35,21 @@ const ProductDetail = () => {
   const { product: productBySlug, loading: loadingBySlug, error: errorBySlug } = useProductBySlug(
     productSlug && !codigo ? productSlug : null
   );
+
+  // Debug logs
+  useEffect(() => {
+    console.log('🔍 ProductDetail Debug:', {
+      codigo,
+      categorySlug,
+      productSlug,
+      product: product ? product.name : null,
+      productBySlug: productBySlug ? productBySlug.name : null,
+      loading,
+      loadingBySlug,
+      error,
+      errorBySlug
+    });
+  }, [product, productBySlug, loading, loadingBySlug, error, errorBySlug, codigo, productSlug, categorySlug]);
 
   // Usar el producto que se encontró
   if (!product && productBySlug && !codigo) {

@@ -128,15 +128,19 @@ export function useProductBySlug(slug: string | null) {
   useEffect(() => {
     if (!slug) {
       setProduct(undefined);
+      setError(null);
       return;
     }
 
     const searchProduct = async () => {
       try {
         setLoading(true);
+        setError(null); // Limpiar error anterior
         
-        // Decodificar el slug: reemplazar guiones con espacios
+        // Decodificar el slug: convertir guiones a espacios
+        // "media-compresiva-hasta-muslo-22-27-mmhg" -> "media compresiva hasta muslo 22 27 mmhg"
         const searchTerm = slug.replace(/\-/g, ' ').toLowerCase();
+        console.log('🔍 Buscando producto por slug:', { slug, searchTerm });
 
         // Buscar en Supabase por nombre aproximado
         const { data, error: fetchError } = await supabase
@@ -150,27 +154,67 @@ export function useProductBySlug(slug: string | null) {
         if (fetchError) throw fetchError;
 
         const rows = (data || []) as Tables<'products'>[];
+        console.log('📦 Total productos encontrados:', rows.length);
+        
+        // Función para normalizar y comparar
+        const normalize = (str: string) => 
+          str.toLowerCase()
+            .trim()
+            .replace(/\s+/g, ' ')
+            .replace(/[^\w\s\d]/g, ''); // Elimina caracteres especiales
+        
+        const normalizedSearchTerm = normalize(searchTerm);
+        console.log('📝 Search term normalizado:', normalizedSearchTerm);
         
         // Buscar coincidencia por nombre normalizado
         const foundProduct = rows.find((p) => {
-          const productName = p.nombre_producto.toLowerCase().trim();
-          // Buscar coincidencia parcial o exacta
-          return productName.includes(searchTerm) || searchTerm.includes(productName);
+          const productNameNormalized = normalize(p.nombre_producto);
+          
+          // Estrategia: buscar por palabras clave
+          // El search term debe coincidir con la mayoría del nombre
+          const searchWords = normalizedSearchTerm.split(' ').filter(w => w.length > 0);
+          const productWords = productNameNormalized.split(' ').filter(w => w.length > 0);
+          
+          // Contar coincidencias de palabras
+          const matchedWords = searchWords.filter(sw => 
+            productWords.some(pw => pw.includes(sw) || sw.includes(pw))
+          ).length;
+          
+          const matchPercentage = searchWords.length > 0 
+            ? matchedWords / searchWords.length 
+            : 0;
+          
+          const isMatch = matchPercentage >= 0.7; // Al menos 70% de coincidencia
+          
+          if (isMatch && matchedWords > 0) {
+            console.log('✅ Coincidencia:', { 
+              original: p.nombre_producto, 
+              normalized: productNameNormalized, 
+              matchedWords,
+              percentage: (matchPercentage * 100).toFixed(0) + '%'
+            });
+          }
+          
+          return isMatch && matchedWords > 0;
         });
 
         if (foundProduct) {
+          console.log('✅ Producto encontrado:', foundProduct.nombre_producto);
           const mapped = mapDbProductToBase(foundProduct);
           setProduct({
             ...mapped,
             stock: foundProduct.cantidad_stock || 0,
           });
+          setError(null);
         } else {
+          console.log('❌ Producto NO encontrado para:', searchTerm);
+          console.log('📋 Primeros 5 productos:', rows.slice(0, 5).map(p => p.nombre_producto));
+          setProduct(undefined);
           setError('Producto no encontrado');
         }
-        
-        setError(null);
       } catch (err) {
-        console.error('Error buscando producto por slug:', err);
+        console.error('❌ Error buscando producto por slug:', err);
+        setProduct(undefined);
         setError(err instanceof Error ? err.message : 'Error al cargar producto');
       } finally {
         setLoading(false);
