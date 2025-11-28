@@ -25,10 +25,14 @@ const AddressSearch = ({ value, onChange, placeholder = "Busca tu dirección..."
   const autocompleteRef = useRef<any>(null);
 
   useEffect(() => {
+    const clientId = import.meta.env.VITE_GOOGLE_MAPS_CLIENT_ID;
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     
-    if (!apiKey) {
-      setError("API de Google Maps no disponible. Ingresa tu dirección manualmente.");
+    // Usar Client ID si está disponible (recomendado), sino API Key
+    const credential = clientId || apiKey;
+    
+    if (!credential) {
+      setError("Credenciales de Google Maps no configuradas");
       setGmapsAvailable(false);
       setIsLoading(false);
       return;
@@ -78,7 +82,18 @@ const AddressSearch = ({ value, onChange, placeholder = "Busca tu dirección..."
     } else {
       // Load Google Maps script
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGoogleMaps`;
+      
+      // Construir URL según credencial disponible
+      let scriptUrl: string;
+      if (clientId) {
+        // Usar OAuth Client ID (recomendado)
+        scriptUrl = `https://maps.googleapis.com/maps/api/js?client=${clientId}&libraries=places&callback=initGoogleMaps`;
+      } else {
+        // Fallback a API Key
+        scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGoogleMaps`;
+      }
+      
+      script.src = scriptUrl;
       script.async = true;
       script.defer = true;
 
