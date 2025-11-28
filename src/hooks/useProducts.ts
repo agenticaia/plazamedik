@@ -120,4 +120,67 @@ export function useProductByName(name: string | null) {
   return { product, loading, error };
 }
 
+export function useProductBySlug(slug: string | null) {
+  const [product, setProduct] = useState<Product | undefined>(undefined);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!slug) {
+      setProduct(undefined);
+      return;
+    }
+
+    const searchProduct = async () => {
+      try {
+        setLoading(true);
+        
+        // Decodificar el slug: reemplazar guiones con espacios
+        const searchTerm = slug.replace(/\-/g, ' ').toLowerCase();
+
+        // Buscar en Supabase por nombre aproximado
+        const { data, error: fetchError } = await supabase
+          .from('products')
+          .select('*')
+          .gt('cantidad_stock', 0)
+          .or('is_discontinued.is.null,is_discontinued.eq.false')
+          .order('nombre_producto')
+          .limit(100); // Obtener productos para búsqueda local
+
+        if (fetchError) throw fetchError;
+
+        const rows = (data || []) as Tables<'products'>[];
+        
+        // Buscar coincidencia por nombre normalizado
+        const foundProduct = rows.find((p) => {
+          const productName = p.nombre_producto.toLowerCase().trim();
+          // Buscar coincidencia parcial o exacta
+          return productName.includes(searchTerm) || searchTerm.includes(productName);
+        });
+
+        if (foundProduct) {
+          const mapped = mapDbProductToBase(foundProduct);
+          setProduct({
+            ...mapped,
+            stock: foundProduct.cantidad_stock || 0,
+          });
+        } else {
+          setError('Producto no encontrado');
+        }
+        
+        setError(null);
+      } catch (err) {
+        console.error('Error buscando producto por slug:', err);
+        setError(err instanceof Error ? err.message : 'Error al cargar producto');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    searchProduct();
+  }, [slug]);
+
+  return { product, loading, error };
+}
+
 export type { Product as CatalogProduct };

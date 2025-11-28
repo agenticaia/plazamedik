@@ -8,10 +8,9 @@ import WhatsAppTransition from "@/components/WhatsAppTransition";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, MessageCircle, ArrowLeft, Loader2 } from "lucide-react";
-import { useProduct, useProductByName } from "@/hooks/useProducts";
+import { useProduct, useProductBySlug } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import { decodeProductUrlParams, normalizeProductName } from "@/lib/slugUtils";
 
 const ProductDetail = () => {
   const [searchParams] = useSearchParams();
@@ -26,18 +25,23 @@ const ProductDetail = () => {
   
   const [whatsappTransitionOpen, setWhatsappTransitionOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string>("");
-  const [searchCode, setSearchCode] = useState<string | null>(codigo);
 
-  // Si viene por slug, necesitamos buscar por nombre
+  // Si viene por código (ruta antigua), buscar por código
   let { product, loading, error } = useProduct(codigo);
-  const { product: productByName, loading: loadingByName } = useProductByName(
-    productSlug && !codigo ? normalizeProductName(productSlug.replace(/\-/g, ' ')) : null
+  
+  // Si viene por slug (ruta nueva), buscar por slug en Supabase
+  const { product: productBySlug, loading: loadingBySlug, error: errorBySlug } = useProductBySlug(
+    productSlug && !codigo ? productSlug : null
   );
 
-  // Si no tenemos producto por código, intentar por nombre
-  if (!product && productByName && !codigo) {
-    product = productByName;
+  // Usar el producto que se encontró
+  if (!product && productBySlug && !codigo) {
+    product = productBySlug;
   }
+  
+  // Usar el estado de carga correcto
+  const isLoading = codigo ? loading : loadingBySlug;
+  const currentError = codigo ? error : errorBySlug;
 
   // Set initial selected color when product loads
   useEffect(() => {
@@ -69,7 +73,7 @@ const ProductDetail = () => {
     }
   }, [product, codigo]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
@@ -82,7 +86,7 @@ const ProductDetail = () => {
     );
   }
 
-  if (error || !product) {
+  if (currentError || !product) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
