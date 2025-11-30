@@ -66,9 +66,63 @@ export async function obtenerPedidos(
       .order('timestamp_registro', { ascending: false })
       .range(from, to);
 
-    const { data, error, count } = await query;
+    let { data, error, count } = await query;
 
-    if (error) throw error;
+    // Si la tabla 'pedidos' no existe, usar 'sales_orders' como fallback
+    if (error && error.message.includes('relation "public.pedidos" does not exist')) {
+      console.log('⚠️ Tabla pedidos no existe, usando sales_orders como fallback');
+      
+      let salesQuery = supabase
+        .from('sales_orders')
+        .select('*', { count: 'exact' });
+      
+      if (filtros?.distrito) {
+        salesQuery = salesQuery.eq('customer_district', filtros.distrito);
+      }
+      if (filtros?.telefono) {
+        salesQuery = salesQuery.ilike('customer_phone', `%${filtros.telefono}%`);
+      }
+      if (filtros?.search) {
+        salesQuery = salesQuery.or(
+          `customer_name.ilike.%${filtros.search}%,customer_phone.ilike.%${filtros.search}%`
+        );
+      }
+      
+      salesQuery = salesQuery
+        .order('created_at', { ascending: false })
+        .range(from, to);
+      
+      const { data: salesData, error: salesError, count: salesCount } = await salesQuery;
+      
+      if (salesError) {
+        console.error('Error obteniendo pedidos (ambas tablas):', salesError);
+        throw salesError;
+      }
+      
+      // Mapear datos de sales_orders al formato de Pedido
+      data = (salesData || []).map(so => ({
+        id: so.id,
+        codigo: so.order_number,
+        cliente_nombre: so.customer_name,
+        cliente_apellido: so.customer_lastname,
+        cliente_telefono: so.customer_phone,
+        cliente_email: '',
+        distrito: so.customer_district,
+        precio_total: so.total,
+        timestamp_registro: so.created_at,
+        estado: 'borrador',
+        ruta: 'web_form',
+        // ... campos adicionales con valores por defecto
+      })) as any;
+      
+      count = salesCount;
+      error = null;
+    }
+
+    if (error) {
+      console.error('Error obteniendo pedidos:', error);
+      throw error;
+    }
 
     return {
       datos: data as Pedido[],
@@ -141,11 +195,48 @@ export async function crearPedido(
       updated_by: user.id,
     };
 
-    const { data, error } = await supabase
+    // Intentar insertar en tabla 'pedidos'
+    let { data, error } = await supabase
       .from('pedidos')
       .insert([nuevoProducto])
       .select()
       .single();
+
+    // Si la tabla 'pedidos' no existe, usar 'sales_orders' como fallback
+    if (error && error.message.includes('relation "public.pedidos" does not exist')) {
+      console.log('⚠️ Tabla pedidos no existe, usando sales_orders como fallback');
+      
+      // Adaptar datos para sales_orders
+      const fallbackData = {
+        customer_name: formData.cliente_nombre,
+        customer_lastname: formData.cliente_apellido,
+        customer_phone: formData.cliente_telefono,
+        customer_district: formData.distrito,
+        total: formData.precio_total,
+        source: 'ruta_' + formData.ruta,
+        // Metadatos adicionales en JSON
+        metadata: {
+          original_form: nuevoProducto,
+        }
+      };
+      
+      const { data: fallbackResult, error: fallbackError } = await supabase
+        .from('sales_orders')
+        .insert([fallbackData])
+        .select()
+        .single();
+      
+      if (fallbackError) {
+        console.error('❌ Error al usar fallback en sales_orders:', {
+          message: fallbackError.message,
+          code: fallbackError.code,
+        });
+        throw fallbackError;
+      }
+      
+      data = fallbackResult;
+      error = null;
+    }
 
     if (error) {
       console.error('❌ Error de Supabase al insertar pedido:', {
