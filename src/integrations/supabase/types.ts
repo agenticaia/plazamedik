@@ -206,6 +206,13 @@ export type Database = {
             referencedRelation: "sales_orders"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "order_state_log_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos_whatsapp_manual"
+            referencedColumns: ["id"]
+          },
         ]
       }
       orders: {
@@ -546,6 +553,81 @@ export type Database = {
           total_pedidos_hoy?: number | null
           updated_at?: string | null
           vendedor_id?: string
+        }
+        Relationships: []
+      }
+      pedidos_wa_log: {
+        Row: {
+          created_by: string | null
+          detalles: Json | null
+          evento: string
+          id: string
+          sales_order_id: string
+          timestamp_evento: string | null
+        }
+        Insert: {
+          created_by?: string | null
+          detalles?: Json | null
+          evento: string
+          id?: string
+          sales_order_id: string
+          timestamp_evento?: string | null
+        }
+        Update: {
+          created_by?: string | null
+          detalles?: Json | null
+          evento?: string
+          id?: string
+          sales_order_id?: string
+          timestamp_evento?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pedidos_wa_log_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "sales_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pedidos_wa_log_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos_whatsapp_manual"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plantillas_wa: {
+        Row: {
+          categoria: string | null
+          contenido: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          nombre: string
+          updated_at: string | null
+          variables: Json | null
+        }
+        Insert: {
+          categoria?: string | null
+          contenido: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          nombre: string
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Update: {
+          categoria?: string | null
+          contenido?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          nombre?: string
+          updated_at?: string | null
+          variables?: Json | null
         }
         Relationships: []
       }
@@ -892,6 +974,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "purchase_orders_linked_sales_order_id_fkey"
+            columns: ["linked_sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos_whatsapp_manual"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "purchase_orders_supplier_id_fkey"
             columns: ["supplier_id"]
             isOneToOne: false
@@ -944,6 +1033,13 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "sales_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos_whatsapp_manual"
             referencedColumns: ["id"]
           },
           {
@@ -1007,10 +1103,20 @@ export type Database = {
             referencedRelation: "sales_orders"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "sales_order_items_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos_whatsapp_manual"
+            referencedColumns: ["id"]
+          },
         ]
       }
       sales_orders: {
         Row: {
+          asignado_a_vendedor_id: string | null
+          asignado_a_vendedor_nombre: string | null
+          comprobante_prepago: string | null
           courier: string | null
           created_at: string | null
           customer_address: string | null
@@ -1023,8 +1129,11 @@ export type Database = {
           customer_phone: string | null
           customer_type: string | null
           delivered_at: string | null
+          estado_confirmacion: string | null
           fulfillment_status: string | null
           id: string
+          latitud: number | null
+          longitud: number | null
           notes: string | null
           order_number: string
           packed_at: string | null
@@ -1033,14 +1142,22 @@ export type Database = {
           picking_started_at: string | null
           priority: string | null
           recommended_by: string | null
+          referencia_adicional: string | null
           referral_code_used: string | null
+          ruta: string | null
           shipped_at: string | null
           source: string | null
+          timestamp_confirmacion_cliente: string | null
+          timestamp_envio_wa: string | null
           total: number
           tracking_number: string | null
           updated_at: string | null
+          url_google_maps: string | null
         }
         Insert: {
+          asignado_a_vendedor_id?: string | null
+          asignado_a_vendedor_nombre?: string | null
+          comprobante_prepago?: string | null
           courier?: string | null
           created_at?: string | null
           customer_address?: string | null
@@ -1053,8 +1170,11 @@ export type Database = {
           customer_phone?: string | null
           customer_type?: string | null
           delivered_at?: string | null
+          estado_confirmacion?: string | null
           fulfillment_status?: string | null
           id?: string
+          latitud?: number | null
+          longitud?: number | null
           notes?: string | null
           order_number: string
           packed_at?: string | null
@@ -1063,14 +1183,22 @@ export type Database = {
           picking_started_at?: string | null
           priority?: string | null
           recommended_by?: string | null
+          referencia_adicional?: string | null
           referral_code_used?: string | null
+          ruta?: string | null
           shipped_at?: string | null
           source?: string | null
+          timestamp_confirmacion_cliente?: string | null
+          timestamp_envio_wa?: string | null
           total: number
           tracking_number?: string | null
           updated_at?: string | null
+          url_google_maps?: string | null
         }
         Update: {
+          asignado_a_vendedor_id?: string | null
+          asignado_a_vendedor_nombre?: string | null
+          comprobante_prepago?: string | null
           courier?: string | null
           created_at?: string | null
           customer_address?: string | null
@@ -1083,8 +1211,11 @@ export type Database = {
           customer_phone?: string | null
           customer_type?: string | null
           delivered_at?: string | null
+          estado_confirmacion?: string | null
           fulfillment_status?: string | null
           id?: string
+          latitud?: number | null
+          longitud?: number | null
           notes?: string | null
           order_number?: string
           packed_at?: string | null
@@ -1093,12 +1224,17 @@ export type Database = {
           picking_started_at?: string | null
           priority?: string | null
           recommended_by?: string | null
+          referencia_adicional?: string | null
           referral_code_used?: string | null
+          ruta?: string | null
           shipped_at?: string | null
           source?: string | null
+          timestamp_confirmacion_cliente?: string | null
+          timestamp_envio_wa?: string | null
           total?: number
           tracking_number?: string | null
           updated_at?: string | null
+          url_google_maps?: string | null
         }
         Relationships: [
           {
@@ -1227,6 +1363,42 @@ export type Database = {
         }
         Relationships: []
       }
+      vendedores: {
+        Row: {
+          created_at: string | null
+          email: string
+          foto_perfil: string | null
+          id: string
+          is_active: boolean | null
+          nombre: string
+          pedidos_asignados: number | null
+          telefono: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          foto_perfil?: string | null
+          id: string
+          is_active?: boolean | null
+          nombre: string
+          pedidos_asignados?: number | null
+          telefono?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          foto_perfil?: string | null
+          id?: string
+          is_active?: boolean | null
+          nombre?: string
+          pedidos_asignados?: number | null
+          telefono?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       vendors: {
         Row: {
           address: string | null
@@ -1275,8 +1447,90 @@ export type Database = {
         }
         Relationships: []
       }
+      wa_messages_log: {
+        Row: {
+          error_message: string | null
+          id: string
+          message_body: string | null
+          message_type: string | null
+          phone_number: string
+          sales_order_id: string
+          status: string | null
+          timestamp_delivered: string | null
+          timestamp_read: string | null
+          timestamp_sent: string | null
+          wa_message_id: string | null
+        }
+        Insert: {
+          error_message?: string | null
+          id?: string
+          message_body?: string | null
+          message_type?: string | null
+          phone_number: string
+          sales_order_id: string
+          status?: string | null
+          timestamp_delivered?: string | null
+          timestamp_read?: string | null
+          timestamp_sent?: string | null
+          wa_message_id?: string | null
+        }
+        Update: {
+          error_message?: string | null
+          id?: string
+          message_body?: string | null
+          message_type?: string | null
+          phone_number?: string
+          sales_order_id?: string
+          status?: string | null
+          timestamp_delivered?: string | null
+          timestamp_read?: string | null
+          timestamp_sent?: string | null
+          wa_message_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wa_messages_log_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "sales_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wa_messages_log_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "v_pedidos_whatsapp_manual"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
+      v_pedidos_whatsapp_manual: {
+        Row: {
+          cantidad_items: number | null
+          codigo_pedido: string | null
+          customer_district: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          delivered_at: string | null
+          estado_confirmacion: string | null
+          estado_logistica: string | null
+          estado_pago: string | null
+          fecha_registro: string | null
+          id: string | null
+          latitud: number | null
+          longitud: number | null
+          tiempo_entrega_dias: number | null
+          tiempo_respuesta_cliente_minutos: number | null
+          timestamp_confirmacion_cliente: string | null
+          timestamp_envio_wa: string | null
+          total: number | null
+          url_google_maps: string | null
+          vendedor: string | null
+        }
+        Relationships: []
+      }
       v_purchase_orders_payment_summary: {
         Row: {
           actual_delivery_date: string | null
