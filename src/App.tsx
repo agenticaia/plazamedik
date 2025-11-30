@@ -23,6 +23,10 @@ import HacerPedidoWA from "./pages/HacerPedidoWA";
 import AdminLogin from "./pages/admin/AdminLogin";
 import Dashboard from "./pages/admin/Dashboard";
 import Pedidos from "./pages/admin/Pedidos";
+import PedidosPage from "./pages/admin/pedidos";
+import CrearPedidoPage from "./pages/admin/pedidos/create";
+import EditarPedidoPage from "./pages/admin/pedidos/[id]/edit";
+import DetallePedidoPage from "./pages/admin/pedidos/[id]";
 import Clientes from "./pages/admin/Clientes";
 import InventoryIA from "./pages/admin/InventoryIA";
 import SyncProducts from "./pages/admin/SyncProducts";
@@ -95,7 +99,31 @@ const App = () => (
               path="/admin/pedidos"
               element={
                 <ProtectedAdminRoute>
-                  <Pedidos />
+                  <PedidosPage />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/pedidos/create"
+              element={
+                <ProtectedAdminRoute>
+                  <CrearPedidoPage />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/pedidos/:id"
+              element={
+                <ProtectedAdminRoute>
+                  <DetallePedidoPage />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/pedidos/:id/edit"
+              element={
+                <ProtectedAdminRoute>
+                  <EditarPedidoPage />
                 </ProtectedAdminRoute>
               }
             />

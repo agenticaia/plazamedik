@@ -7,9 +7,12 @@ import { OrderMetricsDashboard } from "@/components/admin/OrderMetricsDashboard"
 import { useSalesOrders } from "@/hooks/useSalesOrders";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, CheckCircle2, Clock, Package } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock, Package, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function Pedidos() {
+  const navigate = useNavigate();
   const { orders, isLoading } = useSalesOrders();
 
   const filterByStatus = (fulfillmentStatus?: string) => {
@@ -24,12 +27,21 @@ export default function Pedidos() {
   return (
     <AdminLayout>
       <div className="p-6 space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold">Gestión de Pedidos & Cross-Docking</h1>
-          <p className="text-muted-foreground">
-            Ciclo completo Order to Cash - Validación de stock, reservas y flujo directo
-          </p>
+        {/* Header con acceso rápido al nuevo módulo */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Gestión de Pedidos & Cross-Docking</h1>
+            <p className="text-muted-foreground">
+              Ciclo completo Order to Cash - Validación de stock, reservas y flujo directo
+            </p>
+          </div>
+          <Button 
+            onClick={() => navigate('/admin/pedidos')}
+            className="gap-2"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Sistema Pedidos (Ruta A+B)
+          </Button>
         </div>
 
         {/* Alert para Escenarios */}
