@@ -29,14 +29,14 @@ import * as z from 'zod';
 import { Pedido, PedidoFormData, ProductoPedido, METODOS_PAGO, RUTAS_PEDIDO } from '@/types/pedidos';
 import { Save, Plus, Trash2, AlertTriangle, MapPin, Package } from 'lucide-react';
 
-// Validación con Zod - Más permisivo
+// Validación con Zod - Muy permisivo
 const pedidoFormSchema = z.object({
-  cliente_nombre: z.string().min(1, 'Nombre requerido').default(''),
+  cliente_nombre: z.string().default(''),
   cliente_apellido: z.string().optional().or(z.literal('')).default(''),
-  cliente_telefono: z.string().min(1, 'Teléfono requerido').default(''),
+  cliente_telefono: z.string().default(''),
   cliente_email: z.string().optional().or(z.literal('')).default(''),
-  distrito: z.string().min(1, 'Distrito requerido').default(''),
-  direccion_completa: z.string().min(1, 'Dirección requerida').default(''),
+  distrito: z.string().default(''),
+  direccion_completa: z.string().default(''),
   referencia_adicional: z.string().optional().or(z.literal('')).default(''),
   latitud: z.number().optional(),
   longitud: z.number().optional(),
@@ -45,13 +45,7 @@ const pedidoFormSchema = z.object({
   comprobante_prepago_url: z.string().optional().or(z.literal('')).default(''),
   ruta: z.enum(['web_form', 'whatsapp_manual']).default('whatsapp_manual'),
   origen_pagina: z.string().optional().or(z.literal('')).default(''),
-}).refine(
-  (data) => data.cliente_nombre && data.cliente_nombre.trim().length > 0,
-  { message: 'Nombre del cliente es requerido', path: ['cliente_nombre'] }
-).refine(
-  (data) => data.cliente_telefono && data.cliente_telefono.trim().length > 0,
-  { message: 'Teléfono es requerido', path: ['cliente_telefono'] }
-);
+});
 
 type PedidoFormSchema = z.infer<typeof pedidoFormSchema>;
 

@@ -468,3 +468,35 @@ export async function obtenerEstadisticas(): Promise<PedidoStats> {
     };
   }
 }
+
+/**
+ * Obtener pedidos sin asignar
+ */
+export async function obtenerPedidosSinAsignar(
+  minutosDesdecreacion: number = 120
+): Promise<Pedido[]> {
+  try {
+    const fechaLimite = new Date(
+      Date.now() - minutosDesdecreacion * 60 * 1000
+    ).toISOString();
+
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select('*')
+      .is('asignado_a_vendedor_id', null)
+      .lt('created_at', fechaLimite)
+      .eq('estado', 'pendiente_confirmacion');
+
+    if (error?.message?.includes('does not exist')) {
+      // Si tabla no existe, retornar array vacío
+      console.log('⚠️ Tabla pedidos no existe, retornando array vacío');
+      return [];
+    }
+
+    if (error) throw error;
+    return (data || []) as Pedido[];
+  } catch (error) {
+    console.error('❌ Error obteniendo pedidos sin asignar:', error);
+    return [];
+  }
+}
