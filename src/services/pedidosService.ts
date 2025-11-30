@@ -171,7 +171,13 @@ export async function crearPedido(
       return { success: false, error: 'Usuario no autenticado' };
     }
 
+    // Generar código único para el pedido (ORD-2025-XXXXX)
+    const timestamp = Date.now().toString().slice(-5);
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const codigo = `ORD-2025-${timestamp}${random}`;
+
     const nuevoProducto = {
+      codigo, // Campo requerido por la tabla pedidos
       cliente_nombre: formData.cliente_nombre,
       cliente_apellido: formData.cliente_apellido,
       cliente_telefono: formData.cliente_telefono,
