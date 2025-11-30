@@ -21,10 +21,12 @@ export default function CrearPedidoPage() {
     try {
       const success = await crearPedido(formData);
       if (success) {
-        // Mostrar toast de éxito
         alert('✅ Pedido creado exitosamente');
         navigate('/admin/pedidos');
       }
+    } catch (error) {
+      console.error('Error al crear pedido:', error);
+      alert('❌ Error al crear el pedido');
     } finally {
       setIsLoading(false);
     }
