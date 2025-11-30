@@ -151,14 +151,15 @@ export function PedidoForm({
   ];
 
   return (
-    <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
-      <Tabs defaultValue="cliente" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="cliente">👤 Cliente</TabsTrigger>
-          <TabsTrigger value="ubicacion">📍 Ubicación</TabsTrigger>
-          <TabsTrigger value="productos">📦 Productos</TabsTrigger>
-          <TabsTrigger value="pago">💰 Pago</TabsTrigger>
-        </TabsList>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+        <Tabs defaultValue="cliente" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="cliente">👤 Cliente</TabsTrigger>
+            <TabsTrigger value="ubicacion">📍 Ubicación</TabsTrigger>
+            <TabsTrigger value="productos">📦 Productos</TabsTrigger>
+            <TabsTrigger value="pago">💰 Pago</TabsTrigger>
+          </TabsList>
 
         {/* TAB 1: CLIENTE */}
         <TabsContent value="cliente" className="space-y-4">
@@ -531,6 +532,7 @@ export function PedidoForm({
           {isLoading ? 'Guardando...' : 'Guardar y Enviar WA'}
         </Button>
       </div>
-    </form>
+      </form>
+    </Form>
   );
 }
