@@ -92,14 +92,11 @@ export const SalesOrderTable = () => {
         <TableHeader>
           <TableRow>
             <TableHead>ID Pedido</TableHead>
-            <TableHead>Origen</TableHead>
             <TableHead>Cliente</TableHead>
-            <TableHead>Teléfono</TableHead>
             <TableHead>Resumen Productos</TableHead>
             <TableHead>Estado Pago</TableHead>
             <TableHead>Estado Logística</TableHead>
             <TableHead>Total</TableHead>
-            <TableHead>Vendedor</TableHead>
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -115,15 +112,10 @@ export const SalesOrderTable = () => {
                   {order.order_number}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={order.source === "whatsapp" ? "secondary" : "outline"} className="text-xs">
-                    {order.source === "whatsapp" ? "📱 WA" : "🌐 Web"}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <p className="font-medium">{order.customer_name} {order.customer_lastname}</p>
-                </TableCell>
-                <TableCell>
-                  <p className="text-sm text-muted-foreground">{order.customer_phone || "-"}</p>
+                  <div>
+                    <p className="font-medium">{order.customer_name} {order.customer_lastname}</p>
+                    <p className="text-xs text-muted-foreground">{order.customer_phone}</p>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">
@@ -144,11 +136,6 @@ export const SalesOrderTable = () => {
                 <TableCell>{getFulfillmentBadge(order.fulfillment_status)}</TableCell>
                 <TableCell className="font-semibold">
                   S/ {Number(order.total).toFixed(2)}
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm text-muted-foreground">
-                    {order.asignado_a_vendedor_nombre || "Sin asignar"}
-                  </span>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
