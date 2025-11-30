@@ -1,10 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// @ts-nocheck
-// Servicio para gestión de pedidos - API calls
-// Note: TypeScript errors related to 'pedidos' table will resolve after running the migration
-// TODO: Remove @ts-nocheck after executing the SQL migration
-
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import {
   Pedido,
   PedidoFormData,
@@ -13,7 +8,16 @@ import {
   PedidosPaginadas,
   PedidoStats,
   PedidoAuditoria,
+  ProductoPedido,
 } from '@/types/pedidos';
+
+// Helper to convert DB row to Pedido type
+function mapDbRowToPedido(row: Record<string, unknown>): Pedido {
+  return {
+    ...row,
+    productos: (row.productos as unknown as ProductoPedido[]) || [],
+  } as Pedido;
+}
 
 // ============================================
 // OPERACIONES CRUD
@@ -26,7 +30,7 @@ export async function obtenerPedidos(
   filtros?: PedidoFiltros
 ): Promise<PedidosPaginadas> {
   try {
-    let query = supabase.from('pedidos').select('*', { count: 'exact' });
+    let query = supabase.from(TABLA_PEDIDOS).select('*', { count: 'exact' });
 
     // Aplicar filtros
     if (filtros?.estado) {
@@ -66,58 +70,7 @@ export async function obtenerPedidos(
       .order('timestamp_registro', { ascending: false })
       .range(from, to);
 
-    let { data, error, count } = await query;
-
-    // Si la tabla 'pedidos' no existe, usar 'sales_orders' como fallback
-    if (error && error.message.includes('relation "public.pedidos" does not exist')) {
-      console.log('⚠️ Tabla pedidos no existe, usando sales_orders como fallback');
-      
-      let salesQuery = supabase
-        .from('sales_orders')
-        .select('*', { count: 'exact' });
-      
-      if (filtros?.distrito) {
-        salesQuery = salesQuery.eq('customer_district', filtros.distrito);
-      }
-      if (filtros?.telefono) {
-        salesQuery = salesQuery.ilike('customer_phone', `%${filtros.telefono}%`);
-      }
-      if (filtros?.search) {
-        salesQuery = salesQuery.or(
-          `customer_name.ilike.%${filtros.search}%,customer_phone.ilike.%${filtros.search}%`
-        );
-      }
-      
-      salesQuery = salesQuery
-        .order('created_at', { ascending: false })
-        .range(from, to);
-      
-      const { data: salesData, error: salesError, count: salesCount } = await salesQuery;
-      
-      if (salesError) {
-        console.error('Error obteniendo pedidos (ambas tablas):', salesError);
-        throw salesError;
-      }
-      
-      // Mapear datos de sales_orders al formato de Pedido
-      data = (salesData || []).map(so => ({
-        id: so.id,
-        codigo: so.order_number,
-        cliente_nombre: so.customer_name,
-        cliente_apellido: so.customer_lastname,
-        cliente_telefono: so.customer_phone,
-        cliente_email: '',
-        distrito: so.customer_district,
-        precio_total: so.total,
-        timestamp_registro: so.created_at,
-        estado: 'borrador',
-        ruta: 'web_form',
-        // ... campos adicionales con valores por defecto
-      })) as any;
-      
-      count = salesCount;
-      error = null;
-    }
+    const { data, error, count } = await query;
 
     if (error) {
       console.error('Error obteniendo pedidos:', error);
@@ -125,7 +78,7 @@ export async function obtenerPedidos(
     }
 
     return {
-      datos: data as Pedido[],
+      datos: (data || []).map(row => mapDbRowToPedido(row as Record<string, unknown>)),
       total: count || 0,
       pagina: page,
       limite: limit,
@@ -140,16 +93,16 @@ export async function obtenerPedidos(
 /**
  * Obtener un pedido por ID
  */
-export async function obtenerPedido(id: string): Promise<Pedido> {
+export async function obtenerPedido(id: string): Promise<Pedido | null> {
   try {
     const { data, error } = await supabase
-      .from('pedidos')
+      .from(TABLA_PEDIDOS)
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
-    return data as Pedido;
+    return data ? mapDbRowToPedido(data as Record<string, unknown>) : null;
   } catch (error) {
     console.error('Error obteniendo pedido:', error);
     throw error;
@@ -171,93 +124,51 @@ export async function crearPedido(
       return { success: false, error: 'Usuario no autenticado' };
     }
 
-    // Generar código único para el pedido (ORD-2025-XXXXX)
+    // Generar código único para el pedido
     const timestamp = Date.now().toString().slice(-5);
     const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    const codigo = `ORD-2025-${timestamp}${random}`;
+    const codigo = `PED-${new Date().getFullYear()}-${timestamp}${random}`;
 
     const nuevoProducto = {
-      codigo, // Campo requerido por la tabla pedidos
+      codigo,
       cliente_nombre: formData.cliente_nombre,
-      cliente_apellido: formData.cliente_apellido,
+      cliente_apellido: formData.cliente_apellido || null,
       cliente_telefono: formData.cliente_telefono,
-      cliente_email: formData.cliente_email,
+      cliente_email: formData.cliente_email || null,
       distrito: formData.distrito,
       direccion_completa: formData.direccion_completa,
-      referencia_adicional: formData.referencia_adicional,
-      latitud: formData.latitud,
-      longitud: formData.longitud,
-      url_google_maps: formData.url_google_maps,
-      productos: formData.productos,
+      referencia_adicional: formData.referencia_adicional || null,
+      latitud: formData.latitud || null,
+      longitud: formData.longitud || null,
+      url_google_maps: formData.url_google_maps || null,
+      productos: formData.productos as unknown as Json,
       precio_total: formData.precio_total,
       cantidad_items: formData.productos.reduce((sum, p) => sum + p.cantidad, 0),
       metodo_pago: formData.metodo_pago,
-      comprobante_prepago_url: formData.comprobante_prepago_url,
+      comprobante_prepago_url: formData.comprobante_prepago_url || null,
       ruta: formData.ruta,
-      origen_pagina: formData.origen_pagina,
-      estado: 'borrador',
-      estado_confirmacion: 'pendiente',
+      origen_pagina: formData.origen_pagina || null,
+      estado: 'borrador' as const,
+      estado_confirmacion: 'pendiente' as const,
       created_by: user.id,
       updated_by: user.id,
     };
 
-    // Intentar insertar en tabla 'pedidos'
-    let { data, error } = await supabase
-      .from('pedidos')
+    const { data, error } = await supabase
+      .from(TABLA_PEDIDOS)
       .insert([nuevoProducto])
       .select()
       .single();
 
-    // Si la tabla 'pedidos' no existe, usar 'sales_orders' como fallback
-    if (error && error.message.includes('relation "public.pedidos" does not exist')) {
-      console.log('⚠️ Tabla pedidos no existe, usando sales_orders como fallback');
-      
-      // Adaptar datos para sales_orders
-      const fallbackData = {
-        customer_name: formData.cliente_nombre,
-        customer_lastname: formData.cliente_apellido,
-        customer_phone: formData.cliente_telefono,
-        customer_district: formData.distrito,
-        total: formData.precio_total,
-        source: 'ruta_' + formData.ruta,
-        // Metadatos adicionales en JSON
-        metadata: {
-          original_form: nuevoProducto,
-        }
-      };
-      
-      const { data: fallbackResult, error: fallbackError } = await supabase
-        .from('sales_orders')
-        .insert([fallbackData])
-        .select()
-        .single();
-      
-      if (fallbackError) {
-        console.error('❌ Error al usar fallback en sales_orders:', {
-          message: fallbackError.message,
-          code: fallbackError.code,
-        });
-        throw fallbackError;
-      }
-      
-      data = fallbackResult;
-      error = null;
-    }
-
     if (error) {
-      console.error('❌ Error de Supabase al insertar pedido:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-      });
+      console.error('❌ Error de Supabase al insertar pedido:', error);
       throw error;
     }
 
     console.log('✅ Pedido creado exitosamente:', data);
     return {
       success: true,
-      data: data as Pedido,
+      data: mapDbRowToPedido(data as Record<string, unknown>),
       message: 'Pedido creado exitosamente',
     };
   } catch (error) {
@@ -285,15 +196,19 @@ export async function actualizarPedido(
       return { success: false, error: 'Usuario no autenticado' };
     }
 
-    const actualizado = {
+    // Convert productos to Json if present
+    const dbUpdates: Record<string, unknown> = {
       ...updates,
       updated_by: user.id,
       updated_at: new Date().toISOString(),
     };
+    if (updates.productos) {
+      dbUpdates.productos = updates.productos as unknown as Json;
+    }
 
-    const { data, error } = await (supabase
-      .from('pedidos') as any)
-      .update(actualizado)
+    const { data, error } = await supabase
+      .from(TABLA_PEDIDOS)
+      .update(dbUpdates)
       .eq('id', id)
       .select()
       .single();
@@ -302,7 +217,7 @@ export async function actualizarPedido(
 
     return {
       success: true,
-      data: data as Pedido,
+      data: mapDbRowToPedido(data as Record<string, unknown>),
       message: 'Pedido actualizado exitosamente',
     };
   } catch (error) {
@@ -323,10 +238,10 @@ export async function cambiarEstadoPedido(
   notas?: string
 ): Promise<PedidoResponse> {
   try {
-    const { data, error } = await (supabase
-      .from('pedidos') as any)
+    const { data, error } = await supabase
+      .from(TABLA_PEDIDOS)
       .update({
-        estado: nuevoEstado,
+        estado: nuevoEstado as 'borrador' | 'pendiente_confirmacion' | 'confirmado' | 'en_ruta' | 'entregado' | 'cancelado',
         notas_internas: notas || undefined,
         updated_at: new Date().toISOString(),
       })
@@ -337,7 +252,6 @@ export async function cambiarEstadoPedido(
     if (error) throw error;
 
     // Registrar evento
-    // @ts-ignore - Supabase types will include this table after migration
     await supabase.from('pedidos_eventos').insert({
       pedido_id: id,
       tipo_evento: nuevoEstado,
@@ -346,7 +260,7 @@ export async function cambiarEstadoPedido(
 
     return {
       success: true,
-      data: data as Pedido,
+      data: mapDbRowToPedido(data as Record<string, unknown>),
       message: `Estado actualizado a ${nuevoEstado}`,
     };
   } catch (error) {
@@ -367,8 +281,8 @@ export async function asignarVendedor(
   vendedorNombre: string
 ): Promise<PedidoResponse> {
   try {
-    const { data, error } = await (supabase
-      .from('pedidos') as any)
+    const { data, error } = await supabase
+      .from(TABLA_PEDIDOS)
       .update({
         asignado_a_vendedor_id: vendedorId,
         asignado_a_vendedor_nombre: vendedorNombre,
@@ -381,7 +295,6 @@ export async function asignarVendedor(
     if (error) throw error;
 
     // Registrar evento
-    // @ts-ignore - Supabase types will include this table after migration
     await supabase.from('pedidos_eventos').insert({
       pedido_id: pedidoId,
       tipo_evento: 'asignado',
@@ -390,7 +303,7 @@ export async function asignarVendedor(
 
     return {
       success: true,
-      data: data as Pedido,
+      data: mapDbRowToPedido(data as Record<string, unknown>),
       message: `Asignado a ${vendedorNombre}`,
     };
   } catch (error) {
@@ -407,7 +320,7 @@ export async function asignarVendedor(
  */
 export async function eliminarPedido(id: string): Promise<PedidoResponse> {
   try {
-    const { error } = await supabase.from('pedidos').delete().eq('id', id);
+    const { error } = await supabase.from(TABLA_PEDIDOS).delete().eq('id', id);
 
     if (error) throw error;
 
@@ -434,8 +347,8 @@ export async function eliminarPedido(id: string): Promise<PedidoResponse> {
 export async function obtenerEstadisticas(): Promise<PedidoStats> {
   try {
     const { data: pedidos, error } = await supabase
-      .from('pedidos')
-      .select('estado, precio_total', { count: 'exact' });
+      .from(TABLA_PEDIDOS)
+      .select('estado, precio_total');
 
     if (error) throw error;
 
@@ -452,7 +365,7 @@ export async function obtenerEstadisticas(): Promise<PedidoStats> {
     };
 
     if (pedidos) {
-      pedidos.forEach((p: any) => {
+      pedidos.forEach((p) => {
         stats.ingresos_totales += p.precio_total || 0;
         switch (p.estado) {
           case 'pendiente_confirmacion':
@@ -504,7 +417,7 @@ export async function obtenerAuditoriaPedido(
       .order('timestamp', { ascending: false });
 
     if (error) throw error;
-    return data as PedidoAuditoria[];
+    return (data || []) as PedidoAuditoria[];
   } catch (error) {
     console.error('Error obteniendo auditoría:', error);
     throw error;
@@ -523,14 +436,14 @@ export async function obtenerPedidosSinAsignar(
     ).toISOString();
 
     const { data, error } = await supabase
-      .from('pedidos')
+      .from(TABLA_PEDIDOS)
       .select('*')
       .is('asignado_a_vendedor_id', null)
       .lt('timestamp_registro', fechaLimite)
       .eq('estado', 'pendiente_confirmacion');
 
     if (error) throw error;
-    return data as Pedido[];
+    return (data || []).map(row => mapDbRowToPedido(row as Record<string, unknown>));
   } catch (error) {
     console.error('Error obteniendo pedidos sin asignar:', error);
     throw error;
