@@ -29,23 +29,29 @@ import * as z from 'zod';
 import { Pedido, PedidoFormData, ProductoPedido, METODOS_PAGO, RUTAS_PEDIDO } from '@/types/pedidos';
 import { Save, Plus, Trash2, AlertTriangle, MapPin, Package } from 'lucide-react';
 
-// Validación con Zod
+// Validación con Zod - Más permisivo
 const pedidoFormSchema = z.object({
-  cliente_nombre: z.string().min(2, 'Nombre requerido'),
-  cliente_apellido: z.string().optional(),
-  cliente_telefono: z.string().regex(/^\+?51\d{9}$/, 'Teléfono Perú inválido'),
-  cliente_email: z.string().email('Email inválido').optional().or(z.literal('')),
-  distrito: z.string().min(1, 'Distrito requerido'),
-  direccion_completa: z.string().min(5, 'Dirección requerida'),
-  referencia_adicional: z.string().optional(),
+  cliente_nombre: z.string().min(1, 'Nombre requerido').default(''),
+  cliente_apellido: z.string().optional().or(z.literal('')).default(''),
+  cliente_telefono: z.string().min(1, 'Teléfono requerido').default(''),
+  cliente_email: z.string().optional().or(z.literal('')).default(''),
+  distrito: z.string().min(1, 'Distrito requerido').default(''),
+  direccion_completa: z.string().min(1, 'Dirección requerida').default(''),
+  referencia_adicional: z.string().optional().or(z.literal('')).default(''),
   latitud: z.number().optional(),
   longitud: z.number().optional(),
-  url_google_maps: z.string().optional(),
-  metodo_pago: z.enum(['cod', 'yape', 'plin', 'transferencia', 'tarjeta']),
-  comprobante_prepago_url: z.string().optional(),
-  ruta: z.enum(['web_form', 'whatsapp_manual']),
-  origen_pagina: z.string().optional(),
-});
+  url_google_maps: z.string().optional().or(z.literal('')).default(''),
+  metodo_pago: z.enum(['cod', 'yape', 'plin', 'transferencia', 'tarjeta']).default('cod'),
+  comprobante_prepago_url: z.string().optional().or(z.literal('')).default(''),
+  ruta: z.enum(['web_form', 'whatsapp_manual']).default('whatsapp_manual'),
+  origen_pagina: z.string().optional().or(z.literal('')).default(''),
+}).refine(
+  (data) => data.cliente_nombre && data.cliente_nombre.trim().length > 0,
+  { message: 'Nombre del cliente es requerido', path: ['cliente_nombre'] }
+).refine(
+  (data) => data.cliente_telefono && data.cliente_telefono.trim().length > 0,
+  { message: 'Teléfono es requerido', path: ['cliente_telefono'] }
+);
 
 type PedidoFormSchema = z.infer<typeof pedidoFormSchema>;
 
