@@ -147,15 +147,24 @@ export async function crearPedido(
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Error de Supabase al insertar pedido:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
+      throw error;
+    }
 
+    console.log('✅ Pedido creado exitosamente:', data);
     return {
       success: true,
       data: data as Pedido,
       message: 'Pedido creado exitosamente',
     };
   } catch (error) {
-    console.error('Error creando pedido:', error);
+    console.error('❌ Error creando pedido:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Error al crear pedido',
