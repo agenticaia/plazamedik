@@ -48,7 +48,8 @@ export const useSalesOrders = () => {
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["sales-orders"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch from sales_orders
+      const { data: salesOrders, error: salesError } = await supabase
         .from("sales_orders")
         .select(`
           *,
@@ -56,10 +57,82 @@ export const useSalesOrders = () => {
         `)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      return data;
+      if (salesError) throw salesError;
+
+      // Fetch from pedidos table
+      const { data: pedidos, error: pedidosError } = await supabase
+        .from("pedidos")
+        .select("*")
+        .order("timestamp_registro", { ascending: false });
+
+      if (pedidosError) {
+        console.warn("Error fetching pedidos:", pedidosError);
+        return salesOrders || [];
+      }
+
+      // Map pedidos to SalesOrder format
+      const mappedPedidos = (pedidos || []).map((p: any) => ({
+        id: p.id,
+        order_number: p.codigo,
+        customer_name: p.cliente_nombre,
+        customer_lastname: p.cliente_apellido,
+        customer_phone: p.cliente_telefono,
+        customer_district: p.distrito,
+        payment_status: p.confirmacion_pago ? "PAID" : "PENDING",
+        fulfillment_status: mapPedidoEstadoToFulfillment(p.estado),
+        total: p.precio_total,
+        source: p.ruta === "whatsapp_manual" ? "whatsapp" : "web",
+        recommended_by: null,
+        created_at: p.timestamp_registro || p.created_at,
+        updated_at: p.updated_at,
+        items: (p.productos || []).map((prod: any, idx: number) => ({
+          id: `${p.id}-${idx}`,
+          sales_order_id: p.id,
+          product_code: prod.id || prod.codigo || "",
+          product_name: prod.nombre || "",
+          product_color: prod.color || null,
+          quantity: prod.cantidad || 1,
+          unit_price: prod.precio || 0,
+          is_backorder: false,
+          linked_purchase_order_id: null,
+          created_at: p.created_at,
+        })),
+        picking_started_at: null,
+        packed_at: null,
+        shipped_at: null,
+        delivered_at: p.timestamp_entregado,
+        tracking_number: p.codigo_seguimiento,
+        courier: null,
+        priority: "NORMAL",
+        customer_type: "REGULAR",
+        payment_method: p.metodo_pago,
+        notes: p.notas_internas,
+        // Mark as from pedidos table for identification
+        _source_table: "pedidos",
+      }));
+
+      // Combine and sort by date
+      const combined = [...(salesOrders || []), ...mappedPedidos];
+      combined.sort((a: any, b: any) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+
+      return combined;
     },
   });
+
+// Helper function to map pedido estado to fulfillment status
+function mapPedidoEstadoToFulfillment(estado: string): SalesOrder["fulfillment_status"] {
+  const mapping: Record<string, SalesOrder["fulfillment_status"]> = {
+    borrador: "UNFULFILLED",
+    pendiente_confirmacion: "UNFULFILLED",
+    confirmado: "PICKING",
+    en_ruta: "SHIPPED",
+    entregado: "DELIVERED",
+    cancelado: "CANCELLED",
+  };
+  return mapping[estado] || "UNFULFILLED";
+}
 
   const updateStatus = useMutation({
     mutationFn: async ({ 
