@@ -47,6 +47,60 @@ export type Database = {
         }
         Relationships: []
       }
+      campanas_whatsapp: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          descripcion: string | null
+          destinatarios: Json | null
+          ejecutada: string | null
+          estadisticas: Json | null
+          estado: string
+          id: string
+          nombre: string
+          programada: string | null
+          segmento: Json
+          template: string
+          total_destinatarios: number | null
+          updated_at: string | null
+          variables: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          descripcion?: string | null
+          destinatarios?: Json | null
+          ejecutada?: string | null
+          estadisticas?: Json | null
+          estado?: string
+          id?: string
+          nombre: string
+          programada?: string | null
+          segmento?: Json
+          template: string
+          total_destinatarios?: number | null
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          descripcion?: string | null
+          destinatarios?: Json | null
+          ejecutada?: string | null
+          estadisticas?: Json | null
+          estado?: string
+          id?: string
+          nombre?: string
+          programada?: string | null
+          segmento?: Json
+          template?: string
+          total_destinatarios?: number | null
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           address: string | null
@@ -142,6 +196,78 @@ export type Database = {
           suggested_reorder_qty?: number | null
         }
         Relationships: []
+      }
+      mensajes_whatsapp: {
+        Row: {
+          campana_id: string | null
+          contenido: Json | null
+          created_at: string | null
+          entregado_at: string | null
+          enviado_at: string | null
+          error_mensaje: string | null
+          estado: string
+          id: string
+          leido_at: string | null
+          message_id: string | null
+          pedido_id: string | null
+          respondido_at: string | null
+          respuesta: Json | null
+          telefono: string
+          template: string
+          updated_at: string | null
+        }
+        Insert: {
+          campana_id?: string | null
+          contenido?: Json | null
+          created_at?: string | null
+          entregado_at?: string | null
+          enviado_at?: string | null
+          error_mensaje?: string | null
+          estado?: string
+          id?: string
+          leido_at?: string | null
+          message_id?: string | null
+          pedido_id?: string | null
+          respondido_at?: string | null
+          respuesta?: Json | null
+          telefono: string
+          template: string
+          updated_at?: string | null
+        }
+        Update: {
+          campana_id?: string | null
+          contenido?: Json | null
+          created_at?: string | null
+          entregado_at?: string | null
+          enviado_at?: string | null
+          error_mensaje?: string | null
+          estado?: string
+          id?: string
+          leido_at?: string | null
+          message_id?: string | null
+          pedido_id?: string | null
+          respondido_at?: string | null
+          respuesta?: Json | null
+          telefono?: string
+          template?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensajes_whatsapp_campana_id_fkey"
+            columns: ["campana_id"]
+            isOneToOne: false
+            referencedRelation: "campanas_whatsapp"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mensajes_whatsapp_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_rate_limit: {
         Row: {
@@ -1504,6 +1630,36 @@ export type Database = {
           },
         ]
       }
+      webhooks_whatsapp: {
+        Row: {
+          created_at: string | null
+          error: string | null
+          id: string
+          payload: Json
+          procesado: boolean | null
+          procesado_at: string | null
+          tipo: string
+        }
+        Insert: {
+          created_at?: string | null
+          error?: string | null
+          id?: string
+          payload: Json
+          procesado?: boolean | null
+          procesado_at?: string | null
+          tipo: string
+        }
+        Update: {
+          created_at?: string | null
+          error?: string | null
+          id?: string
+          payload?: Json
+          procesado?: boolean | null
+          procesado_at?: string | null
+          tipo?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       v_pedidos_whatsapp_manual: {
@@ -1560,6 +1716,10 @@ export type Database = {
       }
     }
     Functions: {
+      actualizar_estadisticas_campana: {
+        Args: { p_campana_id: string }
+        Returns: undefined
+      }
       calculate_po_total: { Args: { po_id: string }; Returns: number }
       calculate_reorder_points: {
         Args: never
