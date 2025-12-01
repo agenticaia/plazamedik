@@ -179,14 +179,14 @@ export default function CampanasWhatsApp() {
             // Guardar campaña en Supabase (opcional - para tracking)
             const { data, error } = await supabase
                 .from('campanas_whatsapp')
-                .insert({
+                .insert([{
                     nombre: nuevaCampana.nombre,
                     template: nuevaCampana.template,
-                    segmento: nuevaCampana.segmento,
-                    programada: nuevaCampana.programada,
+                    segmento: JSON.parse(JSON.stringify(nuevaCampana.segmento)),
+                    programada: nuevaCampana.programada?.toISOString() || null,
                     estado: 'borrador',
                     total_destinatarios: clientesFiltrados.length,
-                })
+                }])
                 .select()
                 .single();
 
@@ -195,7 +195,7 @@ export default function CampanasWhatsApp() {
             toast.success('Campaña creada exitosamente');
 
             // Agregar a lista local
-            setCampanas([...campanas, data as Campaign]);
+            setCampanas([...campanas, data as unknown as Campaign]);
 
             // Resetear formulario
             setNuevaCampana({
@@ -271,7 +271,7 @@ export default function CampanasWhatsApp() {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            setCampanas(data as Campaign[]);
+            setCampanas(data as unknown as Campaign[]);
         } catch (error) {
             console.error('Error cargando campañas:', error);
         }

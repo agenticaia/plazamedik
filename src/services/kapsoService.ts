@@ -539,7 +539,7 @@ class KapsoService {
                     },
                     action: {
                         button: tituloBoton,
-                        sections,
+                        sections: secciones,
                     },
                 },
             });
