@@ -104,23 +104,24 @@ class KapsoService {
         body?: any
     ): Promise<any> {
         try {
-            const response = await fetch(`${this.baseUrl}${endpoint}`, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.config.apiKey}`,
-                },
-                body: body ? JSON.stringify(body) : undefined,
-            });
+            // Usar Supabase Edge Function para evitar CORS
+            const { data, error } = await import('@/integrations/supabase/client')
+                .then(m => m.supabase.functions.invoke('send-whatsapp', {
+                    body: {
+                        endpoint,
+                        method,
+                        body
+                    }
+                }));
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+            if (error) {
+                console.error('❌ Error invocando Edge Function:', error);
+                throw new Error(error.message || 'Error al conectar con el servidor de envío');
             }
 
-            return await response.json();
+            return data;
         } catch (error) {
-            console.error('❌ Kapso API Error:', error);
+            console.error('❌ Kapso Service Error:', error);
             throw error;
         }
     }

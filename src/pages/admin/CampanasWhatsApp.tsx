@@ -326,10 +326,10 @@ export default function CampanasWhatsApp() {
                                 Nueva Campaña
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby="dialog-description">
                             <DialogHeader>
                                 <DialogTitle>Crear Nueva Campaña</DialogTitle>
-                                <DialogDescription>
+                                <DialogDescription id="dialog-description">
                                     Configura tu campaña de WhatsApp con segmentación de clientes
                                 </DialogDescription>
                             </DialogHeader>
