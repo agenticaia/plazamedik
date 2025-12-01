@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart, Target, BarChart3, CreditCard, TrendingUp, Menu, BookOpen, Users } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart, Target, BarChart3, CreditCard, TrendingUp, Menu, BookOpen, Users, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -30,6 +30,7 @@ const navigation = [
   { name: 'Órdenes de Compra', href: '/admin/ordenes-compra', icon: ShoppingCart },
   { name: 'Punto Reorden IA', href: '/admin/punto-reorden-ia', icon: Target },
   { name: 'Predicción IA', href: '/admin/inventario-ia', icon: Brain },
+  { name: 'Campañas WhatsApp', href: '/admin/campanas-whatsapp', icon: MessageSquare },
   { name: 'Wiki', href: '/admin/wiki', icon: BookOpen },
   { name: 'Sincronizar DB', href: '/admin/sincronizar-productos', icon: Database },
 ];
@@ -68,7 +69,7 @@ function AppSidebar() {
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.href;
-                
+
                 return (
                   <SidebarMenuItem key={item.name}>
                     <SidebarMenuButton asChild isActive={isActive}>
@@ -126,21 +127,20 @@ function MobileNav() {
             <h2 className="text-xl font-bold text-primary">PlazaMedik Admin</h2>
             <p className="text-sm text-muted-foreground">ERP Dashboard</p>
           </div>
-          
+
           <nav className="flex-1 p-4 space-y-2">
             {navigation.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.href;
-              
+
               return (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    }`}
                 >
                   <Icon className="h-5 w-5" />
                   <span className="font-medium">{item.name}</span>

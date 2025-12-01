@@ -38,6 +38,7 @@ import ExecutiveDashboard from "./pages/admin/ExecutiveDashboard";
 import PaymentDashboard from "./pages/admin/PaymentDashboard";
 import SalesStatistics from "./pages/admin/SalesStatistics";
 import Wiki from "./pages/admin/Wiki";
+import CampanasWhatsApp from "./pages/admin/CampanasWhatsApp";
 import Invite from "./pages/Invite";
 import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
 
@@ -196,6 +197,14 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <Wiki />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/campanas-whatsapp"
+              element={
+                <ProtectedAdminRoute>
+                  <CampanasWhatsApp />
                 </ProtectedAdminRoute>
               }
             />

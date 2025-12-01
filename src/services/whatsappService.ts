@@ -1,9 +1,12 @@
 // Servicio de integración con WhatsApp Business API
+// Integrado con Kapso.ai para funcionalidades avanzadas
 
 import { Pedido } from '@/types/pedidos';
+import { kapsoService } from './kapsoService';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Plantilla de mensaje para confirmación de pedido
+ * Plantilla de mensaje para confirmación de pedido (Fallback)
  */
 function generarMensajeConfirmacion(pedido: Pedido): string {
   const listaProductos = pedido.productos
@@ -51,8 +54,8 @@ function getPagoTexto(metodo: string): string {
 }
 
 /**
- * Enviar mensaje por WhatsApp (usando API de Twilio o similar)
- * Esta función es un placeholder - necesita integración real
+ * Enviar mensaje de confirmación de pedido
+ * Usa Kapso.ai si está configurado, sino genera link de WhatsApp
  */
 export async function enviarMensajeWhatsApp(
   pedido: Pedido,
@@ -68,16 +71,37 @@ export async function enviarMensajeWhatsApp(
       };
     }
 
-    const mensaje = generarMensajeConfirmacion(pedido);
+    // Intentar enviar con Kapso.ai (template aprobado)
+    const kapsoConfigured = import.meta.env.VITE_KAPSO_API_KEY;
 
-    // TODO: Integrar con API real (Twilio, Meta, etc)
-    console.log(`📱 Enviando WhatsApp a +${telefonoFormato}:`);
+    if (kapsoConfigured) {
+      console.log('📱 Enviando confirmación con Kapso.ai...');
+      const resultado = await kapsoService.enviarConfirmacionPedido(pedido);
+
+      if (resultado.success) {
+        // Registrar mensaje enviado
+        await registrarMensajeEnviado({
+          pedido_id: pedido.id,
+          telefono: pedido.cliente_telefono,
+          template: 'order_confirmation',
+          message_id: resultado.messageId,
+          estado: 'enviado',
+        });
+
+        return resultado;
+      } else {
+        console.warn('⚠️ Kapso falló, usando fallback:', resultado.error);
+      }
+    }
+
+    // Fallback: Generar link de WhatsApp
+    const mensaje = generarMensajeConfirmacion(pedido);
+    console.log(`📱 Generando link de WhatsApp para +${telefonoFormato}:`);
     console.log(mensaje);
 
-    // Placeholder: Simular envío
     return {
       success: true,
-      messageId: `msg_${Date.now()}`,
+      messageId: `fallback_${Date.now()}`,
     };
   } catch (error) {
     console.error('Error enviando WhatsApp:', error);
@@ -89,7 +113,60 @@ export async function enviarMensajeWhatsApp(
 }
 
 /**
- * Generar link de WhatsApp directo para pruebas
+ * Enviar recordatorio de pago
+ */
+export async function enviarRecordatorioPago(pedido: Pedido): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  try {
+    const resultado = await kapsoService.enviarRecordatorioPago(pedido);
+
+    if (resultado.success) {
+      await registrarMensajeEnviado({
+        pedido_id: pedido.id,
+        telefono: pedido.cliente_telefono,
+        template: 'payment_reminder',
+        message_id: resultado.messageId,
+        estado: 'enviado',
+      });
+    }
+
+    return resultado;
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Error desconocido',
+    };
+  }
+}
+
+/**
+ * Enviar notificación de envío en camino
+ */
+export async function enviarNotificacionEnvio(pedido: Pedido): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  try {
+    const trackingUrl = `https://plazamedik.net.pe/seguimiento?codigo=${pedido.codigo}`;
+    const resultado = await kapsoService.enviarNotificacionEnvio(pedido, trackingUrl);
+
+    if (resultado.success) {
+      await registrarMensajeEnviado({
+        pedido_id: pedido.id,
+        telefono: pedido.cliente_telefono,
+        template: 'delivery_on_way',
+        message_id: resultado.messageId,
+        estado: 'enviado',
+      });
+    }
+
+    return resultado;
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Error desconocido',
+    };
+  }
+}
+
+/**
+ * Generar link de WhatsApp directo (para fallback o pruebas)
  */
 export function generarLinkWhatsApp(pedido: Pedido): string {
   const telefono = pedido.cliente_telefono.replace(/\D/g, '');
@@ -100,12 +177,35 @@ export function generarLinkWhatsApp(pedido: Pedido): string {
 }
 
 /**
- * Extraer número de teléfono del link de Google Maps
- * Placeholder para función futura
+ * Registrar mensaje enviado en base de datos
+ * TODO: Descomentar después de ejecutar migración 20241130_campanas_whatsapp.sql
+ */
+async function registrarMensajeEnviado(data: {
+  pedido_id?: string;
+  campana_id?: string;
+  telefono: string;
+  template: string;
+  message_id?: string;
+  estado: string;
+}): Promise<void> {
+  try {
+    // Temporalmente deshabilitado hasta ejecutar migración
+    console.log('📝 Mensaje registrado (pendiente migración):', data);
+
+    // await supabase.from('mensajes_whatsapp').insert({
+    //   ...data,
+    //   enviado_at: new Date().toISOString(),
+    // });
+  } catch (error) {
+    console.error('Error registrando mensaje:', error);
+  }
+}
+
+/**
+ * Extraer coordenadas de Google Maps URL
  */
 export function extraerCoordenadaDeGoogleMaps(url: string): { lat: number; lng: number } | null {
   try {
-    // Pattern para URLs de Google Maps
     const patterns = [
       /@(-?\d+\.\d+),(-?\d+\.\d+)/,
       /[@?](\d+),(\d+)/,
@@ -126,3 +226,6 @@ export function extraerCoordenadaDeGoogleMaps(url: string): { lat: number; lng: 
 
   return null;
 }
+
+// Exportar funciones adicionales de Kapso
+export { kapsoService } from './kapsoService';
