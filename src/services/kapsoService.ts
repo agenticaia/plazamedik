@@ -138,14 +138,7 @@ class KapsoService {
         return cleaned;
     }
 
-    private validateConfig(): void {
-        if (!this.config.apiKey) {
-            throw new Error('Kapso API Key no configurada. Agrega VITE_KAPSO_API_KEY en .env');
-        }
-        if (!this.config.phoneNumberId) {
-            throw new Error('Phone Number ID no configurado. Agrega VITE_KAPSO_PHONE_NUMBER_ID en .env');
-        }
-    }
+    // Nota: La validación de API key se realiza en el edge function
 
     // ============================================================================
     // TEMPLATES - Mensajes Aprobados por Meta
@@ -155,8 +148,6 @@ class KapsoService {
      * Enviar template de confirmación de pedido
      */
     async enviarConfirmacionPedido(pedido: Pedido): Promise<KapsoResponse> {
-        this.validateConfig();
-
         try {
             const phone = this.formatPhoneNumber(pedido.cliente_telefono);
 
@@ -218,8 +209,6 @@ class KapsoService {
      * Enviar recordatorio de pago pendiente
      */
     async enviarRecordatorioPago(pedido: Pedido): Promise<KapsoResponse> {
-        this.validateConfig();
-
         try {
             const phone = this.formatPhoneNumber(pedido.cliente_telefono);
 
@@ -278,8 +267,6 @@ class KapsoService {
      * Enviar notificación de envío en camino
      */
     async enviarNotificacionEnvio(pedido: Pedido, trackingUrl?: string): Promise<KapsoResponse> {
-        this.validateConfig();
-
         try {
             const phone = this.formatPhoneNumber(pedido.cliente_telefono);
 
@@ -343,8 +330,6 @@ class KapsoService {
         fallidos: number;
         detalles: Array<{ telefono: string; success: boolean; messageId?: string; error?: string }>;
     }> {
-        this.validateConfig();
-
         const resultados = {
             success: true,
             enviados: 0,
@@ -411,8 +396,6 @@ class KapsoService {
         porcentajeDescuento: number,
         fechaVencimiento: string
     ): Promise<KapsoResponse> {
-        this.validateConfig();
-
         try {
             const phone = this.formatPhoneNumber(telefono);
 
@@ -473,8 +456,6 @@ class KapsoService {
         mensaje: string,
         botones: Array<{ id: string; title: string }>
     ): Promise<KapsoResponse> {
-        this.validateConfig();
-
         try {
             const phone = this.formatPhoneNumber(telefono);
 
@@ -523,8 +504,6 @@ class KapsoService {
             rows: Array<{ id: string; title: string; description?: string }>;
         }>
     ): Promise<KapsoResponse> {
-        this.validateConfig();
-
         try {
             const phone = this.formatPhoneNumber(telefono);
 
