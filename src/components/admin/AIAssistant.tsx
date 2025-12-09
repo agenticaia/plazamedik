@@ -133,36 +133,53 @@ export function AIAssistant() {
       });
 
       if (!response.ok) {
-        console.error('n8n workflow error:', response.status);
+        console.error('n8n workflow error:', response.status, response.statusText);
         return null;
       }
 
-      const data = await response.json();
-      console.log('n8n response:', data);
+      // Obtener el texto raw primero
+      const rawText = await response.text();
+      console.log('n8n raw response:', rawText);
       
-      // n8n puede devolver la respuesta en diferentes formatos
-      if (typeof data === 'string') {
-        return data;
+      // Si está vacío, retornar null
+      if (!rawText || rawText.trim() === '') {
+        console.log('n8n returned empty response');
+        return null;
       }
-      if (data.output) {
-        return data.output;
+
+      // Intentar parsear como JSON
+      try {
+        const data = JSON.parse(rawText);
+        console.log('n8n parsed JSON:', data);
+        
+        // n8n puede devolver la respuesta en diferentes formatos
+        if (typeof data === 'string') {
+          return data;
+        }
+        if (data.output) {
+          return data.output;
+        }
+        if (data.response) {
+          return data.response;
+        }
+        if (data.text) {
+          return data.text;
+        }
+        if (data.message) {
+          return data.message;
+        }
+        // Si es un array, tomar el primer elemento
+        if (Array.isArray(data) && data.length > 0) {
+          const first = data[0];
+          return first.output || first.response || first.text || first.message || JSON.stringify(first);
+        }
+        
+        return JSON.stringify(data);
+      } catch (jsonError) {
+        // No es JSON válido, retornar el texto raw como respuesta
+        console.log('n8n response is plain text');
+        return rawText;
       }
-      if (data.response) {
-        return data.response;
-      }
-      if (data.text) {
-        return data.text;
-      }
-      if (data.message) {
-        return data.message;
-      }
-      // Si es un array, tomar el primer elemento
-      if (Array.isArray(data) && data.length > 0) {
-        const first = data[0];
-        return first.output || first.response || first.text || first.message || JSON.stringify(first);
-      }
-      
-      return JSON.stringify(data);
     } catch (error) {
       console.error('Error calling n8n workflow:', error);
       return null;
