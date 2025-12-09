@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -94,12 +94,39 @@ const agentCapabilities = [
   },
 ];
 
+const N8N_CHAT_STORAGE_KEY = 'n8n_webhook_url';
+const N8N_EVENTS_STORAGE_KEY = 'n8n_events_webhook_url';
+const DEFAULT_N8N_CHAT_URL = 'https://plazamedik.app.n8n.cloud/webhook/dfa2eb0e-64a7-47bf-9a0c-ef35458a675b';
+const DEFAULT_N8N_EVENTS_URL = 'https://plazamedik.app.n8n.cloud/webhook-test/dfa2eb0e-64a7-47bf-9a0c-ef35458a675b';
+
 export default function AIAgentSettings() {
   const [integrations, setIntegrations] = useState(mcpIntegrations);
   const [capabilities, setCapabilities] = useState(agentCapabilities);
   const [webhookUrl, setWebhookUrl] = useState('');
-  const [n8nWebhook, setN8nWebhook] = useState('');
+  const [n8nChatWebhook, setN8nChatWebhook] = useState('');
+  const [n8nEventsWebhook, setN8nEventsWebhook] = useState('');
   const [isTesting, setIsTesting] = useState(false);
+  const [isTestingEvents, setIsTestingEvents] = useState(false);
+  
+  // Load saved webhook URLs on mount
+  useEffect(() => {
+    const savedChatUrl = localStorage.getItem(N8N_CHAT_STORAGE_KEY);
+    const savedEventsUrl = localStorage.getItem(N8N_EVENTS_STORAGE_KEY);
+    
+    setN8nChatWebhook(savedChatUrl || DEFAULT_N8N_CHAT_URL);
+    setN8nEventsWebhook(savedEventsUrl || DEFAULT_N8N_EVENTS_URL);
+    
+    // Update n8n status if URL exists
+    if (savedChatUrl) {
+      setIntegrations(prev => 
+        prev.map(int => 
+          int.id === 'n8n' 
+            ? { ...int, status: 'connected' as const, webhookUrl: savedChatUrl } 
+            : int
+        )
+      );
+    }
+  }, []);
 
   const toggleCapability = (id: string) => {
     setCapabilities(prev => 
@@ -141,20 +168,72 @@ export default function AIAgentSettings() {
     }
   };
 
-  const connectN8n = () => {
-    if (!n8nWebhook) {
+  const saveN8nChatWebhook = () => {
+    if (!n8nChatWebhook) {
       toast.error('Ingresa la URL del webhook de n8n');
       return;
     }
 
+    localStorage.setItem(N8N_CHAT_STORAGE_KEY, n8nChatWebhook);
     setIntegrations(prev => 
       prev.map(int => 
         int.id === 'n8n' 
-          ? { ...int, status: 'connected' as const, webhookUrl: n8nWebhook, lastSync: new Date().toISOString() } 
+          ? { ...int, status: 'connected' as const, webhookUrl: n8nChatWebhook, lastSync: new Date().toISOString() } 
           : int
       )
     );
-    toast.success('n8n conectado exitosamente');
+    toast.success('URL del chat de n8n guardada correctamente');
+  };
+
+  const saveN8nEventsWebhook = () => {
+    if (!n8nEventsWebhook) {
+      toast.error('Ingresa la URL del webhook de eventos');
+      return;
+    }
+
+    localStorage.setItem(N8N_EVENTS_STORAGE_KEY, n8nEventsWebhook);
+    toast.success('URL de eventos guardada correctamente');
+  };
+
+  const testEventsWebhook = async (eventType: string) => {
+    if (!n8nEventsWebhook) {
+      toast.error('Primero configura la URL del webhook de eventos');
+      return;
+    }
+
+    setIsTestingEvents(true);
+    try {
+      const testPayload = {
+        event: eventType,
+        timestamp: new Date().toISOString(),
+        source: 'plazamedik-ai-agent',
+        data: {
+          test: true,
+          message: `Prueba de evento ${eventType}`,
+          ...(eventType === 'stock_alert' ? { product_code: 'TEST-001', current_stock: 5, reorder_point: 20 } : {}),
+          ...(eventType === 'order_created' ? { order_number: 'ORD-TEST-001', customer: 'Cliente Test' } : {}),
+          ...(eventType === 'po_generated' ? { po_number: 'PO-TEST-001', total: 500 } : {}),
+        }
+      };
+
+      const response = await fetch(n8nEventsWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(testPayload),
+      });
+
+      if (response.ok) {
+        toast.success(`Evento ${eventType} enviado correctamente`, {
+          description: 'Verifica la recepción en tu workflow de n8n'
+        });
+      } else {
+        toast.error(`Error enviando ${eventType}: ${response.status}`);
+      }
+    } catch (error: any) {
+      toast.error(`Error de conexión: ${error.message}`);
+    } finally {
+      setIsTestingEvents(false);
+    }
   };
 
   return (
@@ -330,44 +409,136 @@ export default function AIAgentSettings() {
               })}
             </div>
 
-            {/* n8n Setup */}
+            {/* n8n Setup - Chat */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="h-5 w-5 text-orange-500" />
-                  Configurar n8n
+                  Webhook del Chat (Agente IA Plaza)
                 </CardTitle>
                 <CardDescription>
-                  Conecta tu instancia de n8n para automatizar flujos con el agente IA
+                  URL del webhook para el chat del Agente IA - respuestas en tiempo real
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="n8n-webhook">URL del Webhook n8n</Label>
+                  <Label htmlFor="n8n-chat-webhook">URL del Webhook Chat</Label>
                   <div className="flex gap-2">
                     <Input
-                      id="n8n-webhook"
+                      id="n8n-chat-webhook"
                       placeholder="https://tu-instancia.n8n.cloud/webhook/..."
-                      value={n8nWebhook}
-                      onChange={(e) => setN8nWebhook(e.target.value)}
+                      value={n8nChatWebhook}
+                      onChange={(e) => setN8nChatWebhook(e.target.value)}
                     />
-                    <Button onClick={connectN8n}>
-                      Conectar
+                    <Button variant="outline" onClick={() => testWebhook(n8nChatWebhook)} disabled={isTesting}>
+                      {isTesting ? <RefreshCw className="h-4 w-4 animate-spin" /> : 'Probar'}
+                    </Button>
+                    <Button onClick={saveN8nChatWebhook}>
+                      Guardar
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Ingresa la URL del webhook de tu workflow en n8n. Asegúrate de que esté activo.
+                    Esta URL recibe los mensajes del chat del Agente IA y devuelve respuestas.
                   </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* n8n Events Webhook */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Webhook className="h-5 w-5 text-blue-500" />
+                  Webhook de Eventos Críticos
+                </CardTitle>
+                <CardDescription>
+                  URL del webhook para recibir eventos automáticos del sistema
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="n8n-events-webhook">URL del Webhook Eventos</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="n8n-events-webhook"
+                      placeholder="https://tu-instancia.n8n.cloud/webhook-test/..."
+                      value={n8nEventsWebhook}
+                      onChange={(e) => setN8nEventsWebhook(e.target.value)}
+                    />
+                    <Button onClick={saveN8nEventsWebhook}>
+                      Guardar
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border p-4 bg-muted/50">
+                  <h4 className="font-medium mb-3">Probar Eventos:</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => testEventsWebhook('stock_alert')}
+                      disabled={isTestingEvents}
+                    >
+                      <AlertTriangle className="h-3 w-3 mr-1" />
+                      stock_alert
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => testEventsWebhook('order_created')}
+                      disabled={isTestingEvents}
+                    >
+                      <Package className="h-3 w-3 mr-1" />
+                      order_created
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => testEventsWebhook('order_delivered')}
+                      disabled={isTestingEvents}
+                    >
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      order_delivered
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => testEventsWebhook('po_generated')}
+                      disabled={isTestingEvents}
+                    >
+                      <TrendingUp className="h-3 w-3 mr-1" />
+                      po_generated
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => testEventsWebhook('rop_trigger')}
+                      disabled={isTestingEvents}
+                    >
+                      <TrendingUp className="h-3 w-3 mr-1" />
+                      rop_trigger
+                    </Button>
+                  </div>
+                  {isTestingEvents && (
+                    <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                      <RefreshCw className="h-3 w-3 animate-spin" />
+                      Enviando evento de prueba...
+                    </p>
+                  )}
                 </div>
 
                 <Alert>
                   <ExternalLink className="h-4 w-4" />
-                  <AlertTitle>¿Cómo configurar n8n?</AlertTitle>
-                  <AlertDescription>
-                    1. Ve a Settings → MCP access en tu instancia n8n<br/>
-                    2. Activa "Enable MCP access"<br/>
-                    3. Copia la URL del MCP Server<br/>
-                    4. En cada workflow, activa "Available in MCP" en Settings
+                  <AlertTitle>Eventos disponibles</AlertTitle>
+                  <AlertDescription className="text-xs">
+                    <ul className="mt-2 space-y-1">
+                      <li>• <code>stock_alert</code> - Alertas de stock bajo</li>
+                      <li>• <code>order_created</code> - Nuevo pedido creado</li>
+                      <li>• <code>order_delivered</code> - Pedido entregado</li>
+                      <li>• <code>po_generated</code> - PO automática generada</li>
+                      <li>• <code>rop_trigger</code> - Punto de reorden alcanzado</li>
+                    </ul>
                   </AlertDescription>
                 </Alert>
               </CardContent>

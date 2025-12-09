@@ -13,14 +13,19 @@ import {
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { addN8nAlert } from './InventoryAlertNotifications';
 
-// n8n Workflow Configuration
-const N8N_WORKFLOW_URL = 'https://plazamedik.app.n8n.cloud/webhook/dfa2eb0e-64a7-47bf-9a0c-ef35458a675b';
+// n8n Workflow Configuration - Dynamic URL from localStorage
+const getN8nWebhookUrl = (): string => {
+  const savedUrl = localStorage.getItem('n8n_webhook_url');
+  return savedUrl || 'https://plazamedik.app.n8n.cloud/webhook/dfa2eb0e-64a7-47bf-9a0c-ef35458a675b';
+};
 
 interface Message {
   role: 'user' | 'assistant' | 'n8n';
   content: string;
   source?: 'local' | 'n8n';
+  responseTime?: number; // milliseconds
 }
 
 interface QuickAction {
@@ -89,6 +94,7 @@ export function AIAssistant() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [showNav, setShowNav] = useState(false);
+  const [isN8nProcessing, setIsN8nProcessing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -120,11 +126,15 @@ export function AIAssistant() {
   }, [messages]);
 
   // Call n8n workflow
-  const callN8nWorkflow = async (mensaje: string): Promise<string | null> => {
+  const callN8nWorkflow = async (mensaje: string): Promise<{ response: string | null; responseTime: number }> => {
+    const startTime = Date.now();
+    setIsN8nProcessing(true);
+    
     try {
       console.log('Calling n8n workflow with message:', mensaje);
+      const webhookUrl = getN8nWebhookUrl();
       
-      const response = await fetch(N8N_WORKFLOW_URL, {
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,7 +144,7 @@ export function AIAssistant() {
 
       if (!response.ok) {
         console.error('n8n workflow error:', response.status, response.statusText);
-        return null;
+        return { response: null, responseTime: Date.now() - startTime };
       }
 
       // Obtener el texto raw primero
@@ -144,7 +154,7 @@ export function AIAssistant() {
       // Si está vacío, retornar null
       if (!rawText || rawText.trim() === '') {
         console.log('n8n returned empty response');
-        return null;
+        return { response: null, responseTime: Date.now() - startTime };
       }
 
       // Intentar parsear como JSON
@@ -152,37 +162,41 @@ export function AIAssistant() {
         const data = JSON.parse(rawText);
         console.log('n8n parsed JSON:', data);
         
+        const responseTime = Date.now() - startTime;
+        
         // n8n puede devolver la respuesta en diferentes formatos
         if (typeof data === 'string') {
-          return data;
+          return { response: data, responseTime };
         }
         if (data.output) {
-          return data.output;
+          return { response: data.output, responseTime };
         }
         if (data.response) {
-          return data.response;
+          return { response: data.response, responseTime };
         }
         if (data.text) {
-          return data.text;
+          return { response: data.text, responseTime };
         }
         if (data.message) {
-          return data.message;
+          return { response: data.message, responseTime };
         }
         // Si es un array, tomar el primer elemento
         if (Array.isArray(data) && data.length > 0) {
           const first = data[0];
-          return first.output || first.response || first.text || first.message || JSON.stringify(first);
+          return { response: first.output || first.response || first.text || first.message || JSON.stringify(first), responseTime };
         }
         
-        return JSON.stringify(data);
+        return { response: JSON.stringify(data), responseTime };
       } catch (jsonError) {
         // No es JSON válido, retornar el texto raw como respuesta
         console.log('n8n response is plain text');
-        return rawText;
+        return { response: rawText, responseTime: Date.now() - startTime };
       }
     } catch (error) {
       console.error('Error calling n8n workflow:', error);
-      return null;
+      return { response: null, responseTime: Date.now() - startTime };
+    } finally {
+      setIsN8nProcessing(false);
     }
   };
 
@@ -197,14 +211,27 @@ export function AIAssistant() {
     try {
       // PRIMERO: Llamar al workflow de n8n "agente ia plaza"
       console.log('Sending to n8n workflow...');
-      const n8nResponse = await callN8nWorkflow(userMessage);
+      const { response: n8nResponse, responseTime } = await callN8nWorkflow(userMessage);
       
       if (n8nResponse) {
-        toast.success('Respuesta recibida de n8n');
+        const timeInSeconds = (responseTime / 1000).toFixed(1);
+        toast.success(`Agente IA Plaza respondió en ${timeInSeconds}s`, {
+          icon: '⚡',
+          description: 'Respuesta procesada por n8n workflow'
+        });
+        
+        // Add to notifications system
+        addN8nAlert({
+          title: 'Agente IA Plaza',
+          message: n8nResponse.substring(0, 100) + (n8nResponse.length > 100 ? '...' : ''),
+          severity: 'info'
+        });
+        
         setMessages(prev => [...prev, {
           role: 'assistant',
           content: n8nResponse,
-          source: 'n8n'
+          source: 'n8n',
+          responseTime
         }]);
         setLoading(false);
         return;
@@ -387,14 +414,13 @@ export function AIAssistant() {
   return (
     <>
 
-      {/* Floating AI Button */}
+      {/* Floating AI Button - Sin animación pulsante */}
       <Button
         onClick={() => setIsOpen(true)}
         className={cn(
           "fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg",
           "bg-gradient-to-r from-primary to-primary/80",
           "hover:scale-110 transition-all duration-300",
-          "animate-pulse hover:animate-none",
           isOpen && "hidden"
         )}
         size="icon"
@@ -573,9 +599,16 @@ export function AIAssistant() {
                       )}
                     >
                       {msg.source === 'n8n' && (
-                        <div className="flex items-center gap-1 mb-2 text-xs text-orange-600 dark:text-orange-400">
-                          <Zap className="h-3 w-3" />
-                          <span className="font-medium">n8n Workflow</span>
+                        <div className="flex items-center justify-between gap-2 mb-2 text-xs text-orange-600 dark:text-orange-400">
+                          <div className="flex items-center gap-1">
+                            <Zap className="h-3 w-3" />
+                            <span className="font-medium">Agente IA Plaza</span>
+                          </div>
+                          {msg.responseTime && (
+                            <span className="text-orange-500/70">
+                              {(msg.responseTime / 1000).toFixed(1)}s
+                            </span>
+                          )}
                         </div>
                       )}
                       <div className="whitespace-pre-wrap space-y-1">
@@ -592,12 +625,28 @@ export function AIAssistant() {
 
                 {loading && (
                   <div className="flex gap-3 justify-start">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center">
-                      <Bot className="h-4 w-4 text-primary-foreground" />
+                    <div className={cn(
+                      "flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center",
+                      isN8nProcessing 
+                        ? "bg-gradient-to-r from-orange-500 to-orange-600" 
+                        : "bg-gradient-to-r from-primary to-primary/80"
+                    )}>
+                      {isN8nProcessing ? (
+                        <Zap className="h-4 w-4 text-white" />
+                      ) : (
+                        <Bot className="h-4 w-4 text-primary-foreground" />
+                      )}
                     </div>
-                    <div className="bg-muted rounded-lg px-4 py-3 flex items-center gap-2">
+                    <div className={cn(
+                      "rounded-lg px-4 py-3 flex items-center gap-2",
+                      isN8nProcessing 
+                        ? "bg-orange-50 border border-orange-200 dark:bg-orange-950/20 dark:border-orange-800" 
+                        : "bg-muted"
+                    )}>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-sm text-muted-foreground">Analizando datos...</span>
+                      <span className="text-sm text-muted-foreground">
+                        {isN8nProcessing ? 'n8n procesando...' : 'Analizando datos...'}
+                      </span>
                     </div>
                   </div>
                 )}
