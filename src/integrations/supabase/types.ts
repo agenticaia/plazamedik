@@ -1714,6 +1714,18 @@ export type Database = {
           },
         ]
       }
+      vista_inventario_critico: {
+        Row: {
+          cantidad_a_pedir: number | null
+          costo_ultimo: number | null
+          nombre: string | null
+          proveedor_preferido: string | null
+          punto_reorden: number | null
+          sku: string | null
+          stock_actual: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       actualizar_estadisticas_campana: {
