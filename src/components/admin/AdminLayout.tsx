@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart, Target, BarChart3, CreditCard, TrendingUp, Menu, BookOpen, Users, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, LogOut, Database, Brain, Building2, ShoppingCart, Target, BarChart3, CreditCard, TrendingUp, Menu, BookOpen, Users, MessageSquare, Bot } from 'lucide-react';
+import { InventoryAlertNotifications } from './InventoryAlertNotifications';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -31,6 +32,7 @@ const navigation = [
   { name: 'Órdenes de Compra', href: '/admin/ordenes-compra', icon: ShoppingCart },
   { name: 'Punto Reorden IA', href: '/admin/punto-reorden-ia', icon: Target },
   { name: 'Predicción IA', href: '/admin/inventario-ia', icon: Brain },
+  { name: 'Agente IA', href: '/admin/agente-ia', icon: Bot },
   { name: 'Campañas WhatsApp', href: '/admin/campanas-whatsapp', icon: MessageSquare },
   { name: 'Wiki', href: '/admin/wiki', icon: BookOpen },
   { name: 'Sincronizar DB', href: '/admin/sincronizar-productos', icon: Database },
@@ -178,10 +180,15 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col w-full">
           {/* Mobile Header */}
-          <header className="h-14 border-b flex items-center px-4 md:px-6 bg-background sticky top-0 z-10">
-            <MobileNav />
-            <SidebarTrigger className="hidden md:flex" />
-            <h1 className="text-lg font-semibold ml-4 md:ml-0">PlazaMedik Admin</h1>
+          <header className="h-14 border-b flex items-center justify-between px-4 md:px-6 bg-background sticky top-0 z-10">
+            <div className="flex items-center">
+              <MobileNav />
+              <SidebarTrigger className="hidden md:flex" />
+              <h1 className="text-lg font-semibold ml-4 md:ml-0">PlazaMedik Admin</h1>
+            </div>
+            <div className="flex items-center">
+              <InventoryAlertNotifications />
+            </div>
           </header>
 
           {/* Page Content */}

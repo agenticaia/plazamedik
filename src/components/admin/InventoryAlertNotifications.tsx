@@ -17,11 +17,7 @@ interface CriticalAlert {
   dismissed: boolean;
 }
 
-interface InventoryAlertNotificationsProps {
-  onAlertClick?: () => void;
-}
-
-export function InventoryAlertNotifications({ onAlertClick }: InventoryAlertNotificationsProps) {
+export function InventoryAlertNotifications() {
   const [alerts, setAlerts] = useState<CriticalAlert[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [lastCheck, setLastCheck] = useState<Date | null>(null);
@@ -52,8 +48,8 @@ export function InventoryAlertNotifications({ onAlertClick }: InventoryAlertNoti
         newAlerts.push({
           id: `sin_stock_${p.product_code}`,
           type: 'sin_stock',
-          title: '🔴 Producto Agotado',
-          message: `${p.nombre_producto} está sin stock. Acción inmediata requerida.`,
+          title: 'Producto Agotado',
+          message: `${p.nombre_producto} está sin stock.`,
           productCode: p.product_code,
           severity: 'critical',
           timestamp: now,
@@ -68,15 +64,11 @@ export function InventoryAlertNotifications({ onAlertClick }: InventoryAlertNoti
         p.cantidad_stock <= 5
       );
       criticalStock.forEach(p => {
-        const daysLeft = p.sales_velocity_7d && p.sales_velocity_7d > 0 
-          ? Math.floor(p.cantidad_stock! / p.sales_velocity_7d) 
-          : null;
-        
         newAlerts.push({
           id: `stock_critico_${p.product_code}`,
           type: 'stock_critico',
-          title: '🟠 Stock Crítico',
-          message: `${p.nombre_producto} tiene solo ${p.cantidad_stock} unidades.${daysLeft !== null ? ` (~${daysLeft} días restantes)` : ''}`,
+          title: 'Stock Crítico',
+          message: `${p.nombre_producto}: ${p.cantidad_stock} unidades`,
           productCode: p.product_code,
           severity: 'critical',
           timestamp: now,
@@ -95,28 +87,9 @@ export function InventoryAlertNotifications({ onAlertClick }: InventoryAlertNoti
         newAlerts.push({
           id: `rop_${p.product_code}`,
           type: 'rop_alerta',
-          title: '🎯 Punto de Reorden Alcanzado',
-          message: `${p.nombre_producto}: ${p.cantidad_stock} uds (ROP: ${p.ai_reorder_point})`,
+          title: 'Punto de Reorden Alcanzado',
+          message: `${p.nombre_producto}`,
           productCode: p.product_code,
-          severity: 'warning',
-          timestamp: now,
-          dismissed: false
-        });
-      });
-
-      // Check for pending urgent POs
-      const { data: urgentPOs } = await supabase
-        .from('purchase_orders')
-        .select('order_number, product_name, priority, status')
-        .eq('priority', 'URGENT')
-        .in('status', ['DRAFT', 'SENT']);
-
-      urgentPOs?.forEach(po => {
-        newAlerts.push({
-          id: `po_${po.order_number}`,
-          type: 'po_urgente',
-          title: '⚡ PO Urgente Pendiente',
-          message: `${po.order_number}: ${po.product_name} requiere atención`,
           severity: 'warning',
           timestamp: now,
           dismissed: false
@@ -132,14 +105,14 @@ export function InventoryAlertNotifications({ onAlertClick }: InventoryAlertNoti
       setAlerts(filteredAlerts);
       setLastCheck(now);
 
-      // Show toast notifications for critical alerts
+      // Show toast notifications for critical alerts (only if panel is closed)
       const criticalAlerts = filteredAlerts.filter(a => a.severity === 'critical');
       if (criticalAlerts.length > 0 && !showNotifications) {
         toast.error(
           `${criticalAlerts.length} alerta${criticalAlerts.length > 1 ? 's' : ''} crítica${criticalAlerts.length > 1 ? 's' : ''} de inventario`,
           {
             description: criticalAlerts[0].message,
-            duration: 8000,
+            duration: 5000,
             action: {
               label: 'Ver todas',
               onClick: () => setShowNotifications(true)
@@ -192,39 +165,33 @@ export function InventoryAlertNotifications({ onAlertClick }: InventoryAlertNoti
   };
 
   const criticalCount = alerts.filter(a => a.severity === 'critical').length;
-  const warningCount = alerts.filter(a => a.severity === 'warning').length;
-
-  if (alerts.length === 0) return null;
 
   return (
-    <>
-      {/* Alert Badge - Fixed position */}
-      <div className="fixed bottom-24 right-6 z-40">
-        <Button
-          onClick={() => {
-            setShowNotifications(!showNotifications);
-            onAlertClick?.();
-          }}
-          size="icon"
-          variant="destructive"
-          className={cn(
-            "h-12 w-12 rounded-full shadow-lg relative",
-            "animate-bounce hover:animate-none"
-          )}
-        >
-          <Bell className="h-5 w-5" />
+    <div className="relative">
+      {/* Bell Button in Navbar */}
+      <Button
+        onClick={() => setShowNotifications(!showNotifications)}
+        size="icon"
+        variant={alerts.length > 0 ? "destructive" : "ghost"}
+        className={cn(
+          "relative h-9 w-9",
+          alerts.length > 0 && "animate-pulse hover:animate-none"
+        )}
+      >
+        <Bell className="h-4 w-4" />
+        {alerts.length > 0 && (
           <Badge 
             variant="secondary" 
-            className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
+            className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs bg-white text-destructive border border-destructive"
           >
             {alerts.length}
           </Badge>
-        </Button>
-      </div>
+        )}
+      </Button>
 
-      {/* Notifications Panel */}
+      {/* Notifications Dropdown Panel */}
       {showNotifications && (
-        <div className="fixed bottom-40 right-6 z-50 w-80 max-h-96 overflow-hidden">
+        <div className="absolute top-12 right-0 z-50 w-80 max-h-96 overflow-hidden">
           <div className="bg-card border-2 border-destructive/20 rounded-lg shadow-2xl overflow-hidden">
             {/* Header */}
             <div className="bg-destructive/10 p-3 flex items-center justify-between border-b">
@@ -251,61 +218,69 @@ export function InventoryAlertNotifications({ onAlertClick }: InventoryAlertNoti
 
             {/* Alerts List */}
             <div className="max-h-72 overflow-y-auto">
-              {alerts.map(alert => {
-                const Icon = getAlertIcon(alert.type);
-                return (
-                  <div 
-                    key={alert.id}
-                    className={cn(
-                      "p-3 border-b last:border-0 hover:bg-muted/50 transition-colors",
-                      alert.severity === 'critical' && "bg-destructive/5"
-                    )}
-                  >
-                    <div className="flex items-start gap-2">
-                      <div className={cn(
-                        "mt-0.5 p-1 rounded",
-                        alert.severity === 'critical' ? "bg-destructive/20" : "bg-warning/20"
-                      )}>
-                        <Icon className={cn(
-                          "h-3 w-3",
-                          alert.severity === 'critical' ? "text-destructive" : "text-warning"
-                        )} />
+              {alerts.length === 0 ? (
+                <div className="p-4 text-center text-muted-foreground text-sm">
+                  ✅ No hay alertas críticas
+                </div>
+              ) : (
+                alerts.map(alert => {
+                  const Icon = getAlertIcon(alert.type);
+                  return (
+                    <div 
+                      key={alert.id}
+                      className={cn(
+                        "p-3 border-b last:border-0 hover:bg-muted/50 transition-colors",
+                        alert.severity === 'critical' && "bg-destructive/5"
+                      )}
+                    >
+                      <div className="flex items-start gap-2">
+                        <div className={cn(
+                          "mt-0.5 p-1 rounded",
+                          alert.severity === 'critical' ? "bg-destructive/20" : "bg-warning/20"
+                        )}>
+                          <Icon className={cn(
+                            "h-3 w-3",
+                            alert.severity === 'critical' ? "text-destructive" : "text-warning"
+                          )} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium">{alert.title}</p>
+                          <p className="text-xs text-muted-foreground truncate">{alert.message}</p>
+                        </div>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-5 w-5 flex-shrink-0"
+                          onClick={() => dismissAlert(alert.id)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium">{alert.title}</p>
-                        <p className="text-xs text-muted-foreground truncate">{alert.message}</p>
-                      </div>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-5 w-5 flex-shrink-0"
-                        onClick={() => dismissAlert(alert.id)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
 
             {/* Footer */}
-            <div className="p-2 border-t bg-muted/30 flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">
-                Última revisión: {lastCheck?.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' })}
-              </span>
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="text-xs h-6"
-                onClick={dismissAll}
-              >
-                Descartar todas
-              </Button>
-            </div>
+            {alerts.length > 0 && (
+              <div className="p-2 border-t bg-muted/30 flex justify-between items-center">
+                <span className="text-xs text-muted-foreground">
+                  Última revisión: {lastCheck?.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="text-xs h-6"
+                  onClick={dismissAll}
+                >
+                  Descartar todas
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

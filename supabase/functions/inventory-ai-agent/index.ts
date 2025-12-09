@@ -6,6 +6,375 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Define the tools the AI agent can use
+const agentTools = [
+  {
+    type: "function",
+    function: {
+      name: "update_purchase_order_status",
+      description: "Update the status of a purchase order. Use this when the user asks to change PO status, send a PO to supplier, approve a PO, mark as received, etc.",
+      parameters: {
+        type: "object",
+        properties: {
+          order_number: {
+            type: "string",
+            description: "The purchase order number (e.g., PO-2025-5004)"
+          },
+          new_status: {
+            type: "string",
+            enum: ["DRAFT", "SENT", "CONFIRMED", "IN_TRANSIT", "PARTIAL_RECEIVED", "RECEIVED", "CLOSED", "CANCELLED"],
+            description: "The new status for the purchase order"
+          },
+          notes: {
+            type: "string",
+            description: "Optional notes about the status change"
+          }
+        },
+        required: ["order_number", "new_status"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "update_sales_order_status",
+      description: "Update the fulfillment status of a sales order. Use this when the user asks to change order status, start picking, mark as packed, shipped, or delivered.",
+      parameters: {
+        type: "object",
+        properties: {
+          order_number: {
+            type: "string",
+            description: "The sales order number (e.g., ORD-2025-0001)"
+          },
+          new_status: {
+            type: "string",
+            enum: ["UNFULFILLED", "WAITING_STOCK", "PICKING", "PACKED", "SHIPPED", "DELIVERED", "CANCELLED"],
+            description: "The new fulfillment status for the sales order"
+          },
+          notes: {
+            type: "string",
+            description: "Optional notes about the status change"
+          }
+        },
+        required: ["order_number", "new_status"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "create_purchase_order",
+      description: "Create a new purchase order for inventory replenishment. Use this when the user asks to order more stock, create a PO, or replenish inventory.",
+      parameters: {
+        type: "object",
+        properties: {
+          product_code: {
+            type: "string",
+            description: "The product code to order"
+          },
+          quantity: {
+            type: "number",
+            description: "The quantity to order"
+          },
+          supplier_id: {
+            type: "string",
+            description: "The UUID of the supplier (optional, will use product's preferred supplier if not provided)"
+          },
+          priority: {
+            type: "string",
+            enum: ["NORMAL", "HIGH", "URGENT"],
+            description: "The priority of the order"
+          },
+          notes: {
+            type: "string",
+            description: "Optional notes for the purchase order"
+          }
+        },
+        required: ["product_code", "quantity"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "update_product_stock",
+      description: "Update the stock quantity of a product. Use this for manual stock adjustments.",
+      parameters: {
+        type: "object",
+        properties: {
+          product_code: {
+            type: "string",
+            description: "The product code"
+          },
+          new_quantity: {
+            type: "number",
+            description: "The new stock quantity"
+          },
+          reason: {
+            type: "string",
+            description: "Reason for the stock adjustment"
+          }
+        },
+        required: ["product_code", "new_quantity"]
+      }
+    }
+  }
+];
+
+// Execute the tool actions
+async function executeToolAction(supabase: any, toolName: string, args: any): Promise<{ success: boolean; message: string; data?: any }> {
+  console.log(`Executing tool: ${toolName} with args:`, args);
+
+  try {
+    switch (toolName) {
+      case "update_purchase_order_status": {
+        const { order_number, new_status, notes } = args;
+        
+        // First, find the PO by order_number
+        const { data: po, error: findError } = await supabase
+          .from('purchase_orders')
+          .select('id, order_number, status, product_name, quantity')
+          .eq('order_number', order_number)
+          .maybeSingle();
+
+        if (findError) {
+          console.error('Error finding PO:', findError);
+          return { success: false, message: `Error buscando la orden: ${findError.message}` };
+        }
+
+        if (!po) {
+          return { success: false, message: `No se encontró la orden de compra ${order_number}` };
+        }
+
+        const oldStatus = po.status;
+
+        // Update the PO status
+        const updateData: any = {
+          status: new_status,
+          updated_at: new Date().toISOString()
+        };
+
+        if (notes) {
+          updateData.notes = notes;
+        }
+
+        // Set specific timestamps based on status
+        if (new_status === 'RECEIVED') {
+          updateData.actual_delivery_date = new Date().toISOString().split('T')[0];
+        }
+
+        const { error: updateError } = await supabase
+          .from('purchase_orders')
+          .update(updateData)
+          .eq('id', po.id);
+
+        if (updateError) {
+          console.error('Error updating PO:', updateError);
+          return { success: false, message: `Error actualizando la orden: ${updateError.message}` };
+        }
+
+        return {
+          success: true,
+          message: `✅ Orden de compra ${order_number} actualizada exitosamente de ${oldStatus} a ${new_status}`,
+          data: {
+            order_number,
+            old_status: oldStatus,
+            new_status,
+            product_name: po.product_name,
+            quantity: po.quantity
+          }
+        };
+      }
+
+      case "update_sales_order_status": {
+        const { order_number, new_status, notes } = args;
+        
+        const { data: so, error: findError } = await supabase
+          .from('sales_orders')
+          .select('id, order_number, fulfillment_status, customer_name, total')
+          .eq('order_number', order_number)
+          .maybeSingle();
+
+        if (findError || !so) {
+          return { success: false, message: `No se encontró el pedido ${order_number}` };
+        }
+
+        const oldStatus = so.fulfillment_status;
+
+        const updateData: any = {
+          fulfillment_status: new_status,
+          updated_at: new Date().toISOString()
+        };
+
+        if (notes) {
+          updateData.notes = notes;
+        }
+
+        // Set specific timestamps
+        if (new_status === 'PICKING') updateData.picking_started_at = new Date().toISOString();
+        if (new_status === 'PACKED') updateData.packed_at = new Date().toISOString();
+        if (new_status === 'SHIPPED') updateData.shipped_at = new Date().toISOString();
+        if (new_status === 'DELIVERED') updateData.delivered_at = new Date().toISOString();
+
+        const { error: updateError } = await supabase
+          .from('sales_orders')
+          .update(updateData)
+          .eq('id', so.id);
+
+        if (updateError) {
+          return { success: false, message: `Error actualizando el pedido: ${updateError.message}` };
+        }
+
+        // Log the state change
+        await supabase.from('order_state_log').insert({
+          sales_order_id: so.id,
+          from_state: oldStatus,
+          to_state: new_status,
+          notes: notes || `Cambio de estado por Agente IA`,
+          automated: true
+        });
+
+        return {
+          success: true,
+          message: `✅ Pedido ${order_number} actualizado de ${oldStatus} a ${new_status}`,
+          data: {
+            order_number,
+            old_status: oldStatus,
+            new_status,
+            customer_name: so.customer_name
+          }
+        };
+      }
+
+      case "create_purchase_order": {
+        const { product_code, quantity, supplier_id, priority, notes } = args;
+        
+        // Get product info
+        const { data: product, error: productError } = await supabase
+          .from('products')
+          .select('*, preferred_supplier_id, cost, precio')
+          .eq('product_code', product_code)
+          .maybeSingle();
+
+        if (productError || !product) {
+          return { success: false, message: `No se encontró el producto ${product_code}` };
+        }
+
+        // Get supplier
+        let finalSupplierId = supplier_id || product.preferred_supplier_id;
+        if (!finalSupplierId) {
+          const { data: supplier } = await supabase
+            .from('suppliers')
+            .select('id')
+            .eq('is_active', true)
+            .limit(1)
+            .maybeSingle();
+          finalSupplierId = supplier?.id;
+        }
+
+        if (!finalSupplierId) {
+          return { success: false, message: 'No hay proveedor disponible para crear la orden' };
+        }
+
+        // Generate PO number
+        const { data: poNumber } = await supabase.rpc('generate_po_number_sequential');
+
+        const unitPrice = product.cost || (product.precio * 0.6);
+
+        const { data: newPO, error: createError } = await supabase
+          .from('purchase_orders')
+          .insert({
+            order_number: poNumber,
+            supplier_id: finalSupplierId,
+            product_code: product.product_code,
+            product_name: product.nombre_producto,
+            quantity,
+            unit_price: unitPrice,
+            total_amount: quantity * unitPrice,
+            total_cost: quantity * unitPrice,
+            status: 'DRAFT',
+            order_type: 'automatica',
+            po_type: 'STOCK_REPLENISHMENT',
+            priority: priority || 'NORMAL',
+            notes: notes || `Creada por Agente IA`
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          return { success: false, message: `Error creando la orden: ${createError.message}` };
+        }
+
+        // Create PO item
+        await supabase.from('purchase_order_items').insert({
+          purchase_order_id: newPO.id,
+          product_code: product.product_code,
+          product_name: product.nombre_producto,
+          qty_ordered: quantity,
+          cost_per_unit: unitPrice,
+          qty_received: 0
+        });
+
+        return {
+          success: true,
+          message: `✅ Orden de compra ${poNumber} creada exitosamente para ${quantity} unidades de ${product.nombre_producto}`,
+          data: {
+            order_number: poNumber,
+            product_name: product.nombre_producto,
+            quantity,
+            total: quantity * unitPrice
+          }
+        };
+      }
+
+      case "update_product_stock": {
+        const { product_code, new_quantity, reason } = args;
+        
+        const { data: product, error: findError } = await supabase
+          .from('products')
+          .select('nombre_producto, cantidad_stock')
+          .eq('product_code', product_code)
+          .maybeSingle();
+
+        if (findError || !product) {
+          return { success: false, message: `No se encontró el producto ${product_code}` };
+        }
+
+        const oldStock = product.cantidad_stock;
+
+        const { error: updateError } = await supabase
+          .from('products')
+          .update({
+            cantidad_stock: new_quantity,
+            updated_at: new Date().toISOString()
+          })
+          .eq('product_code', product_code);
+
+        if (updateError) {
+          return { success: false, message: `Error actualizando stock: ${updateError.message}` };
+        }
+
+        return {
+          success: true,
+          message: `✅ Stock de ${product.nombre_producto} actualizado de ${oldStock} a ${new_quantity} unidades. Razón: ${reason || 'Ajuste manual por Agente IA'}`,
+          data: {
+            product_code,
+            product_name: product.nombre_producto,
+            old_stock: oldStock,
+            new_stock: new_quantity
+          }
+        };
+      }
+
+      default:
+        return { success: false, message: `Herramienta no reconocida: ${toolName}` };
+    }
+  } catch (error: any) {
+    console.error(`Error executing tool ${toolName}:`, error);
+    return { success: false, message: `Error ejecutando acción: ${error.message}` };
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -68,8 +437,6 @@ serve(async (req) => {
       { data: customers },
       { data: vendedores },
       { data: waMessagesLog },
-      { data: pedidosWaLog },
-      { data: orderStateLog },
       { data: lowStockProducts },
       { data: dashboardMetrics },
     ] = await Promise.all([
@@ -98,41 +465,25 @@ serve(async (req) => {
         .select('*')
         .order('timestamp_sent', { ascending: false })
         .limit(100),
-      supabase.from('pedidos_wa_log')
-        .select('*')
-        .order('timestamp_evento', { ascending: false })
-        .limit(100),
-      supabase.from('order_state_log')
-        .select('*')
-        .order('changed_at', { ascending: false })
-        .limit(200),
       supabase.rpc('get_low_stock_products', { p_threshold: 20 }),
       supabase.rpc('get_dashboard_metrics'),
     ]);
 
-    console.log('Data fetched - Products:', products?.length, 'SOs:', salesOrders?.length, 'WA Messages:', waMessagesLog?.length, 'Vendedores:', vendedores?.length);
+    console.log('Data fetched - Products:', products?.length, 'SOs:', salesOrders?.length, 'POs:', purchaseOrders?.length);
 
-    // Calculate comprehensive analytics
+    // Calculate analytics
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // ==================== ORDERS ANALYTICS ====================
-    // Today's orders
+    // Orders analytics
     const todayOrders = salesOrders?.filter(o => new Date(o.created_at) >= todayStart) || [];
     const todaySalesTotal = todayOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
-    
-    // Month orders
     const monthOrders = salesOrders?.filter(o => new Date(o.created_at) >= monthStart) || [];
     const monthSalesTotal = monthOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
 
-    // Last 30 days
-    const last30DaysOrders = salesOrders?.filter(o => new Date(o.created_at) >= last30Days) || [];
-    const last30DaysSales = last30DaysOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
-
-    // ==================== ORDER STATUS ANALYTICS ====================
+    // Order status breakdown
     const ordersByStatus = {
       UNFULFILLED: salesOrders?.filter(o => o.fulfillment_status === 'UNFULFILLED') || [],
       WAITING_STOCK: salesOrders?.filter(o => o.fulfillment_status === 'WAITING_STOCK') || [],
@@ -142,98 +493,25 @@ serve(async (req) => {
       DELIVERED: salesOrders?.filter(o => o.fulfillment_status === 'DELIVERED') || [],
     };
 
-    // ==================== DELIVERED ORDERS (Last 30 days) ====================
-    const deliveredOrders = salesOrders?.filter(o => 
-      o.fulfillment_status === 'DELIVERED' && 
-      o.delivered_at && 
-      new Date(o.delivered_at) >= last30Days
-    ) || [];
-
-    // ==================== PAYMENT STATUS ====================
-    const ordersByPayment = {
-      PENDING: salesOrders?.filter(o => o.payment_status === 'PENDING') || [],
-      PAID: salesOrders?.filter(o => o.payment_status === 'PAID') || [],
-      PARTIAL: salesOrders?.filter(o => o.payment_status === 'PARTIAL') || [],
+    // PO status breakdown
+    const posByStatus = {
+      DRAFT: purchaseOrders?.filter(po => po.status === 'DRAFT') || [],
+      SENT: purchaseOrders?.filter(po => po.status === 'SENT') || [],
+      CONFIRMED: purchaseOrders?.filter(po => po.status === 'CONFIRMED') || [],
+      IN_TRANSIT: purchaseOrders?.filter(po => po.status === 'IN_TRANSIT') || [],
+      RECEIVED: purchaseOrders?.filter(po => po.status === 'RECEIVED') || [],
     };
 
-    // ==================== SOURCE/CHANNEL ANALYTICS ====================
+    // Source/channel analytics
     const ordersBySource = {
       whatsapp_manual: salesOrders?.filter(o => o.ruta === 'whatsapp_manual' || o.source === 'whatsapp_manual') || [],
       web_form: salesOrders?.filter(o => o.ruta === 'web_form' || o.source === 'web_form' || !o.ruta) || [],
     };
 
-    const sourceAnalysis = {
-      whatsapp: {
-        total: ordersBySource.whatsapp_manual.length,
-        revenue: ordersBySource.whatsapp_manual.reduce((sum, o) => sum + Number(o.total || 0), 0),
-        avgTicket: ordersBySource.whatsapp_manual.length > 0 
-          ? ordersBySource.whatsapp_manual.reduce((sum, o) => sum + Number(o.total || 0), 0) / ordersBySource.whatsapp_manual.length 
-          : 0
-      },
-      web: {
-        total: ordersBySource.web_form.length,
-        revenue: ordersBySource.web_form.reduce((sum, o) => sum + Number(o.total || 0), 0),
-        avgTicket: ordersBySource.web_form.length > 0 
-          ? ordersBySource.web_form.reduce((sum, o) => sum + Number(o.total || 0), 0) / ordersBySource.web_form.length 
-          : 0
-      }
-    };
-
-    // ==================== VENDEDORES/SELLERS ANALYTICS ====================
-    const vendedorStats = new Map<string, { name: string; orders: number; revenue: number; delivered: number; pending: number }>();
-    
-    salesOrders?.forEach(order => {
-      if (order.asignado_a_vendedor_id || order.asignado_a_vendedor_nombre) {
-        const vendorId = order.asignado_a_vendedor_id || 'unknown';
-        const vendorName = order.asignado_a_vendedor_nombre || 'Sin nombre';
-        const current = vendedorStats.get(vendorId) || { name: vendorName, orders: 0, revenue: 0, delivered: 0, pending: 0 };
-        
-        current.orders += 1;
-        current.revenue += Number(order.total || 0);
-        
-        if (order.fulfillment_status === 'DELIVERED') {
-          current.delivered += 1;
-        } else if (['UNFULFILLED', 'PICKING', 'WAITING_STOCK'].includes(order.fulfillment_status || '')) {
-          current.pending += 1;
-        }
-        
-        vendedorStats.set(vendorId, current);
-      }
-    });
-
-    // ==================== WHATSAPP NOTIFICATIONS ANALYTICS ====================
-    const waMessageStats = {
-      total: waMessagesLog?.length || 0,
-      sent: waMessagesLog?.filter(m => m.status === 'sent' || m.timestamp_sent)?.length || 0,
-      delivered: waMessagesLog?.filter(m => m.status === 'delivered' || m.timestamp_delivered)?.length || 0,
-      read: waMessagesLog?.filter(m => m.status === 'read' || m.timestamp_read)?.length || 0,
-      failed: waMessagesLog?.filter(m => m.status === 'failed' || m.error_message)?.length || 0,
-    };
-
-    // Recent WA messages with status
-    const recentWaMessages = waMessagesLog?.slice(0, 10).map(m => ({
-      phone: m.phone_number,
-      type: m.message_type,
-      status: m.status,
-      sentAt: m.timestamp_sent,
-      orderId: m.sales_order_id,
-    })) || [];
-
-    // ==================== CROSS-DOCKING & BACKORDER ====================
-    const backorderItems = salesOrderItems?.filter(item => item.is_backorder) || [];
-    const crossDockingOrders = salesOrders?.filter(o => o.fulfillment_status === 'WAITING_STOCK') || [];
-    
-    // POs linked to sales orders (cross-docking)
-    const crossDockingPOs = purchaseOrders?.filter(po => po.linked_sales_order_id) || [];
-
-    // ==================== INVENTORY ANALYTICS ====================
+    // Inventory analytics
     const inventoryValue = products?.reduce((sum, p) => 
       sum + (Number(p.precio || 0) * (p.cantidad_stock || 0)), 0
     ) || 0;
-
-    const ropAlerts = products?.filter(p => 
-      p.ai_reorder_point && p.cantidad_stock !== null && p.cantidad_stock <= p.ai_reorder_point
-    ) || [];
 
     const criticalStock = products?.filter(p => 
       p.cantidad_stock !== null && p.cantidad_stock <= 5
@@ -243,307 +521,86 @@ serve(async (req) => {
       p.cantidad_stock !== null && p.cantidad_stock === 0
     ) || [];
 
-    // ==================== PO ANALYTICS ====================
-    const autoPOs = purchaseOrders?.filter(po => po.order_type === 'automatica') || [];
-    const draftPOs = purchaseOrders?.filter(po => po.status === 'DRAFT') || [];
-    const pendingPOs = purchaseOrders?.filter(po => ['SENT', 'PARTIAL_RECEIVED', 'IN_TRANSIT'].includes(po.status || '')) || [];
-
-    // ==================== TOP PRODUCTS ====================
-    const productSalesMap = new Map<string, { name: string; quantity: number; revenue: number }>();
-    salesOrderItems?.forEach(item => {
-      const current = productSalesMap.get(item.product_code) || { 
-        name: item.product_name, 
-        quantity: 0, 
-        revenue: 0 
-      };
-      productSalesMap.set(item.product_code, {
-        name: item.product_name,
-        quantity: current.quantity + item.quantity,
-        revenue: current.revenue + (item.quantity * Number(item.unit_price))
-      });
-    });
-    const topSellingProducts = Array.from(productSalesMap.values())
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 10);
-
-    // ==================== CUSTOMERS ANALYTICS ====================
-    const topCustomers = customers?.slice(0, 10) || [];
-    const newCustomersThisMonth = customers?.filter(c => 
-      c.created_at && new Date(c.created_at) >= monthStart
-    ) || [];
-
-    // ==================== DELIVERY TIME ANALYTICS ====================
-    const deliveryTimes = deliveredOrders.map(order => {
-      if (order.created_at && order.delivered_at) {
-        const created = new Date(order.created_at);
-        const delivered = new Date(order.delivered_at);
-        return (delivered.getTime() - created.getTime()) / (1000 * 60 * 60 * 24); // days
-      }
-      return null;
-    }).filter(t => t !== null) as number[];
-    
-    const avgDeliveryTime = deliveryTimes.length > 0 
-      ? deliveryTimes.reduce((a, b) => a + b, 0) / deliveryTimes.length 
-      : 0;
-
-    // Build comprehensive context for AI
+    // Build context for AI
     const context = `
-Eres el **Asistente IA de Inventario y Operaciones** de PlazaMedik, un sistema ERP inteligente con acceso COMPLETO a todos los datos del negocio.
+Eres el **Asistente IA Agente** de PlazaMedik. Eres un agente AGENTIC con capacidad de EJECUTAR ACCIONES REALES en la base de datos.
+
+**IMPORTANTE - ERES UN AGENTE AGENTIC:**
+- Cuando el usuario te pide realizar una acción (cambiar estado de PO, actualizar pedido, crear órdenes), DEBES usar las herramientas disponibles para ejecutar la acción REALMENTE.
+- NO solo describas lo que harías, USA LAS HERRAMIENTAS para hacerlo.
+- Después de ejecutar una acción, confirma al usuario el resultado real.
+
 Fecha y hora actual: ${now.toLocaleString('es-PE', { timeZone: 'America/Lima' })}
 
 ═══════════════════════════════════════════════════════════════
-📊 RESUMEN EJECUTIVO - KPIs PRINCIPALES
-═══════════════════════════════════════════════════════════════
-${dashboardMetrics ? `
-• **Total Productos Activos:** ${(dashboardMetrics as any).total_productos || products?.length || 0}
-• **Valor del Inventario:** S/ ${inventoryValue.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
-• **Stock Total:** ${(dashboardMetrics as any).total_stock || 0} unidades
-• **Productos Vendidos (histórico):** ${(dashboardMetrics as any).total_vendido || 0} unidades
-• **Ingresos Históricos Totales:** S/ ${((dashboardMetrics as any).total_ingresos || 0).toLocaleString('es-PE', { minimumFractionDigits: 2 })}
-• **Productos con Stock Bajo:** ${(dashboardMetrics as any).productos_bajo_stock || 0}
-• **Productos Agotados:** ${outOfStock.length}
-• **Tasa de Conversión:** ${((dashboardMetrics as any).conversion_rate_promedio || 0).toFixed(2)}%
-` : 'Métricas no disponibles'}
-
-═══════════════════════════════════════════════════════════════
-💰 ANÁLISIS DE VENTAS
-═══════════════════════════════════════════════════════════════
-📅 **VENTAS HOY:**
-• Total: **S/ ${todaySalesTotal.toLocaleString('es-PE', { minimumFractionDigits: 2 })}**
-• Pedidos: ${todayOrders.length}
-• Promedio por pedido: S/ ${(todayOrders.length > 0 ? todaySalesTotal / todayOrders.length : 0).toFixed(2)}
-
-📅 **VENTAS ESTE MES:**
-• Total: **S/ ${monthSalesTotal.toLocaleString('es-PE', { minimumFractionDigits: 2 })}**
-• Pedidos: ${monthOrders.length}
-
-📅 **ÚLTIMOS 30 DÍAS:**
-• Total: S/ ${last30DaysSales.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
-• Pedidos: ${last30DaysOrders.length}
-
-🏆 **TOP 10 PRODUCTOS MÁS VENDIDOS:**
-${topSellingProducts.map((p, i) => `${i + 1}. **${p.name}**
-   • Unidades vendidas: ${p.quantity}
-   • Ingresos: S/ ${p.revenue.toLocaleString('es-PE', { minimumFractionDigits: 2 })}`).join('\n') || 'Sin datos de ventas'}
-
-═══════════════════════════════════════════════════════════════
-📦 GESTIÓN DE PEDIDOS - ESTADO OPERATIVO
-═══════════════════════════════════════════════════════════════
-📊 **RESUMEN POR ESTADO:**
-• 🔴 **Pendientes (UNFULFILLED):** ${ordersByStatus.UNFULFILLED.length} pedidos
-• 🟠 **Esperando Stock (WAITING_STOCK):** ${ordersByStatus.WAITING_STOCK.length} pedidos (Cross-docking activo)
-• 🟡 **En Picking:** ${ordersByStatus.PICKING.length} pedidos
-• 🟢 **Empacados (PACKED):** ${ordersByStatus.PACKED.length} pedidos
-• 📦 **Enviados (SHIPPED):** ${ordersByStatus.SHIPPED.length} pedidos
-• ✅ **Entregados (DELIVERED):** ${ordersByStatus.DELIVERED.length} pedidos
-
-📊 **ESTADO DE PAGOS:**
-• ⏳ Pendientes de pago: ${ordersByPayment.PENDING.length} (S/ ${ordersByPayment.PENDING.reduce((s, o) => s + Number(o.total || 0), 0).toFixed(2)})
-• ✅ Pagados: ${ordersByPayment.PAID.length} (S/ ${ordersByPayment.PAID.reduce((s, o) => s + Number(o.total || 0), 0).toFixed(2)})
-• 🔄 Pago parcial: ${ordersByPayment.PARTIAL.length}
-
-═══════════════════════════════════════════════════════════════
-✅ PEDIDOS ENTREGADOS (Últimos 30 días)
-═══════════════════════════════════════════════════════════════
-• **Total entregados:** ${deliveredOrders.length} pedidos
-• **Tiempo promedio de entrega:** ${avgDeliveryTime.toFixed(1)} días
-• **Valor total entregado:** S/ ${deliveredOrders.reduce((s, o) => s + Number(o.total || 0), 0).toFixed(2)}
-
-📋 **ÚLTIMOS PEDIDOS ENTREGADOS:**
-${deliveredOrders.slice(0, 5).map(o => `• **${o.order_number}** - ${o.customer_name}
-  - Entregado: ${o.delivered_at ? new Date(o.delivered_at).toLocaleDateString('es-PE') : 'N/A'}
-  - Total: S/ ${Number(o.total || 0).toFixed(2)}
-  - Distrito: ${o.customer_district || 'N/A'}`).join('\n') || 'No hay entregas recientes'}
-
-📝 **CRITERIOS DE ENTREGA:**
-Un pedido se considera "ENTREGADO" cuando:
-1. El courier confirma la entrega física al cliente
-2. El administrador actualiza el estado a DELIVERED en el sistema
-3. Se registra el timestamp \`delivered_at\`
-4. Se guarda el evento en \`order_state_log\`
-
-═══════════════════════════════════════════════════════════════
-📱 ANÁLISIS POR CANAL DE ORIGEN
-═══════════════════════════════════════════════════════════════
-📲 **WHATSAPP MANUAL:**
-• Pedidos: ${sourceAnalysis.whatsapp.total}
-• Ingresos: S/ ${sourceAnalysis.whatsapp.revenue.toFixed(2)}
-• Ticket promedio: S/ ${sourceAnalysis.whatsapp.avgTicket.toFixed(2)}
-• % del total: ${salesOrders?.length ? ((sourceAnalysis.whatsapp.total / salesOrders.length) * 100).toFixed(1) : 0}%
-
-🌐 **WEB FORM:**
-• Pedidos: ${sourceAnalysis.web.total}
-• Ingresos: S/ ${sourceAnalysis.web.revenue.toFixed(2)}
-• Ticket promedio: S/ ${sourceAnalysis.web.avgTicket.toFixed(2)}
-• % del total: ${salesOrders?.length ? ((sourceAnalysis.web.total / salesOrders.length) * 100).toFixed(1) : 0}%
-
-📊 **CANAL MÁS USADO:** ${sourceAnalysis.whatsapp.total > sourceAnalysis.web.total ? '📲 WhatsApp Manual' : '🌐 Web Form'} (${Math.max(sourceAnalysis.whatsapp.total, sourceAnalysis.web.total)} pedidos)
-
-═══════════════════════════════════════════════════════════════
-👨‍💼 VENDEDORES Y ASIGNACIONES
-═══════════════════════════════════════════════════════════════
-📊 **VENDEDORES ACTIVOS:** ${vendedores?.filter(v => v.is_active)?.length || 0}
-
-${Array.from(vendedorStats.values()).map((v, i) => `${i + 1}. **${v.name}**
-   • Pedidos asignados: ${v.orders}
-   • Ingresos generados: S/ ${v.revenue.toFixed(2)}
-   • Entregados: ${v.delivered} | Pendientes: ${v.pending}`).join('\n') || 'No hay datos de vendedores'}
-
-📋 **LISTA DE VENDEDORES:**
-${vendedores?.map(v => `• **${v.nombre}** (${v.email})
-  - Activo: ${v.is_active ? '✅ Sí' : '❌ No'}
-  - Teléfono: ${v.telefono || 'N/A'}
-  - Pedidos asignados: ${v.pedidos_asignados || 0}`).join('\n') || 'No hay vendedores registrados'}
-
-═══════════════════════════════════════════════════════════════
-📲 NOTIFICACIONES WHATSAPP - STATUS
-═══════════════════════════════════════════════════════════════
-📊 **RESUMEN DE MENSAJES:**
-• Total enviados: ${waMessageStats.total}
-• ✅ Entregados: ${waMessageStats.delivered}
-• 👀 Leídos: ${waMessageStats.read}
-• ❌ Fallidos: ${waMessageStats.failed}
-• Tasa de entrega: ${waMessageStats.total > 0 ? ((waMessageStats.delivered / waMessageStats.total) * 100).toFixed(1) : 0}%
-
-📋 **ÚLTIMOS MENSAJES WA:**
-${recentWaMessages.map(m => `• 📱 ${m.phone} - ${m.type || 'mensaje'}
-  - Estado: ${m.status || 'enviado'}
-  - Enviado: ${m.sentAt ? new Date(m.sentAt).toLocaleString('es-PE') : 'N/A'}`).join('\n') || 'No hay mensajes recientes'}
-
-═══════════════════════════════════════════════════════════════
-🔄 CROSS-DOCKING & BACKORDERS
-═══════════════════════════════════════════════════════════════
-📦 **PEDIDOS EN CROSS-DOCKING:** ${crossDockingOrders.length}
-${crossDockingOrders.slice(0, 5).map(o => `• **${o.order_number}** - ${o.customer_name}
-  - Estado: WAITING_STOCK
-  - Total: S/ ${Number(o.total || 0).toFixed(2)}`).join('\n') || 'No hay pedidos en cross-docking'}
-
-🔗 **POs VINCULADAS (Para Cross-docking):** ${crossDockingPOs.length}
-${crossDockingPOs.slice(0, 5).map(po => `• **${po.order_number}** → SO vinculada
-  - Producto: ${po.product_name}
-  - Estado: ${po.status}
-  - Cantidad: ${po.quantity}`).join('\n') || 'No hay POs vinculadas'}
-
-📋 **ITEMS EN BACKORDER:** ${backorderItems.length}
-${backorderItems.slice(0, 5).map(item => `• ${item.product_name} (${item.product_code})
-  - Cantidad: ${item.quantity}
-  - PO vinculada: ${item.linked_purchase_order_id ? '✅ Sí' : '❌ No'}`).join('\n') || 'No hay items en backorder'}
-
-═══════════════════════════════════════════════════════════════
-🎯 PUNTO DE REORDEN (ROP) - CALCULADORA IA
-═══════════════════════════════════════════════════════════════
-Fórmula: **ROP = (Demanda × Lead Time) + Safety Stock**
-
-🚨 **PRODUCTOS QUE NECESITAN REORDEN (${ropAlerts.length}):**
-${ropAlerts.slice(0, 10).map(p => `• **${p.nombre_producto}** (${p.product_code})
-  - Stock actual: ${p.cantidad_stock} unidades
-  - ROP (IA): ${p.ai_reorder_point} unidades
-  - ⚠️ ALERTA: Stock por debajo del punto de reorden`).join('\n') || '✅ Todos los productos tienen stock adecuado'}
-
-═══════════════════════════════════════════════════════════════
-⚠️ ALERTAS CRÍTICAS DE STOCK
-═══════════════════════════════════════════════════════════════
-${criticalStock.length > 0 ? `
-🔴 **${criticalStock.length} PRODUCTOS EN ESTADO CRÍTICO:**
-${criticalStock.slice(0, 10).map(p => `• **${p.nombre_producto}** (${p.product_code})
-  - Stock: ${p.cantidad_stock} unidades
-  - ROP: ${p.ai_reorder_point || p.reorder_point || 'No definido'}`).join('\n')}` : '✅ No hay productos en estado crítico'}
-
-${outOfStock.length > 0 ? `
-🔴 **${outOfStock.length} PRODUCTOS AGOTADOS (Stock = 0):**
-${outOfStock.slice(0, 5).map(p => `• **${p.nombre_producto}** (${p.product_code})`).join('\n')}` : ''}
-
-═══════════════════════════════════════════════════════════════
-🛒 ÓRDENES DE COMPRA - FLUJOS
-═══════════════════════════════════════════════════════════════
-📊 **RESUMEN:**
-• Total POs activas: ${purchaseOrders?.length || 0}
-• POs Auto-generadas (IA): ${autoPOs.length}
-• POs en Borrador: ${draftPOs.length}
-• POs Pendientes/En Tránsito: ${pendingPOs.length}
-
-🤖 **POs AUTO-GENERADAS POR ROP:**
-${autoPOs.slice(0, 5).map(po => `• **${po.order_number}** - ${po.product_name}
-  - Estado: ${po.status}
-  - Cantidad: ${po.quantity} unidades
-  - Tipo: ${po.po_type}
-  - Prioridad: ${po.priority}`).join('\n') || 'No hay POs automáticas'}
-
-📋 **TIPOS DE FLUJOS:**
-1. **STOCK_REPLENISHMENT:** Reposición de stock normal
-2. **BACKORDER_FULFILLMENT:** Para cumplir pedidos sin stock (Cross-docking)
-3. **URGENT:** Reposición urgente por stock crítico
-
-═══════════════════════════════════════════════════════════════
-👥 CLIENTES - ANÁLISIS
-═══════════════════════════════════════════════════════════════
-• **Total clientes:** ${customers?.length || 0}
-• **Nuevos este mes:** ${newCustomersThisMonth.length}
-
-🏆 **TOP 10 CLIENTES:**
-${topCustomers.map((c, i) => `${i + 1}. **${c.name} ${c.lastname || ''}**
-   - Total gastado: S/ ${Number(c.total_spent || 0).toFixed(2)}
-   - Pedidos: ${c.total_orders || 0}
-   - Tipo: ${c.customer_type || 'REGULAR'}
-   - Distrito: ${c.district || 'N/A'}`).join('\n') || 'Sin datos de clientes'}
-
-═══════════════════════════════════════════════════════════════
-🏢 PROVEEDORES Y BALANCES
-═══════════════════════════════════════════════════════════════
-${suppliers && suppliers.length > 0 ? `
-**Proveedores activos:** ${suppliers.length}
-${suppliers.map(s => `• **${s.name}**
-  - Lead time: ${s.lead_time_days || 7} días
-  - Rating: ${s.rating || 'N/A'}/5
-  - Términos pago: ${s.payment_terms || 'No especificado'}`).join('\n')}` : 'No hay proveedores registrados'}
-
-═══════════════════════════════════════════════════════════════
-📋 BASE DE CONOCIMIENTO - PROCESOS
+📊 DATOS ACTUALES DEL NEGOCIO
 ═══════════════════════════════════════════════════════════════
 
-**FLUJO DE PEDIDOS (SOP):**
-1. **UNFULFILLED** → Pedido recibido, pendiente de procesamiento
-2. **WAITING_STOCK** → Esperando reabastecimiento (Cross-docking activo)
-3. **PICKING** → En proceso de recolección
-4. **PACKED** → Empacado, listo para envío
-5. **SHIPPED** → En tránsito al cliente
-6. **DELIVERED** → Entregado exitosamente
+**VENTAS HOY:** S/ ${todaySalesTotal.toFixed(2)} (${todayOrders.length} pedidos)
+**VENTAS MES:** S/ ${monthSalesTotal.toFixed(2)} (${monthOrders.length} pedidos)
+**VALOR INVENTARIO:** S/ ${inventoryValue.toFixed(2)}
 
-**CROSS-DOCKING:**
-- Sistema identifica cuando un pedido requiere items sin stock
-- Se genera PO automática vinculada al pedido
-- Al recibir la PO, se activa envío directo sin almacenar
+**ESTADO DE PEDIDOS:**
+• Pendientes (UNFULFILLED): ${ordersByStatus.UNFULFILLED.length}
+• Esperando Stock: ${ordersByStatus.WAITING_STOCK.length}
+• En Picking: ${ordersByStatus.PICKING.length}
+• Empacados: ${ordersByStatus.PACKED.length}
+• Enviados: ${ordersByStatus.SHIPPED.length}
+• Entregados: ${ordersByStatus.DELIVERED.length}
 
-**CRITERIO DE ENTREGA:**
-- El pedido está "ENTREGADO" cuando el courier confirma entrega física
-- Se actualiza \`fulfillment_status = 'DELIVERED'\`
-- Se registra \`delivered_at\` con timestamp
-- Se guarda en \`order_state_log\` para auditoría
+**ÓRDENES DE COMPRA:**
+• En Borrador (DRAFT): ${posByStatus.DRAFT.length}
+${posByStatus.DRAFT.slice(0, 5).map(po => `  - ${po.order_number}: ${po.product_name} (${po.quantity} uds) - S/${po.total_amount}`).join('\n')}
+• Enviadas (SENT): ${posByStatus.SENT.length}
+• Confirmadas: ${posByStatus.CONFIRMED.length}
+• En Tránsito: ${posByStatus.IN_TRANSIT.length}
+• Recibidas: ${posByStatus.RECEIVED.length}
+
+**ALERTAS DE INVENTARIO:**
+• Productos agotados (Stock = 0): ${outOfStock.length}
+${outOfStock.slice(0, 5).map(p => `  - ${p.nombre_producto} (${p.product_code})`).join('\n')}
+• Productos críticos (Stock <= 5): ${criticalStock.length}
+${criticalStock.slice(0, 5).map(p => `  - ${p.nombre_producto}: ${p.cantidad_stock} uds`).join('\n')}
+
+**CANALES DE ORIGEN:**
+• WhatsApp Manual: ${ordersBySource.whatsapp_manual.length} pedidos
+• Web Form: ${ordersBySource.web_form.length} pedidos
+
+**PROVEEDORES ACTIVOS:** ${suppliers?.length || 0}
+${suppliers?.slice(0, 3).map(s => `• ${s.name} (Lead time: ${s.lead_time_days} días)`).join('\n') || ''}
+
+**VENDEDORES:** ${vendedores?.length || 0}
+${vendedores?.map(v => `• ${v.nombre} - Pedidos asignados: ${v.pedidos_asignados || 0}`).join('\n') || ''}
 
 ═══════════════════════════════════════════════════════════════
-📋 INSTRUCCIONES PARA EL ASISTENTE
+🛠️ HERRAMIENTAS DISPONIBLES (USA CUANDO SEA NECESARIO)
 ═══════════════════════════════════════════════════════════════
-1. Responde SIEMPRE en español con tono profesional y amigable
-2. Usa **negritas** para destacar información importante
-3. Usa emojis para organizar visualmente la información
-4. Incluye datos específicos: nombres, cantidades, precios exactos
-5. Para preguntas sobre entregas, usa la sección "PEDIDOS ENTREGADOS"
-6. Para análisis de canales, compara WhatsApp vs Web Form
-7. Para vendedores, muestra asignaciones y rendimiento
-8. Si detectas anomalías, menciónalas proactivamente
-9. Ofrece insights adicionales basados en los datos
 
-💡 **CAPACIDADES ESPECIALES:**
-- Análisis de rentabilidad por producto y canal
-- Tracking de pedidos y estados de entrega
-- Métricas de vendedores y asignaciones
-- Cross-docking y backorder tracking
-- Alertas de ROP e inventario
-- Análisis de notificaciones WhatsApp
-- Comparativas por canal de origen
+1. **update_purchase_order_status** - Cambiar estado de una PO
+   Ejemplo: Cambiar PO-2025-5004 de DRAFT a SENT
+
+2. **update_sales_order_status** - Cambiar estado de un pedido
+   Ejemplo: Marcar ORD-2025-0001 como SHIPPED
+
+3. **create_purchase_order** - Crear nueva orden de compra
+   Ejemplo: Crear PO para reabastecer producto agotado
+
+4. **update_product_stock** - Ajustar stock de un producto
+   Ejemplo: Ajustar stock después de conteo físico
+
+═══════════════════════════════════════════════════════════════
+📋 INSTRUCCIONES
+═══════════════════════════════════════════════════════════════
+1. Responde SIEMPRE en español
+2. Usa **negritas** y emojis para organizar la información
+3. Cuando te pidan ejecutar una acción, USA LAS HERRAMIENTAS - no solo describas
+4. Después de ejecutar una acción, confirma el resultado al usuario
+5. Si hay errores, explícalos claramente
 `;
 
-    console.log('Calling Lovable AI...');
+    console.log('Calling Lovable AI with tools...');
+    
+    // First call - AI decides if it needs to use tools
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -556,6 +613,8 @@ ${suppliers.map(s => `• **${s.name}**
           { role: 'system', content: context },
           { role: 'user', content: question }
         ],
+        tools: agentTools,
+        tool_choice: "auto"
       }),
     });
 
@@ -585,7 +644,74 @@ ${suppliers.map(s => `• **${s.name}**
     }
 
     const aiData = await aiResponse.json();
-    const answer = aiData.choices?.[0]?.message?.content || 'No pude generar una respuesta.';
+    const firstChoice = aiData.choices?.[0];
+    
+    console.log('AI Response:', JSON.stringify(firstChoice, null, 2));
+
+    // Check if AI wants to use tools
+    if (firstChoice?.message?.tool_calls && firstChoice.message.tool_calls.length > 0) {
+      console.log('AI wants to use tools, executing...');
+      
+      const toolResults: string[] = [];
+      
+      for (const toolCall of firstChoice.message.tool_calls) {
+        const toolName = toolCall.function.name;
+        let toolArgs;
+        
+        try {
+          toolArgs = JSON.parse(toolCall.function.arguments);
+        } catch (e) {
+          console.error('Error parsing tool arguments:', e);
+          toolResults.push(`❌ Error parseando argumentos para ${toolName}`);
+          continue;
+        }
+        
+        console.log(`Executing tool: ${toolName}`, toolArgs);
+        const result = await executeToolAction(supabase, toolName, toolArgs);
+        toolResults.push(result.message);
+      }
+      
+      // Make a second call to get the final response with tool results
+      const followUpResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${lovableApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: context },
+            { role: 'user', content: question },
+            { role: 'assistant', content: firstChoice.message.content || '', tool_calls: firstChoice.message.tool_calls },
+            { role: 'tool', content: toolResults.join('\n\n'), tool_call_id: firstChoice.message.tool_calls[0].id }
+          ],
+        }),
+      });
+
+      if (followUpResponse.ok) {
+        const followUpData = await followUpResponse.json();
+        const finalAnswer = followUpData.choices?.[0]?.message?.content || toolResults.join('\n\n');
+        
+        return new Response(JSON.stringify({ 
+          answer: finalAnswer,
+          actions_executed: toolResults
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      // If follow-up fails, return the tool results directly
+      return new Response(JSON.stringify({ 
+        answer: `He ejecutado las siguientes acciones:\n\n${toolResults.join('\n\n')}`,
+        actions_executed: toolResults
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // No tools needed, return the direct response
+    const answer = firstChoice?.message?.content || 'No pude generar una respuesta.';
     
     console.log('AI Response received, length:', answer.length);
 

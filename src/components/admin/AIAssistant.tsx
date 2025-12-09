@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { InventoryAlertNotifications } from './InventoryAlertNotifications';
+
 
 interface Message {
   role: 'user' | 'assistant';
@@ -297,8 +297,6 @@ export function AIAssistant() {
 
   return (
     <>
-      {/* Critical Inventory Alert Notifications */}
-      <InventoryAlertNotifications onAlertClick={() => setIsOpen(true)} />
 
       {/* Floating AI Button */}
       <Button
