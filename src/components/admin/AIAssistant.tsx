@@ -8,15 +8,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { 
   Bot, X, Send, Loader2, Sparkles, Package, TrendingUp, 
   ShoppingCart, AlertTriangle, BarChart3, Building2, 
-  DollarSign, Target, RefreshCw, ChevronRight
+  DollarSign, Target, RefreshCw, ChevronRight, Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
+// n8n Workflow Configuration
+const N8N_WORKFLOW_URL = 'https://plazamedik.app.n8n.cloud/webhook/dfa2eb0e-64a7-47bf-9a0c-ef35458a675b';
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'n8n';
   content: string;
+  source?: 'local' | 'n8n';
 }
 
 interface QuickAction {
@@ -115,6 +119,56 @@ export function AIAssistant() {
     }
   }, [messages]);
 
+  // Call n8n workflow
+  const callN8nWorkflow = async (mensaje: string): Promise<string | null> => {
+    try {
+      console.log('Calling n8n workflow with message:', mensaje);
+      
+      const response = await fetch(N8N_WORKFLOW_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mensaje }),
+      });
+
+      if (!response.ok) {
+        console.error('n8n workflow error:', response.status);
+        return null;
+      }
+
+      const data = await response.json();
+      console.log('n8n response:', data);
+      
+      // n8n puede devolver la respuesta en diferentes formatos
+      if (typeof data === 'string') {
+        return data;
+      }
+      if (data.output) {
+        return data.output;
+      }
+      if (data.response) {
+        return data.response;
+      }
+      if (data.text) {
+        return data.text;
+      }
+      if (data.message) {
+        return data.message;
+      }
+      // Si es un array, tomar el primer elemento
+      if (Array.isArray(data) && data.length > 0) {
+        const first = data[0];
+        return first.output || first.response || first.text || first.message || JSON.stringify(first);
+      }
+      
+      return JSON.stringify(data);
+    } catch (error) {
+      console.error('Error calling n8n workflow:', error);
+      return null;
+    }
+  };
+
   const handleSend = async (messageText?: string) => {
     const userMessage = messageText || input.trim();
     if (!userMessage || loading) return;
@@ -124,6 +178,23 @@ export function AIAssistant() {
     setLoading(true);
 
     try {
+      // PRIMERO: Llamar al workflow de n8n "agente ia plaza"
+      console.log('Sending to n8n workflow...');
+      const n8nResponse = await callN8nWorkflow(userMessage);
+      
+      if (n8nResponse) {
+        toast.success('Respuesta recibida de n8n');
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: n8nResponse,
+          source: 'n8n'
+        }]);
+        setLoading(false);
+        return;
+      }
+
+      // Si n8n falla, usar el agente local de Supabase como fallback
+      console.log('n8n failed, falling back to local agent...');
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         setMessages(prev => [...prev, {
@@ -148,7 +219,8 @@ export function AIAssistant() {
 
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: data.answer || 'No pude generar una respuesta.'
+        content: data.answer || 'No pude generar una respuesta.',
+        source: 'local'
       }]);
     } catch (error: any) {
       console.error('AI Assistant error:', error);
@@ -460,8 +532,17 @@ export function AIAssistant() {
                     )}
                   >
                     {msg.role === 'assistant' && (
-                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center">
-                        <Bot className="h-4 w-4 text-primary-foreground" />
+                      <div className={cn(
+                        "flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center",
+                        msg.source === 'n8n' 
+                          ? "bg-gradient-to-r from-orange-500 to-orange-600" 
+                          : "bg-gradient-to-r from-primary to-primary/80"
+                      )}>
+                        {msg.source === 'n8n' ? (
+                          <Zap className="h-4 w-4 text-white" />
+                        ) : (
+                          <Bot className="h-4 w-4 text-primary-foreground" />
+                        )}
                       </div>
                     )}
                     <div
@@ -469,9 +550,17 @@ export function AIAssistant() {
                         "max-w-[85%] rounded-lg px-4 py-3",
                         msg.role === 'user'
                           ? "bg-primary text-primary-foreground"
+                          : msg.source === 'n8n'
+                          ? "bg-orange-50 border border-orange-200 dark:bg-orange-950/20 dark:border-orange-800"
                           : "bg-muted"
                       )}
                     >
+                      {msg.source === 'n8n' && (
+                        <div className="flex items-center gap-1 mb-2 text-xs text-orange-600 dark:text-orange-400">
+                          <Zap className="h-3 w-3" />
+                          <span className="font-medium">n8n Workflow</span>
+                        </div>
+                      )}
                       <div className="whitespace-pre-wrap space-y-1">
                         {renderMessageContent(msg.content)}
                       </div>

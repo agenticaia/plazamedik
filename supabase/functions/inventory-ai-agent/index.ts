@@ -118,6 +118,32 @@ const agentTools = [
         required: ["product_code", "new_quantity"]
       }
     }
+  },
+  {
+    type: "function",
+    function: {
+      name: "trigger_n8n_webhook",
+      description: "Trigger an n8n webhook to notify external systems about critical events. Use this when executing important actions that require external notification.",
+      parameters: {
+        type: "object",
+        properties: {
+          event_type: {
+            type: "string",
+            enum: ["po_status_changed", "order_status_changed", "stock_alert", "po_created", "critical_action"],
+            description: "The type of event to notify"
+          },
+          event_data: {
+            type: "object",
+            description: "The data associated with the event"
+          },
+          message: {
+            type: "string",
+            description: "A human-readable message about the event"
+          }
+        },
+        required: ["event_type", "message"]
+      }
+    }
   }
 ];
 
@@ -366,6 +392,51 @@ async function executeToolAction(supabase: any, toolName: string, args: any): Pr
         };
       }
 
+      case "trigger_n8n_webhook": {
+        const { event_type, event_data, message } = args;
+        
+        // n8n webhook URL for critical events
+        const n8nWebhookUrl = 'https://plazamedik.app.n8n.cloud/webhook/dfa2eb0e-64a7-47bf-9a0c-ef35458a675b';
+        
+        try {
+          const webhookPayload = {
+            mensaje: `[${event_type.toUpperCase()}] ${message}`,
+            event: event_type,
+            data: event_data || {},
+            timestamp: new Date().toISOString(),
+            source: 'plazamedik-ai-agent'
+          };
+          
+          console.log('Triggering n8n webhook:', webhookPayload);
+          
+          const webhookResponse = await fetch(n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(webhookPayload)
+          });
+
+          if (webhookResponse.ok) {
+            const responseData = await webhookResponse.text();
+            return {
+              success: true,
+              message: `📤 Notificación enviada a n8n: ${message}`,
+              data: { event_type, response: responseData }
+            };
+          } else {
+            return {
+              success: false,
+              message: `⚠️ No se pudo notificar a n8n (${webhookResponse.status}), pero la acción se completó`
+            };
+          }
+        } catch (error: any) {
+          console.error('Error triggering n8n webhook:', error);
+          return {
+            success: false,
+            message: `⚠️ Error al notificar a n8n: ${error.message}`
+          };
+        }
+      }
+
       default:
         return { success: false, message: `Herramienta no reconocida: ${toolName}` };
     }
@@ -588,14 +659,18 @@ ${vendedores?.map(v => `• ${v.nombre} - Pedidos asignados: ${v.pedidos_asignad
 4. **update_product_stock** - Ajustar stock de un producto
    Ejemplo: Ajustar stock después de conteo físico
 
+5. **trigger_n8n_webhook** - Notificar a n8n sobre acciones críticas
+   IMPORTANTE: Después de ejecutar acciones críticas (cambio de estado de PO, creación de PO, alertas de stock), USA ESTA HERRAMIENTA para notificar al workflow de n8n.
+
 ═══════════════════════════════════════════════════════════════
 📋 INSTRUCCIONES
 ═══════════════════════════════════════════════════════════════
 1. Responde SIEMPRE en español
 2. Usa **negritas** y emojis para organizar la información
 3. Cuando te pidan ejecutar una acción, USA LAS HERRAMIENTAS - no solo describas
-4. Después de ejecutar una acción, confirma el resultado al usuario
-5. Si hay errores, explícalos claramente
+4. Después de ejecutar una acción crítica, USA trigger_n8n_webhook para notificar
+5. Después de ejecutar una acción, confirma el resultado al usuario
+6. Si hay errores, explícalos claramente
 `;
 
     console.log('Calling Lovable AI with tools...');
