@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import AIAgentSettings from "./pages/admin/AIAgentSettings";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -85,6 +86,14 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <ReorderPointsIA />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/agente-ia"
+              element={
+                <ProtectedAdminRoute>
+                  <AIAgentSettings />
                 </ProtectedAdminRoute>
               }
             />
