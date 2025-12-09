@@ -67,13 +67,13 @@ const quickActions: QuickAction[] = [
 
 const navigationMenu = [
   { label: 'Dashboard', path: '/admin/dashboard', icon: BarChart3 },
+  { label: 'Pedidos', path: '/admin/pedidos', icon: ShoppingCart },
   { label: 'Ejecutivo Analytics', path: '/admin/ejecutivo', icon: TrendingUp },
   { label: 'Estadísticas Ventas', path: '/admin/estadisticas-ventas', icon: DollarSign },
-  { label: 'Pagos & Finanzas', path: '/admin/pagos', icon: DollarSign },
-  { label: 'Productos', path: '/admin/productos', icon: Package },
-  { label: 'Órdenes de Compra', path: '/admin/ordenes-compra', icon: ShoppingCart },
+  { label: 'Órdenes de Compra', path: '/admin/ordenes-compra', icon: Package },
   { label: 'Punto Reorden IA', path: '/admin/punto-reorden-ia', icon: Target },
   { label: 'Predicción IA', path: '/admin/inventario-ia', icon: Sparkles },
+  { label: 'Agente IA Config', path: '/admin/agente-ia', icon: Bot },
 ];
 
 const STORAGE_KEY = 'ai_assistant_history';
