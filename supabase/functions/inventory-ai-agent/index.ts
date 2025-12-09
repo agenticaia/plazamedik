@@ -129,7 +129,7 @@ const agentTools = [
         properties: {
           event_type: {
             type: "string",
-            enum: ["po_status_changed", "order_status_changed", "stock_alert", "po_created", "critical_action"],
+            enum: ["stock_alert", "order_created", "order_delivered", "po_generated", "rop_trigger", "po_status_changed", "order_status_changed", "critical_action"],
             description: "The type of event to notify"
           },
           event_data: {
@@ -139,6 +139,10 @@ const agentTools = [
           message: {
             type: "string",
             description: "A human-readable message about the event"
+          },
+          webhook_url: {
+            type: "string",
+            description: "Optional custom webhook URL. If not provided, uses the default configured URL."
           }
         },
         required: ["event_type", "message"]
@@ -393,10 +397,10 @@ async function executeToolAction(supabase: any, toolName: string, args: any): Pr
       }
 
       case "trigger_n8n_webhook": {
-        const { event_type, event_data, message } = args;
+        const { event_type, event_data, message, webhook_url } = args;
         
-        // n8n webhook URL for critical events
-        const n8nWebhookUrl = 'https://plazamedik.app.n8n.cloud/webhook/dfa2eb0e-64a7-47bf-9a0c-ef35458a675b';
+        // Use provided webhook URL or default
+        const n8nWebhookUrl = webhook_url || 'https://plazamedik.app.n8n.cloud/webhook-test/dfa2eb0e-64a7-47bf-9a0c-ef35458a675b';
         
         try {
           const webhookPayload = {

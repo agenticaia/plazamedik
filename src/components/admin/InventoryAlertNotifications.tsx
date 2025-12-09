@@ -1,20 +1,31 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { AlertTriangle, Package, ShoppingCart, TrendingDown, Bell, X } from 'lucide-react';
+import { AlertTriangle, Package, ShoppingCart, TrendingDown, Bell, X, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
+// Función para agregar alertas de n8n desde fuera del componente
+export const addN8nAlert = (alert: {
+  title: string;
+  message: string;
+  severity?: 'critical' | 'warning' | 'info';
+}) => {
+  const event = new CustomEvent('n8n-alert', { detail: alert });
+  window.dispatchEvent(event);
+};
+
 interface CriticalAlert {
   id: string;
-  type: 'stock_critico' | 'sin_stock' | 'rop_alerta' | 'po_urgente';
+  type: 'stock_critico' | 'sin_stock' | 'rop_alerta' | 'po_urgente' | 'n8n_event';
   title: string;
   message: string;
   productCode?: string;
   severity: 'critical' | 'warning' | 'info';
   timestamp: Date;
   dismissed: boolean;
+  source?: 'system' | 'n8n';
 }
 
 export function InventoryAlertNotifications() {
@@ -22,6 +33,37 @@ export function InventoryAlertNotifications() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [lastCheck, setLastCheck] = useState<Date | null>(null);
   const [isChecking, setIsChecking] = useState(false);
+
+  // Listen for n8n alerts from other components
+  useEffect(() => {
+    const handleN8nAlert = (event: CustomEvent<{ title: string; message: string; severity?: 'critical' | 'warning' | 'info' }>) => {
+      const { title, message, severity = 'info' } = event.detail;
+      const newAlert: CriticalAlert = {
+        id: `n8n_${Date.now()}`,
+        type: 'n8n_event',
+        title,
+        message,
+        severity,
+        timestamp: new Date(),
+        dismissed: false,
+        source: 'n8n'
+      };
+      
+      setAlerts(prev => [newAlert, ...prev]);
+      
+      // Show toast notification
+      if (severity === 'critical') {
+        toast.error(title, { description: message, icon: '⚡' });
+      } else if (severity === 'warning') {
+        toast.warning(title, { description: message, icon: '⚡' });
+      } else {
+        toast.info(title, { description: message, icon: '⚡' });
+      }
+    };
+
+    window.addEventListener('n8n-alert', handleN8nAlert as EventListener);
+    return () => window.removeEventListener('n8n-alert', handleN8nAlert as EventListener);
+  }, []);
 
   const checkCriticalAlerts = useCallback(async () => {
     if (isChecking) return;
@@ -154,12 +196,14 @@ export function InventoryAlertNotifications() {
     setShowNotifications(false);
   };
 
-  const getAlertIcon = (type: CriticalAlert['type']) => {
-    switch (type) {
+  const getAlertIcon = (alert: CriticalAlert) => {
+    if (alert.source === 'n8n') return Zap;
+    switch (alert.type) {
       case 'sin_stock': return Package;
       case 'stock_critico': return TrendingDown;
       case 'rop_alerta': return AlertTriangle;
       case 'po_urgente': return ShoppingCart;
+      case 'n8n_event': return Zap;
       default: return AlertTriangle;
     }
   };
@@ -224,27 +268,44 @@ export function InventoryAlertNotifications() {
                 </div>
               ) : (
                 alerts.map(alert => {
-                  const Icon = getAlertIcon(alert.type);
+                  const Icon = getAlertIcon(alert);
+                  const isN8n = alert.source === 'n8n';
                   return (
                     <div 
                       key={alert.id}
                       className={cn(
                         "p-3 border-b last:border-0 hover:bg-muted/50 transition-colors",
-                        alert.severity === 'critical' && "bg-destructive/5"
+                        alert.severity === 'critical' && "bg-destructive/5",
+                        isN8n && "bg-orange-50/50 dark:bg-orange-950/10"
                       )}
                     >
                       <div className="flex items-start gap-2">
                         <div className={cn(
                           "mt-0.5 p-1 rounded",
-                          alert.severity === 'critical' ? "bg-destructive/20" : "bg-warning/20"
+                          isN8n 
+                            ? "bg-orange-100 dark:bg-orange-900/30" 
+                            : alert.severity === 'critical' 
+                            ? "bg-destructive/20" 
+                            : "bg-warning/20"
                         )}>
                           <Icon className={cn(
                             "h-3 w-3",
-                            alert.severity === 'critical' ? "text-destructive" : "text-warning"
+                            isN8n 
+                              ? "text-orange-600" 
+                              : alert.severity === 'critical' 
+                              ? "text-destructive" 
+                              : "text-warning"
                           )} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium">{alert.title}</p>
+                          <div className="flex items-center gap-1">
+                            <p className="text-xs font-medium">{alert.title}</p>
+                            {isN8n && (
+                              <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-orange-100 text-orange-700 border-orange-300">
+                                n8n
+                              </Badge>
+                            )}
+                          </div>
                           <p className="text-xs text-muted-foreground truncate">{alert.message}</p>
                         </div>
                         <Button
