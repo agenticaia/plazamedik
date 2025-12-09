@@ -76,6 +76,9 @@ const navigationMenu = [
   { label: 'Predicción IA', path: '/admin/inventario-ia', icon: Sparkles },
 ];
 
+const STORAGE_KEY = 'ai_assistant_history';
+const MAX_HISTORY_MESSAGES = 50;
+
 export function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -84,6 +87,27 @@ export function AIAssistant() {
   const [showNav, setShowNav] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  // Load conversation history from localStorage
+  useEffect(() => {
+    const savedHistory = localStorage.getItem(STORAGE_KEY);
+    if (savedHistory) {
+      try {
+        const parsed = JSON.parse(savedHistory);
+        setMessages(parsed);
+      } catch (e) {
+        console.error('Error loading chat history:', e);
+      }
+    }
+  }, []);
+
+  // Save conversation history to localStorage
+  useEffect(() => {
+    if (messages.length > 0) {
+      const historyToSave = messages.slice(-MAX_HISTORY_MESSAGES);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(historyToSave));
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -144,29 +168,131 @@ export function AIAssistant() {
 
   const clearChat = () => {
     setMessages([]);
+    localStorage.removeItem(STORAGE_KEY);
+  };
+
+  // Parse inline markdown (bold, italic, code)
+  const parseInlineMarkdown = (text: string) => {
+    const parts: (string | JSX.Element)[] = [];
+    let remaining = text;
+    let keyIndex = 0;
+
+    while (remaining.length > 0) {
+      // Bold: **text** or __text__
+      const boldMatch = remaining.match(/\*\*(.+?)\*\*|__(.+?)__/);
+      // Code: `text`
+      const codeMatch = remaining.match(/`([^`]+)`/);
+      
+      const boldIndex = boldMatch ? remaining.indexOf(boldMatch[0]) : -1;
+      const codeIndex = codeMatch ? remaining.indexOf(codeMatch[0]) : -1;
+
+      // Find the first match
+      let firstMatch: RegExpMatchArray | null = null;
+      let firstIndex = -1;
+      let matchType: 'bold' | 'code' | null = null;
+
+      if (boldIndex !== -1 && (codeIndex === -1 || boldIndex < codeIndex)) {
+        firstMatch = boldMatch;
+        firstIndex = boldIndex;
+        matchType = 'bold';
+      } else if (codeIndex !== -1) {
+        firstMatch = codeMatch;
+        firstIndex = codeIndex;
+        matchType = 'code';
+      }
+
+      if (firstMatch && firstIndex !== -1 && matchType) {
+        // Add text before the match
+        if (firstIndex > 0) {
+          parts.push(remaining.substring(0, firstIndex));
+        }
+
+        // Add formatted element
+        const content = firstMatch[1] || firstMatch[2];
+        if (matchType === 'bold') {
+          parts.push(<strong key={keyIndex++} className="font-bold">{content}</strong>);
+        } else if (matchType === 'code') {
+          parts.push(
+            <code key={keyIndex++} className="bg-muted px-1 py-0.5 rounded text-xs font-mono">
+              {content}
+            </code>
+          );
+        }
+
+        remaining = remaining.substring(firstIndex + firstMatch[0].length);
+      } else {
+        parts.push(remaining);
+        break;
+      }
+    }
+
+    return parts.length > 0 ? parts : [text];
   };
 
   const renderMessageContent = (content: string) => {
     return content.split('\n').map((line, i) => {
-      // Render section headers with emojis
-      if (line.includes('═══') || line.match(/^[📊🚨⚠️📦💰🏢📋💡✅❌🔄📈]/)) {
-        return <div key={i} className="font-semibold text-sm mt-3 mb-1">{line}</div>;
+      // Skip empty lines but keep spacing
+      if (line.trim() === '') {
+        return <div key={i} className="h-2" />;
       }
-      // Render bullet points
-      if (line.trim().startsWith('•') || line.trim().startsWith('-') || line.trim().startsWith('*')) {
-        return <div key={i} className="ml-2 text-sm">{line}</div>;
+
+      // Section headers with decorative lines
+      if (line.includes('═══')) {
+        const cleanLine = line.replace(/═/g, '').trim();
+        if (cleanLine) {
+          return (
+            <div key={i} className="font-bold text-sm mt-4 mb-2 text-primary border-b border-primary/20 pb-1">
+              {parseInlineMarkdown(cleanLine)}
+            </div>
+          );
+        }
+        return null;
       }
-      // Render numbered items
-      if (line.match(/^\d+\./)) {
-        return <div key={i} className="ml-2 font-medium text-sm">{line}</div>;
+
+      // Emoji headers (lines starting with emoji)
+      if (line.match(/^[📊🚨⚠️📦💰🏢📋💡✅❌🔄📈🎯🏆🛒👥💳🤖🔴🟠🟡🟢⚡]/)) {
+        return (
+          <div key={i} className="font-semibold text-sm mt-3 mb-1">
+            {parseInlineMarkdown(line)}
+          </div>
+        );
       }
-      // Render bold lines (lines that end with :)
-      if (line.trim().endsWith(':') && !line.includes('http')) {
-        return <div key={i} className="font-semibold mt-2">{line}</div>;
+
+      // Numbered items (1. 2. 3. etc)
+      if (line.match(/^\d+\.\s/)) {
+        return (
+          <div key={i} className="ml-2 text-sm py-0.5">
+            {parseInlineMarkdown(line)}
+          </div>
+        );
       }
-      // Regular lines
-      return <div key={i} className="text-sm">{line}</div>;
-    });
+
+      // Bullet points
+      if (line.trim().startsWith('•') || line.trim().match(/^-\s/) || line.trim().match(/^\*\s/)) {
+        const indent = line.startsWith('    ') || line.startsWith('\t') ? 'ml-6' : 'ml-3';
+        return (
+          <div key={i} className={`${indent} text-sm py-0.5`}>
+            {parseInlineMarkdown(line)}
+          </div>
+        );
+      }
+
+      // Lines ending with colon (section titles)
+      if (line.trim().endsWith(':') && !line.includes('http') && line.length < 80) {
+        return (
+          <div key={i} className="font-semibold mt-2 text-sm">
+            {parseInlineMarkdown(line)}
+          </div>
+        );
+      }
+
+      // Regular lines with inline markdown parsing
+      return (
+        <div key={i} className="text-sm py-0.5">
+          {parseInlineMarkdown(line)}
+        </div>
+      );
+    }).filter(Boolean);
   };
 
   return (
