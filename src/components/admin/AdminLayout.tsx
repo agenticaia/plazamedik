@@ -17,6 +17,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { AIAssistant } from './AIAssistant';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -188,6 +189,9 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
             {children}
           </main>
         </div>
+
+        {/* AI Assistant Floating Button */}
+        <AIAssistant />
       </div>
     </SidebarProvider>
   );
