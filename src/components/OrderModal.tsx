@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Product } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight } from "lucide-react";
+import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight, Gift, X } from "lucide-react";
 import AddressSearch from "./AddressSearch";
 import { cn } from "@/lib/utils";
 
@@ -19,11 +19,14 @@ interface OrderModalProps {
 }
 
 const WHATSAPP_NUMBER = "51941941083"; // Número correcto de WhatsApp
+const REFERRAL_DISCOUNT = 15;
 
 const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalProps) => {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [orderCode, setOrderCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Datos del formulario
@@ -38,6 +41,16 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
     color: selectedColor || product.colors[0] || "Piel",
   });
 
+  // Cargar código de referido desde localStorage
+  useEffect(() => {
+    if (open) {
+      const savedCode = localStorage.getItem("referral_code");
+      if (savedCode) {
+        setReferralCode(savedCode);
+      }
+    }
+  }, [open]);
+
   const resetModal = () => {
     setStep(1);
     setFormData({
@@ -51,6 +64,16 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
       color: selectedColor || product.colors[0] || "Piel",
     });
     setOrderCode("");
+    setAppliedDiscount(0);
+  };
+
+  const removeReferralCode = () => {
+    localStorage.removeItem("referral_code");
+    setReferralCode(null);
+    toast({
+      title: "Código removido",
+      description: "El descuento ya no se aplicará",
+    });
   };
 
   const handleClose = () => {
@@ -98,12 +121,20 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
           product_price: product.priceSale,
           quantity: 1,
           source: 'web',
+          referral_code_used: referralCode,
         },
       });
 
       if (error) throw error;
 
       setOrderCode(data.order_number);
+      setAppliedDiscount(data.discount || 0);
+      
+      // Limpiar código de referido después de usarlo
+      if (data.referral_code_applied) {
+        localStorage.removeItem("referral_code");
+      }
+      
       setStep(4);
     } catch (error) {
       console.error("Error al crear pedido:", error);
@@ -122,6 +153,12 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
       ? `📍 Coordenadas: ${formData.lat.toFixed(6)}, ${formData.lng.toFixed(6)}\n🗺️ Ver mapa: https://www.google.com/maps?q=${formData.lat},${formData.lng}`
       : '';
 
+    const discountText = appliedDiscount > 0 
+      ? `🎁 *Descuento por referido:* -S/ ${appliedDiscount.toFixed(2)}\n` 
+      : '';
+
+    const finalTotal = product.priceSale - appliedDiscount;
+
     const message = `¡Hola! 👋
 
 *Nuevo Pedido - ${orderCode}*
@@ -129,6 +166,7 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
 📦 *Producto:* ${product.name}
 🎨 *Color:* ${formData.color}
 💰 *Precio:* S/ ${product.priceSale.toFixed(2)}
+${discountText}💵 *Total a pagar:* S/ ${finalTotal.toFixed(2)}
 
 👤 *Cliente:*
 Nombre: ${formData.name} ${formData.lastname}
@@ -145,6 +183,10 @@ ${coordsText}
     window.open(whatsappUrl, "_blank");
     handleClose();
   };
+
+  // Calcular precio con descuento
+  const finalPrice = referralCode ? Math.max(product.priceSale - REFERRAL_DISCOUNT, 0) : product.priceSale;
+
 
   const renderStep = () => {
     switch (step) {
@@ -234,10 +276,51 @@ ${coordsText}
             </div>
 
             <div className="space-y-4">
+              {/* Mostrar cupón de descuento si hay código de referido */}
+              {referralCode && (
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border border-amber-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Gift className="w-5 h-5 text-amber-600" />
+                      <div>
+                        <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                          ¡Descuento de referido aplicado!
+                        </p>
+                        <p className="text-xs text-amber-600">Código: {referralCode}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-bold text-green-600">-S/ {REFERRAL_DISCOUNT}</span>
+                      <button 
+                        onClick={removeReferralCode}
+                        className="p-1 hover:bg-amber-200/50 rounded transition-colors"
+                      >
+                        <X className="w-4 h-4 text-amber-600" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-muted/50 p-4 rounded-lg space-y-3">
                 <p className="text-sm font-semibold text-foreground mb-2">Producto seleccionado:</p>
                 <p className="text-sm text-muted-foreground">{product.name}</p>
-                <p className="text-lg font-bold text-primary mt-1">S/ {product.priceSale.toFixed(2)}</p>
+                
+                {referralCode ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground line-through">
+                      S/ {product.priceSale.toFixed(2)}
+                    </span>
+                    <span className="text-lg font-bold text-primary">
+                      S/ {finalPrice.toFixed(2)}
+                    </span>
+                    <Badge className="bg-green-100 text-green-700 text-xs">
+                      Ahorras S/ {REFERRAL_DISCOUNT}
+                    </Badge>
+                  </div>
+                ) : (
+                  <p className="text-lg font-bold text-primary mt-1">S/ {product.priceSale.toFixed(2)}</p>
+                )}
                 
                 {product.colors && product.colors.length > 1 && (
                   <div className="pt-2 border-t">
