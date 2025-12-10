@@ -6,7 +6,11 @@ import { getWhatsAppLink } from "@/lib/productUtils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrentCustomer } from "@/hooks/useCurrentCustomer";
 
-const Navigation = () => {
+interface NavigationProps {
+  muted?: boolean;
+}
+
+const Navigation = ({ muted = false }: NavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { data: customer } = useCurrentCustomer();
@@ -22,9 +26,17 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-soft">
+    <nav className={`sticky top-0 z-50 backdrop-blur-sm border-b shadow-soft transition-all ${
+      muted 
+        ? "bg-muted/80 border-muted-foreground/10" 
+        : "bg-card/95 border-border"
+    }`}>
       {/* Top Banner - Delivery Promise */}
-      <div className="bg-primary text-primary-foreground py-2">
+      <div className={`py-2 transition-all ${
+        muted 
+          ? "bg-muted-foreground/20 text-muted-foreground" 
+          : "bg-primary text-primary-foreground"
+      }`}>
         <div className="container mx-auto px-4">
           <p className="text-center text-sm font-medium">
             🚚 Envíos rápidos: <span className="font-bold">24h en Lima</span> /{" "}
