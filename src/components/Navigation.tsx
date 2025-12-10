@@ -95,9 +95,10 @@ const Navigation = ({ muted = false }: NavigationProps) => {
             </Button>
 
             {user ? (
-              <Button variant="outline" size="sm" onClick={() => signOut()}>
-                <LogOut className="w-4 h-4 mr-2" />
-                Salir
+              <Button asChild variant="outline" size="sm">
+                <Link to="/mi-cuenta">
+                  Mi Cuenta
+                </Link>
               </Button>
             ) : (
               <Button asChild variant="outline" size="sm">
@@ -160,16 +161,10 @@ const Navigation = ({ muted = false }: NavigationProps) => {
               </Button>
 
               {user ? (
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => {
-                    signOut();
-                    setIsOpen(false);
-                  }}
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Salir
+                <Button asChild variant="outline" className="w-full">
+                  <Link to="/mi-cuenta" onClick={() => setIsOpen(false)}>
+                    Mi Cuenta
+                  </Link>
                 </Button>
               ) : (
                 <Button asChild variant="outline" className="w-full">

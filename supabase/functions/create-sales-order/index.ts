@@ -62,18 +62,20 @@ serve(async (req) => {
     const REFERRAL_DISCOUNT = 15;
     let discount = 0;
     let validReferralCode: string | null = null;
+    let referrerData: { id: string; name: string; lastname: string | null; phone: string } | null = null;
 
     if (referral_code_used) {
-      // Validar que el código de referido existe
+      // Validar que el código de referido existe y obtener datos del referente
       const { data: referrer } = await supabase
         .from('customers')
-        .select('id, referral_code')
+        .select('id, name, lastname, phone, referral_code')
         .eq('referral_code', referral_code_used)
         .maybeSingle();
 
       if (referrer) {
         discount = REFERRAL_DISCOUNT;
         validReferralCode = referral_code_used;
+        referrerData = referrer;
         console.log(`Aplicando descuento de S/.${REFERRAL_DISCOUNT} por código de referido: ${referral_code_used}`);
       }
     }
@@ -122,6 +124,17 @@ serve(async (req) => {
 
     console.log('Pedido creado:', orderNumber, validReferralCode ? `con descuento de S/.${discount}` : '');
 
+    // Notificar al referente por WhatsApp si usaron su código
+    if (referrerData && validReferralCode) {
+      try {
+        await notifyReferrer(referrerData, customer_name, orderNumber, total);
+        console.log('Notificación enviada al referente:', referrerData.phone);
+      } catch (notifyError) {
+        // No bloquear el pedido si falla la notificación
+        console.error('Error al notificar referente (no bloqueante):', notifyError);
+      }
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
@@ -146,3 +159,66 @@ serve(async (req) => {
     );
   }
 });
+
+// Función para notificar al referente por WhatsApp
+async function notifyReferrer(
+  referrer: { id: string; name: string; lastname: string | null; phone: string },
+  referredCustomerName: string,
+  orderNumber: string,
+  orderTotal: number
+) {
+  const phone = referrer.phone.replace(/\D/g, '');
+  const formattedPhone = phone.startsWith('51') ? phone : `51${phone}`;
+  
+  const message = `🎉 ¡Hola ${referrer.name}!
+
+Tu amigo/a ${referredCustomerName} acaba de hacer su primer pedido usando tu código de referido.
+
+📦 Pedido: ${orderNumber}
+💰 Total: S/. ${orderTotal.toFixed(2)}
+
+Cuando se pague el pedido, recibirás S/. 15 de crédito en tu cuenta.
+
+¡Gracias por recomendar PlazaMedik! 💚
+Sigue compartiendo tu código y gana más créditos.
+
+👉 Tu código: ${referrer.phone ? `https://plazamedik.net.pe/invite/` : ''}`;
+
+  const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+  
+  // Registrar la notificación en el log (para tracking)
+  console.log(`WhatsApp notification URL generated for referrer ${formattedPhone}:`, whatsappUrl);
+  
+  // Intentar enviar vía Kapso si está configurado
+  const kapsoApiKey = Deno.env.get('KAPSO_API_KEY');
+  
+  if (kapsoApiKey) {
+    try {
+      const response = await fetch('https://api.kapso.ai/v1/whatsapp/messages', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${kapsoApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: formattedPhone,
+          type: 'text',
+          text: { body: message },
+        }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('WhatsApp enviado via Kapso:', result);
+        return { success: true, via: 'kapso', messageId: result.messageId };
+      } else {
+        console.error('Error de Kapso:', await response.text());
+      }
+    } catch (kapsoError) {
+      console.error('Error al enviar por Kapso:', kapsoError);
+    }
+  }
+  
+  // Si no hay Kapso, solo loggeamos (el mensaje se puede enviar manualmente)
+  return { success: true, via: 'link', url: whatsappUrl };
+}

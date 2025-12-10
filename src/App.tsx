@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import MiCuenta from "@/pages/MiCuenta";
 import AIAgentSettings from "./pages/admin/AIAgentSettings";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -71,6 +72,7 @@ const App = () => (
             <Route path="/hacer-pedido-wa" element={<HacerPedidoWA />} />
             <Route path="/invite" element={<Invite />} />
             <Route path="/invite/:code" element={<Invite />} />
+            <Route path="/mi-cuenta" element={<MiCuenta />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLogin />} />
