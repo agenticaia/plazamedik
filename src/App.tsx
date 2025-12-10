@@ -69,6 +69,7 @@ const App = () => (
             <Route path="/preguntas-frecuentes" element={<FAQ />} />
             <Route path="/seguimiento" element={<Seguimiento />} />
             <Route path="/hacer-pedido-wa" element={<HacerPedidoWA />} />
+            <Route path="/invite" element={<Invite />} />
             <Route path="/invite/:code" element={<Invite />} />
 
             {/* Admin Routes */}
