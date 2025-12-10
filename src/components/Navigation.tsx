@@ -66,20 +66,18 @@ const Navigation = ({ muted = false }: NavigationProps) => {
               </Link>
             ))}
 
-            {/* Referral Button - Destacado */}
-            {customer?.referral_code && (
-              <Button
-                asChild
-                size="sm"
-                variant="outline"
-                className="border-amber-500 text-amber-600 hover:bg-amber-50 hover:text-amber-700 font-semibold animate-pulse"
-              >
-                <Link to={`/invite/${customer.referral_code}`}>
-                  <Gift className="w-4 h-4 mr-2" />
-                  Invita y Gana S/.15
-                </Link>
-              </Button>
-            )}
+            {/* Botón Regala Salud - Para todos */}
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="border-amber-500 text-amber-600 hover:bg-amber-50 hover:text-amber-700 font-semibold"
+            >
+              <Link to="/invite">
+                <Gift className="w-4 h-4 mr-2" />
+                Regala Salud
+              </Link>
+            </Button>
 
             <Button
               asChild
@@ -135,19 +133,17 @@ const Navigation = ({ muted = false }: NavigationProps) => {
                 </Link>
               ))}
 
-              {/* Referral Button Mobile - Destacado */}
-              {customer?.referral_code && (
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full border-amber-500 text-amber-600 hover:bg-amber-50 hover:text-amber-700 font-semibold"
-                >
-                  <Link to={`/invite/${customer.referral_code}`} onClick={() => setIsOpen(false)}>
-                    <Gift className="w-4 h-4 mr-2" />
-                    Invita y Gana S/.15
-                  </Link>
-                </Button>
-              )}
+              {/* Botón Regala Salud Mobile - Para todos */}
+              <Button
+                asChild
+                variant="outline"
+                className="w-full border-amber-500 text-amber-600 hover:bg-amber-50 hover:text-amber-700 font-semibold"
+              >
+                <Link to="/invite" onClick={() => setIsOpen(false)}>
+                  <Gift className="w-4 h-4 mr-2" />
+                  Regala Salud
+                </Link>
+              </Button>
 
               <Button
                 asChild

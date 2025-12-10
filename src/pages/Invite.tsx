@@ -8,12 +8,18 @@ import { Gift, CheckCircle2, ArrowRight, Sparkles, Users } from "lucide-react";
 import { useValidateReferralCode } from "@/hooks/useCustomers";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentCustomer } from "@/hooks/useCurrentCustomer";
+import ReferralDashboard from "@/components/ReferralDashboard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Invite() {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const validateCode = useValidateReferralCode();
   const [referrer, setReferrer] = useState<any>(null);
+  const { user } = useAuth();
+  const { data: currentCustomer, isLoading: isLoadingCustomer } = useCurrentCustomer();
 
   useEffect(() => {
     if (code) {
@@ -33,16 +39,97 @@ export default function Invite() {
     }
   }, [code]);
 
+  // Si el usuario está logueado y tiene cliente asociado, mostrar dashboard
+  const showDashboard = user && currentCustomer?.referral_code;
+  
   // Si no hay código o es inválido, mostrar invitación a obtener uno
   const showGetCodePromo = !code || validateCode.isError;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-muted/30 to-background">
-      <Navigation muted />
+      <Navigation muted={!showDashboard} />
       
-      <main className="flex-1 container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto">
-          {validateCode.isPending && code ? (
+      <main className="flex-1 container mx-auto px-4 py-8">
+        {/* Usuario logueado con cliente - Mostrar Dashboard */}
+        {showDashboard ? (
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="mb-8 text-center">
+                <h1 className="text-3xl font-bold mb-2">
+                  Programa Regala Salud
+                </h1>
+                <p className="text-muted-foreground">
+                  Invita amigos, ambos ganan S/. 15
+                </p>
+              </div>
+
+              <Tabs defaultValue="dashboard" className="space-y-6">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="dashboard">Mis Referidos</TabsTrigger>
+                  <TabsTrigger value="how-it-works">Cómo Funciona</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="dashboard">
+                  <ReferralDashboard customer={currentCustomer} />
+                </TabsContent>
+
+                <TabsContent value="how-it-works">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>¿Cómo funciona el programa?</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="grid gap-4 md:grid-cols-3">
+                        <div className="text-center p-4">
+                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                            <span className="text-xl font-bold text-primary">1</span>
+                          </div>
+                          <h3 className="font-semibold mb-2">Comparte tu código</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Envía tu código único a amigos y familiares
+                          </p>
+                        </div>
+                        <div className="text-center p-4">
+                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                            <span className="text-xl font-bold text-primary">2</span>
+                          </div>
+                          <h3 className="font-semibold mb-2">Ellos compran</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Tu amigo usa el código y recibe S/. 15 de descuento
+                          </p>
+                        </div>
+                        <div className="text-center p-4">
+                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                            <span className="text-xl font-bold text-primary">3</span>
+                          </div>
+                          <h3 className="font-semibold mb-2">Ambos ganan</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Cuando el pedido se pague, tú también recibes S/. 15
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-muted/50 rounded-lg p-4 mt-6">
+                        <h4 className="font-semibold mb-2">Términos y condiciones</h4>
+                        <ul className="text-sm text-muted-foreground space-y-1">
+                          <li>• Los créditos se acreditan cuando el pedido referido está <strong>pagado</strong></li>
+                          <li>• El código solo aplica para la primera compra del referido</li>
+                          <li>• Los créditos no tienen fecha de vencimiento</li>
+                          <li>• No hay límite de referidos</li>
+                        </ul>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </motion.div>
+          </div>
+        ) : isLoadingCustomer && user ? (
+          <div className="max-w-2xl mx-auto">
             <Card>
               <CardHeader>
                 <Skeleton className="h-8 w-64" />
@@ -52,7 +139,21 @@ export default function Invite() {
                 <Skeleton className="h-32 w-full" />
               </CardContent>
             </Card>
-          ) : showGetCodePromo ? (
+          </div>
+        ) : validateCode.isPending && code ? (
+          <div className="max-w-2xl mx-auto">
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-8 w-64" />
+                <Skeleton className="h-4 w-full mt-2" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-32 w-full" />
+              </CardContent>
+            </Card>
+          </div>
+        ) : showGetCodePromo ? (
+          <div className="max-w-2xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -152,7 +253,9 @@ export default function Invite() {
                 </CardContent>
               </Card>
             </motion.div>
-          ) : (
+          </div>
+        ) : (
+          <div className="max-w-2xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -240,8 +343,8 @@ export default function Invite() {
                 </CardContent>
               </Card>
             </motion.div>
-          )}
-        </div>
+          </div>
+        )}
       </main>
 
       <Footer />
