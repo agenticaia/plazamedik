@@ -26,6 +26,7 @@ serve(async (req) => {
       product_price,
       quantity = 1,
       source = 'web',
+      referral_code_used = null,
     } = await req.json();
 
     // Validar campos requeridos
@@ -57,9 +58,30 @@ serve(async (req) => {
 
     if (orderNumberError) throw orderNumberError;
 
-    const total = priceNum * quantity;
+    // Calcular total con descuento por referido si aplica
+    const REFERRAL_DISCOUNT = 15;
+    let discount = 0;
+    let validReferralCode: string | null = null;
 
-    // Crear orden de venta
+    if (referral_code_used) {
+      // Validar que el código de referido existe
+      const { data: referrer } = await supabase
+        .from('customers')
+        .select('id, referral_code')
+        .eq('referral_code', referral_code_used)
+        .maybeSingle();
+
+      if (referrer) {
+        discount = REFERRAL_DISCOUNT;
+        validReferralCode = referral_code_used;
+        console.log(`Aplicando descuento de S/.${REFERRAL_DISCOUNT} por código de referido: ${referral_code_used}`);
+      }
+    }
+
+    const subtotal = priceNum * quantity;
+    const total = Math.max(subtotal - discount, 0);
+
+    // Crear orden de venta con código de referido si aplica
     const { data: salesOrder, error: salesOrderError } = await supabase
       .from('sales_orders')
       .insert({
@@ -76,6 +98,8 @@ serve(async (req) => {
         payment_status: 'PENDING',
         payment_method: 'CONTRA_ENTREGA',
         source: source,
+        referral_code_used: validReferralCode,
+        notes: validReferralCode ? `🎁 Descuento por referido: S/.${discount} (Código: ${validReferralCode})` : null,
       })
       .select()
       .single();
@@ -96,14 +120,17 @@ serve(async (req) => {
 
     if (itemError) throw itemError;
 
-    console.log('Pedido creado:', orderNumber);
+    console.log('Pedido creado:', orderNumber, validReferralCode ? `con descuento de S/.${discount}` : '');
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         order_number: orderNumber,
         order_id: salesOrder.id,
+        subtotal: subtotal,
+        discount: discount,
         total: total,
+        referral_code_applied: validReferralCode,
       }),
       { 
         status: 200, 
