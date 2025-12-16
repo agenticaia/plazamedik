@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import type { Product } from "@/hooks/useProducts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight, Gift, X } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { ShieldCheck, Package, Phone, CheckCircle2, ArrowRight, Gift, X, Coins } from "lucide-react";
 import AddressSearch from "./AddressSearch";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +29,10 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
   const [orderCode, setOrderCode] = useState("");
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [useCredits, setUseCredits] = useState(false);
+  const [availableCredits, setAvailableCredits] = useState(0);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   // Datos del formulario
   const [formData, setFormData] = useState({
@@ -41,15 +46,53 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
     color: selectedColor || product.colors[0] || "Piel",
   });
 
-  // Cargar código de referido desde localStorage
+  // Cargar código de referido desde localStorage y créditos del cliente
   useEffect(() => {
     if (open) {
       const savedCode = localStorage.getItem("referral_code");
       if (savedCode) {
         setReferralCode(savedCode);
       }
+      
+      // Cargar créditos del cliente si está logueado
+      if (user?.email || user?.phone) {
+        loadCustomerCredits();
+      }
     }
-  }, [open]);
+  }, [open, user]);
+
+  const loadCustomerCredits = async () => {
+    try {
+      let query = supabase
+        .from("customers")
+        .select("referral_credits, name, lastname, phone, district, address");
+      
+      if (user?.email) {
+        query = query.eq("email", user.email);
+      } else if (user?.phone) {
+        query = query.eq("phone", user.phone);
+      }
+      
+      const { data } = await query.maybeSingle();
+      
+      if (data) {
+        setAvailableCredits(data.referral_credits || 0);
+        // Pre-llenar datos del cliente si están vacíos
+        if (!formData.name && data.name) {
+          setFormData(prev => ({
+            ...prev,
+            name: data.name || "",
+            lastname: data.lastname || "",
+            phone: data.phone || "",
+            district: data.district || "",
+            address: data.address || "",
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Error loading customer credits:", error);
+    }
+  };
 
   const resetModal = () => {
     setStep(1);
@@ -65,6 +108,7 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
     });
     setOrderCode("");
     setAppliedDiscount(0);
+    setUseCredits(false);
   };
 
   const removeReferralCode = () => {
@@ -106,24 +150,28 @@ const OrderModal = ({ open, onOpenChange, product, selectedColor }: OrderModalPr
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("create-sales-order", {
-        body: {
-          customer_name: formData.name,
-          customer_lastname: formData.lastname,
-          customer_phone: formData.phone,
-          customer_district: formData.district,
-          customer_address: formData.address,
-          customer_lat: formData.lat,
-          customer_lng: formData.lng,
-          product_code: product.code,
-          product_name: product.name,
-          product_color: formData.color,
-          product_price: product.priceSale,
-          quantity: 1,
-          source: 'web',
-          referral_code_used: referralCode,
-        },
-      });
+        // Calcular créditos a usar (máximo el precio del producto)
+        const creditsToUse = useCredits ? Math.min(availableCredits, product.priceSale) : 0;
+        
+        const { data, error } = await supabase.functions.invoke("create-sales-order", {
+          body: {
+            customer_name: formData.name,
+            customer_lastname: formData.lastname,
+            customer_phone: formData.phone,
+            customer_district: formData.district,
+            customer_address: formData.address,
+            customer_lat: formData.lat,
+            customer_lng: formData.lng,
+            product_code: product.code,
+            product_name: product.name,
+            product_color: formData.color,
+            product_price: product.priceSale,
+            quantity: 1,
+            source: 'web',
+            referral_code_used: referralCode,
+            credits_to_use: creditsToUse,
+          },
+        });
 
       if (error) throw error;
 
@@ -184,8 +232,11 @@ ${coordsText}
     handleClose();
   };
 
-  // Calcular precio con descuento
-  const finalPrice = referralCode ? Math.max(product.priceSale - REFERRAL_DISCOUNT, 0) : product.priceSale;
+  // Calcular precio con descuentos
+  const creditsDiscount = useCredits ? Math.min(availableCredits, product.priceSale) : 0;
+  const referralDiscount = referralCode ? REFERRAL_DISCOUNT : 0;
+  const totalDiscount = creditsDiscount + referralDiscount;
+  const finalPrice = Math.max(product.priceSale - totalDiscount, 0);
 
 
   const renderStep = () => {
@@ -276,6 +327,34 @@ ${coordsText}
             </div>
 
             <div className="space-y-4">
+              {/* Mostrar créditos disponibles */}
+              {availableCredits > 0 && (
+                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 border border-emerald-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Coins className="w-5 h-5 text-emerald-600" />
+                      <div>
+                        <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
+                          Tienes S/ {availableCredits.toFixed(2)} en créditos
+                        </p>
+                        <p className="text-xs text-emerald-600">De tu programa de referidos</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {useCredits && (
+                        <span className="text-lg font-bold text-green-600">
+                          -S/ {Math.min(availableCredits, product.priceSale).toFixed(2)}
+                        </span>
+                      )}
+                      <Switch 
+                        checked={useCredits}
+                        onCheckedChange={setUseCredits}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Mostrar cupón de descuento si hay código de referido */}
               {referralCode && (
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border border-amber-200 rounded-lg p-4">
@@ -306,17 +385,28 @@ ${coordsText}
                 <p className="text-sm font-semibold text-foreground mb-2">Producto seleccionado:</p>
                 <p className="text-sm text-muted-foreground">{product.name}</p>
                 
-                {referralCode ? (
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground line-through">
-                      S/ {product.priceSale.toFixed(2)}
-                    </span>
-                    <span className="text-lg font-bold text-primary">
-                      S/ {finalPrice.toFixed(2)}
-                    </span>
-                    <Badge className="bg-green-100 text-green-700 text-xs">
-                      Ahorras S/ {REFERRAL_DISCOUNT}
-                    </Badge>
+                {totalDiscount > 0 ? (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground line-through">
+                        S/ {product.priceSale.toFixed(2)}
+                      </span>
+                      <span className="text-lg font-bold text-primary">
+                        S/ {finalPrice.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {useCredits && creditsDiscount > 0 && (
+                        <Badge className="bg-emerald-100 text-emerald-700 text-xs">
+                          Créditos: -S/ {creditsDiscount.toFixed(2)}
+                        </Badge>
+                      )}
+                      {referralCode && (
+                        <Badge className="bg-amber-100 text-amber-700 text-xs">
+                          Referido: -S/ {REFERRAL_DISCOUNT}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <p className="text-lg font-bold text-primary mt-1">S/ {product.priceSale.toFixed(2)}</p>
