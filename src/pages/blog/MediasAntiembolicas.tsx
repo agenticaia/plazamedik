@@ -35,7 +35,7 @@ const MediasAntiembolicas = () => {
       "name": "PlazaMedik",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://plazamedik.net.pe/logo.png"
+        "url": "https://plazamedik.com/logo.png"
       }
     }
   };
@@ -46,7 +46,7 @@ const MediasAntiembolicas = () => {
         <title>Medias Antiembólicas: Prevención de Trombosis | Guía Completa 2025</title>
         <meta name="description" content="Descubre cómo las medias antiembólicas previenen coágulos y trombosis. Guía completa sobre uso postoperatorio, beneficios y diferencias con medias de compresión." />
         <meta name="keywords" content="medias antiembolicas, medias antitromboticas, medias para pacientes, prevencion trombosis venosa profunda, medias postoperatorias, compresion graduada antiembolica" />
-        <link rel="canonical" href="https://plazamedik.net.pe/blog/medias-antiembolicas" />
+        <link rel="canonical" href="https://plazamedik.com/blog/medias-antiembolicas" />
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </Helmet>
 

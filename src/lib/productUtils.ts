@@ -2,7 +2,7 @@
 
 export function getWhatsAppLink(productName: string, message?: string): string {
   const phone = "51941941083";
-  const text = message || `Hola, quiero información del producto: ${productName} - vengo de PlazaMedik.net.pe`;
+  const text = message || `Hola, quiero información del producto: ${productName} - vengo de PlazaMedik.com`;
   return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 }
 

@@ -108,7 +108,7 @@ export const TestDialog = ({ open, onOpenChange }: TestDialogProps) => {
 
   const getWhatsAppMessage = (productCode: string, result: RiskLevel) => {
     const name = testData.name || "Cliente";
-    return `Hola, soy ${name}. Acabo de hacer el Test Online en PlazaMedik.net.pe. Mi resultado: ${result}. Me interesa el producto código ${productCode}. ¿Me pueden ayudar con talla y precio?`;
+    return `Hola, soy ${name}. Acabo de hacer el Test Online en PlazaMedik.com. Mi resultado: ${result}. Me interesa el producto código ${productCode}. ¿Me pueden ayudar con talla y precio?`;
   };
 
   const getWhatsAppLink = (productCode: string, result: RiskLevel) => {
