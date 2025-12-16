@@ -27,6 +27,7 @@ serve(async (req) => {
       quantity = 1,
       source = 'web',
       referral_code_used = null,
+      credits_to_use = 0,
     } = await req.json();
 
     // Validar campos requeridos
@@ -58,14 +59,16 @@ serve(async (req) => {
 
     if (orderNumberError) throw orderNumberError;
 
-    // Calcular total con descuento por referido si aplica
+    // Calcular descuentos
     const REFERRAL_DISCOUNT = 15;
-    let discount = 0;
+    let referralDiscount = 0;
+    let creditsDiscount = 0;
     let validReferralCode: string | null = null;
     let referrerData: { id: string; name: string; lastname: string | null; phone: string } | null = null;
+    let customerData: { id: string; referral_credits: number } | null = null;
 
+    // 1. Validar código de referido
     if (referral_code_used) {
-      // Validar que el código de referido existe y obtener datos del referente
       const { data: referrer } = await supabase
         .from('customers')
         .select('id, name, lastname, phone, referral_code')
@@ -73,17 +76,45 @@ serve(async (req) => {
         .maybeSingle();
 
       if (referrer) {
-        discount = REFERRAL_DISCOUNT;
+        referralDiscount = REFERRAL_DISCOUNT;
         validReferralCode = referral_code_used;
         referrerData = referrer;
         console.log(`Aplicando descuento de S/.${REFERRAL_DISCOUNT} por código de referido: ${referral_code_used}`);
       }
     }
 
-    const subtotal = priceNum * quantity;
-    const total = Math.max(subtotal - discount, 0);
+    // 2. Validar y aplicar créditos del cliente
+    if (credits_to_use > 0) {
+      // Buscar cliente por teléfono
+      const { data: customer } = await supabase
+        .from('customers')
+        .select('id, referral_credits')
+        .eq('phone', String(customer_phone))
+        .maybeSingle();
 
-    // Crear orden de venta con código de referido si aplica
+      if (customer && customer.referral_credits >= credits_to_use) {
+        creditsDiscount = Math.min(credits_to_use, priceNum); // No más que el precio
+        customerData = customer;
+        console.log(`Aplicando S/.${creditsDiscount} de créditos del cliente`);
+      } else {
+        console.log('Cliente no tiene suficientes créditos o no existe');
+      }
+    }
+
+    const subtotal = priceNum * quantity;
+    const totalDiscount = referralDiscount + creditsDiscount;
+    const total = Math.max(subtotal - totalDiscount, 0);
+
+    // Construir notas del pedido
+    const notesArr: string[] = [];
+    if (validReferralCode) {
+      notesArr.push(`🎁 Descuento por referido: S/.${referralDiscount} (Código: ${validReferralCode})`);
+    }
+    if (creditsDiscount > 0) {
+      notesArr.push(`💰 Créditos usados: S/.${creditsDiscount}`);
+    }
+
+    // Crear orden de venta
     const { data: salesOrder, error: salesOrderError } = await supabase
       .from('sales_orders')
       .insert({
@@ -101,7 +132,7 @@ serve(async (req) => {
         payment_method: 'CONTRA_ENTREGA',
         source: source,
         referral_code_used: validReferralCode,
-        notes: validReferralCode ? `🎁 Descuento por referido: S/.${discount} (Código: ${validReferralCode})` : null,
+        notes: notesArr.length > 0 ? notesArr.join('\n') : null,
       })
       .select()
       .single();
@@ -122,7 +153,27 @@ serve(async (req) => {
 
     if (itemError) throw itemError;
 
-    console.log('Pedido creado:', orderNumber, validReferralCode ? `con descuento de S/.${discount}` : '');
+    // 3. Descontar créditos del cliente si se usaron
+    if (creditsDiscount > 0 && customerData) {
+      const { error: creditsError } = await supabase
+        .from('customers')
+        .update({ 
+          referral_credits: customerData.referral_credits - creditsDiscount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', customerData.id);
+
+      if (creditsError) {
+        console.error('Error al descontar créditos:', creditsError);
+      } else {
+        console.log(`Créditos descontados: S/.${creditsDiscount} del cliente ${customerData.id}`);
+      }
+    }
+
+    console.log('Pedido creado:', orderNumber, 
+      validReferralCode ? `con descuento de referido S/.${referralDiscount}` : '',
+      creditsDiscount > 0 ? `con créditos S/.${creditsDiscount}` : ''
+    );
 
     // Notificar al referente por WhatsApp si usaron su código
     if (referrerData && validReferralCode) {
@@ -130,7 +181,6 @@ serve(async (req) => {
         await notifyReferrer(referrerData, customer_name, orderNumber, total);
         console.log('Notificación enviada al referente:', referrerData.phone);
       } catch (notifyError) {
-        // No bloquear el pedido si falla la notificación
         console.error('Error al notificar referente (no bloqueante):', notifyError);
       }
     }
@@ -141,9 +191,12 @@ serve(async (req) => {
         order_number: orderNumber,
         order_id: salesOrder.id,
         subtotal: subtotal,
-        discount: discount,
+        referral_discount: referralDiscount,
+        credits_discount: creditsDiscount,
+        discount: totalDiscount,
         total: total,
         referral_code_applied: validReferralCode,
+        credits_applied: creditsDiscount,
       }),
       { 
         status: 200, 
@@ -180,13 +233,10 @@ Tu amigo/a ${referredCustomerName} acaba de hacer su primer pedido usando tu có
 Cuando se pague el pedido, recibirás S/. 15 de crédito en tu cuenta.
 
 ¡Gracias por recomendar PlazaMedik! 💚
-Sigue compartiendo tu código y gana más créditos.
-
-👉 Tu código: ${referrer.phone ? `https://plazamedik.net.pe/invite/` : ''}`;
+Sigue compartiendo tu código y gana más créditos.`;
 
   const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
   
-  // Registrar la notificación en el log (para tracking)
   console.log(`WhatsApp notification URL generated for referrer ${formattedPhone}:`, whatsappUrl);
   
   // Intentar enviar vía Kapso si está configurado
@@ -219,6 +269,5 @@ Sigue compartiendo tu código y gana más créditos.
     }
   }
   
-  // Si no hay Kapso, solo loggeamos (el mensaje se puede enviar manualmente)
   return { success: true, via: 'link', url: whatsappUrl };
 }
