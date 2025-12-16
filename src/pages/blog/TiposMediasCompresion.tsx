@@ -40,7 +40,7 @@ const TiposMediasCompresion = () => {
       "name": "PlazaMedik",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://plazamedik.net.pe/logo.png"
+        "url": "https://plazamedik.com/logo.png"
       }
     }
   };

@@ -143,7 +143,7 @@ export async function enviarRecordatorioPago(pedido: Pedido): Promise<{ success:
  */
 export async function enviarNotificacionEnvio(pedido: Pedido): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
-    const trackingUrl = `https://plazamedik.net.pe/seguimiento?codigo=${pedido.codigo}`;
+    const trackingUrl = `https://plazamedik.com/seguimiento?codigo=${pedido.codigo}`;
     const resultado = await kapsoService.enviarNotificacionEnvio(pedido, trackingUrl);
 
     if (resultado.success) {

@@ -1,69 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://plazamedik.net.pe</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://plazamedik.net.pe/catalogo</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com/catalogo</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://plazamedik.net.pe/blog</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com/blog</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://plazamedik.net.pe/preguntas-frecuentes</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com/preguntas-frecuentes</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://plazamedik.net.pe/hacer-pedido-wa</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com/hacer-pedido-wa</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://plazamedik.net.pe/invitar</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com/mi-cuenta</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://plazamedik.net.pe/piel-sensible</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com/piel-sensible</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://plazamedik.net.pe/seguimiento</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com/seguimiento</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://plazamedik.net.pe/trabajo-de-pie</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com/trabajo-de-pie</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://plazamedik.net.pe/medias-para-varices</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com/medias-para-varices</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://plazamedik.net.pe/auth</loc>
-    <lastmod>2025-11-28T01:36:12.897Z</lastmod>
+    <loc>https://plazamedik.com/auth</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://plazamedik.com/blog/medias-elasticas-para-varices</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://plazamedik.com/blog/tipos-de-medias-de-compresion</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://plazamedik.com/blog/como-elegir-talla-correcta</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://plazamedik.com/blog/medias-antiembolicas</loc>
+    <lastmod>2025-12-16T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

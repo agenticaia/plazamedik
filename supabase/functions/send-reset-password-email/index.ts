@@ -80,10 +80,10 @@ const createResetPasswordEmail = (resetLink: string) => `
               <p style="margin: 0; color: #8898aa; font-size: 12px; line-height: 20px; text-align: center;">
                 © ${new Date().getFullYear()} PlazaMedik - Sistema de Gestión Administrativa
                 <br>
-                <a href="https://plazamedik.net.pe" 
+                <a href="https://plazamedik.com" 
                    target="_blank" 
                    style="color: #0ea5e9; text-decoration: underline;">
-                  plazamedik.net.pe
+                  plazamedik.com
                 </a>
               </p>
             </td>

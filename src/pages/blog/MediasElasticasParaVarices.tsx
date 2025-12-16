@@ -40,7 +40,7 @@ const MediasElasticasParaVarices = () => {
       "name": "PlazaMedik",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://plazamedik.net.pe/logo.png"
+        "url": "https://plazamedik.com/logo.png"
       }
     },
     "datePublished": "2025-01-01",
@@ -53,7 +53,7 @@ const MediasElasticasParaVarices = () => {
         <title>Medias Elásticas para Várices: Guía Completa 2025 | RelaxSan Perú</title>
         <meta name="description" content="Guía completa sobre medias elásticas para várices. Descubre cómo alivian el dolor, mejoran la circulación y qué nivel de compresión necesitas. Calidad italiana RelaxSan en Lima." />
         <meta name="keywords" content="medias elasticas para varices, medias de compresion para varices, medias para varices 15 20 mmhg, medias compresivas varices, medias antivarices, donde comprar medias de compresion en lima" />
-        <link rel="canonical" href="https://plazamedik.net.pe/blog/medias-elasticas-para-varices" />
+        <link rel="canonical" href="https://plazamedik.com/blog/medias-elasticas-para-varices" />
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </Helmet>
 
@@ -75,7 +75,7 @@ const MediasElasticasParaVarices = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <Button size="lg" asChild className="bg-accent hover:bg-accent/90">
-                <a href="https://plazamedik.net.pe/categorias/medias-de-compresion" target="_blank" rel="noopener noreferrer">
+                <a href="https://plazamedik.com/categorias/medias-de-compresion" target="_blank" rel="noopener noreferrer">
                   Ver Medias RelaxSan
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </a>

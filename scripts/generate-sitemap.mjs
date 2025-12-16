@@ -27,7 +27,7 @@ dotenv.config();
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const OUT_FILE = path.join(PUBLIC_DIR, 'sitemap.xml');
 
-const BASE_URL = process.env.SITEMAP_BASE_URL || 'https://plazamedik.net.pe';
+const BASE_URL = process.env.SITEMAP_BASE_URL || 'https://plazamedik.com';
 
 // Mapeo de categorías a slugs amigables (debe coincidir con src/lib/slugUtils.ts)
 const CATEGORY_SLUG_MAP = {

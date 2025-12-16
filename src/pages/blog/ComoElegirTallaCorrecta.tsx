@@ -56,7 +56,7 @@ const ComoElegirTallaCorrecta = () => {
         <title>Cómo Elegir la Talla de Medias de Compresión: Guía Paso a Paso</title>
         <meta name="description" content="Aprende a medir tus piernas correctamente y elegir la talla perfecta de medias de compresión. Guía práctica con tabla de tallas y consejos profesionales." />
         <meta name="keywords" content="medias de compresion medidas, como medir medias de compresion, talla de medias de compresion, guia de tallas medias compresion" />
-        <link rel="canonical" href="https://plazamedik.net.pe/blog/como-elegir-talla-correcta" />
+        <link rel="canonical" href="https://plazamedik.com/blog/como-elegir-talla-correcta" />
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </Helmet>
 
@@ -76,7 +76,7 @@ const ComoElegirTallaCorrecta = () => {
               Elegir la talla incorrecta puede arruinar tu experiencia. Aprende paso a paso cómo tomar las medidas correctas y elegir la talla perfecta para obtener el máximo beneficio.
             </p>
             <Button size="lg" asChild className="bg-accent hover:bg-accent/90">
-              <a href="https://plazamedik.net.pe/marca/relaxsan" target="_blank" rel="noopener noreferrer">
+              <a href="https://plazamedik.com/marca/relaxsan" target="_blank" rel="noopener noreferrer">
                 Ver Tabla de Tallas RelaxSan
                 <ArrowRight className="ml-2 w-4 h-4" />
               </a>

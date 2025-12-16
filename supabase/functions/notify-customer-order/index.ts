@@ -166,7 +166,7 @@ function createOrderNotificationEmail(data: NotifyCustomerRequest): string {
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="https://plazamedik.net.pe/seguimiento" 
+                    <a href="https://plazamedik.com/seguimiento" 
                        style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);">
                       Ver Estado de mi Pedido
                     </a>
@@ -177,8 +177,8 @@ function createOrderNotificationEmail(data: NotifyCustomerRequest): string {
               <!-- Tracking Info -->
               <p style="font-size: 14px; color: #6b7280; margin: 20px 0 0 0; line-height: 1.6; text-align: center;">
                 Puedes dar seguimiento a tu pedido en cualquier momento visitando:<br>
-                <a href="https://plazamedik.net.pe/seguimiento" style="color: #667eea; text-decoration: none; font-weight: 500;">
-                  plazamedik.net.pe/seguimiento
+                <a href="https://plazamedik.com/seguimiento" style="color: #667eea; text-decoration: none; font-weight: 500;">
+                  plazamedik.com/seguimiento
                 </a>
               </p>
 
