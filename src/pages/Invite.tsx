@@ -4,12 +4,14 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Gift, CheckCircle2, ArrowRight, Sparkles, Users } from "lucide-react";
+import { Gift, CheckCircle2, ArrowRight, Sparkles, Users, Loader2 } from "lucide-react";
 import { useValidateReferralCode } from "@/hooks/useCustomers";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrentCustomer } from "@/hooks/useCurrentCustomer";
+import { useEnsureCustomer } from "@/hooks/useEnsureCustomer";
+import { useToast } from "@/hooks/use-toast";
 import ReferralDashboard from "@/components/ReferralDashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -19,7 +21,9 @@ export default function Invite() {
   const validateCode = useValidateReferralCode();
   const [referrer, setReferrer] = useState<any>(null);
   const { user } = useAuth();
-  const { data: currentCustomer, isLoading: isLoadingCustomer } = useCurrentCustomer();
+  const { data: currentCustomer, isLoading: isLoadingCustomer, refetch } = useCurrentCustomer();
+  const ensureCustomer = useEnsureCustomer();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (code) {
@@ -230,10 +234,34 @@ export default function Invite() {
                     <Button 
                       size="lg" 
                       className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg"
-                      onClick={() => navigate("/auth")}
+                      disabled={ensureCustomer.isPending}
+                      onClick={() => {
+                        if (!user) {
+                          navigate("/auth");
+                          return;
+                        }
+                        ensureCustomer.mutate(undefined, {
+                          onSuccess: () => {
+                            toast({ title: "¡Tu código está listo!" });
+                            refetch();
+                            navigate("/mi-cuenta");
+                          },
+                          onError: (e: any) => {
+                            toast({
+                              title: "No se pudo generar tu código",
+                              description: e?.message || "Intenta nuevamente",
+                              variant: "destructive",
+                            });
+                          },
+                        });
+                      }}
                     >
-                      <Gift className="w-4 h-4 mr-2" />
-                      Obtener Mi Código
+                      {ensureCustomer.isPending ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <Gift className="w-4 h-4 mr-2" />
+                      )}
+                      {ensureCustomer.isPending ? "Generando..." : "Obtener Mi Código"}
                     </Button>
                     
                     <Button 
