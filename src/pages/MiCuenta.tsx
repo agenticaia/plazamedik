@@ -1,20 +1,25 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ReferralDashboard from "@/components/ReferralDashboard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrentCustomer } from "@/hooks/useCurrentCustomer";
+import { useEnsureCustomer } from "@/hooks/useEnsureCustomer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, User } from "lucide-react";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 export default function MiCuenta() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { data: customer, isLoading, refetch } = useCurrentCustomer();
+  const ensureCustomer = useEnsureCustomer();
+  const { toast } = useToast();
+  const autoCreateAttempted = useRef(false);
 
   useEffect(() => {
     if (!user) {
@@ -109,15 +114,31 @@ export default function MiCuenta() {
           ) : (
             <Card>
               <CardHeader>
-                <CardTitle>Completa tu perfil</CardTitle>
+                <CardTitle>Generando tu código de regalo...</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-muted-foreground">
-                  No encontramos un perfil de cliente asociado a tu cuenta. 
-                  Realiza tu primer pedido para crear tu perfil y acceder al programa de referidos.
+                  Estamos creando tu perfil y tu código exclusivo del programa Regala Salud.
                 </p>
-                <Button onClick={() => navigate("/catalogo")}>
-                  Ver Catálogo
+                <Button
+                  onClick={() => {
+                    ensureCustomer.mutate(undefined, {
+                      onSuccess: () => {
+                        refetch();
+                        toast({ title: "¡Tu código está listo!" });
+                      },
+                      onError: (e: any) => {
+                        toast({
+                          title: "No se pudo generar tu código",
+                          description: e?.message || "Intenta nuevamente",
+                          variant: "destructive",
+                        });
+                      },
+                    });
+                  }}
+                  disabled={ensureCustomer.isPending}
+                >
+                  {ensureCustomer.isPending ? "Generando..." : "Obtener Mi Código"}
                 </Button>
               </CardContent>
             </Card>
