@@ -50,6 +50,22 @@ export default function MiCuenta() {
     mergeProfile();
   }, [user?.email, user?.phone, refetch]);
 
+  // Auto-crear customer mínimo si no existe (para que el usuario tenga su código de regalo)
+  useEffect(() => {
+    if (
+      !isLoading &&
+      !customer &&
+      user?.email &&
+      !ensureCustomer.isPending &&
+      !autoCreateAttempted.current
+    ) {
+      autoCreateAttempted.current = true;
+      ensureCustomer.mutate(undefined, {
+        onSuccess: () => refetch(),
+      });
+    }
+  }, [isLoading, customer, user?.email, ensureCustomer, refetch]);
+
   const handleLogout = async () => {
     await signOut();
     navigate("/");
