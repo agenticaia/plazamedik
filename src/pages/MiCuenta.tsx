@@ -14,13 +14,36 @@ import { motion } from "framer-motion";
 export default function MiCuenta() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { data: customer, isLoading } = useCurrentCustomer();
+  const { data: customer, isLoading, refetch } = useCurrentCustomer();
 
   useEffect(() => {
     if (!user) {
       navigate("/auth");
     }
   }, [user, navigate]);
+
+  // Merge: si existe un customer con el phone del user pero sin email, vincular email
+  useEffect(() => {
+    const mergeProfile = async () => {
+      if (!user?.email || !user?.phone) return;
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data: existing } = await supabase
+        .from("customers")
+        .select("id, email")
+        .eq("phone", user.phone)
+        .is("email", null)
+        .maybeSingle();
+
+      if (existing?.id) {
+        await supabase
+          .from("customers")
+          .update({ email: user.email })
+          .eq("id", existing.id);
+        refetch();
+      }
+    };
+    mergeProfile();
+  }, [user?.email, user?.phone, refetch]);
 
   const handleLogout = async () => {
     await signOut();
