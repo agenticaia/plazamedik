@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heart, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { generateProductSlug } from "@/lib/slugUtils";
+import { getProductUrl } from "@/lib/slugUtils";
 
 interface FavoriteProduct {
   product_code: string;
@@ -48,8 +48,7 @@ export default function FavoritesSection() {
   });
 
   const handleViewProduct = (product: FavoriteProduct) => {
-    const slug = generateProductSlug(product.nombre_producto, product.product_code);
-    navigate(`/producto/${slug}`);
+    navigate(getProductUrl(product.nombre_producto, product.categoria, product.product_code));
   };
 
   return (
